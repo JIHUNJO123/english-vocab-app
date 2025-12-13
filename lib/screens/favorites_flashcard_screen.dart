@@ -24,7 +24,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   late AnimationController _flipController;
   late Animation<double> _flipAnimation;
 
-  // 번역 관??
+  // 번역 관련
   String? _translatedDefinition;
   String? _translatedExample;
   bool _isLoadingTranslation = false;
@@ -168,14 +168,14 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.shuffle),
-            tooltip: '?�기',
+            tooltip: '섞기',
             onPressed: _shuffleCards,
           ),
         ],
       ),
       body: Column(
         children: [
-          // 진행 ?�시
+          // 진행 표시
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -196,7 +196,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             ),
           ),
 
-          // ?�래?�카??
+          // 플래시카드
           Expanded(
             child: GestureDetector(
               onTap: _flipCard,
@@ -235,7 +235,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             ),
           ),
 
-          // ?�비게이??버튼
+          // 네비게이션 버튼
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -251,7 +251,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
                   icon: Icon(
                     _showAnswer ? Icons.flip_to_front : Icons.flip_to_back,
                   ),
-                  label: Text(_showAnswer ? '?�면' : '?�집�?),
+                  label: Text(_showAnswer ? '앞면' : '뒤집기'),
                 ),
                 ElevatedButton.icon(
                   onPressed:
@@ -270,7 +270,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   }
 
   Widget _buildFrontCard(Word word, AppLocalizations l10n) {
-    // ?�면: ?�어 ?�어 보여주기 (?�어 보고 ??맞추�?
+    // 앞면: 영어 단어 보여주기 (단어 보고 뜻 맞추기)
     return _buildCard(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -310,7 +310,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   }
 
   Widget _buildBackCard(Word word, AppLocalizations l10n) {
-    // ?�면: 번역???�과 ?�문
+    // 뒷면: 번역된 뜻과 예문
     return _buildCard(
       color: Colors.blue[50],
       child: SingleChildScrollView(

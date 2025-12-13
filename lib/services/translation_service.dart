@@ -3,11 +3,11 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../db/database_helper.dart';
 
-/// 지?�하???�어 목록
+/// 지원하는 언어 목록
 class SupportedLanguage {
-  final String code; // ?�어 코드 (ko, ja, zh, es, ...)
-  final String name; // ?�어 ?�름
-  final String nativeName; // 모국???�름
+  final String code; // 언어 코드 (ko, ja, zh, es, ...)
+  final String name; // 영어 이름
+  final String nativeName; // 모국어 이름
 
   const SupportedLanguage({
     required this.code,
@@ -16,28 +16,28 @@ class SupportedLanguage {
   });
 }
 
-/// 번역 ?�비??(무료 API ?�용 + 로컬 캐싱)
+/// 번역 서비스 (무료 API 사용 + 로컬 캐싱)
 class TranslationService {
   static final TranslationService instance = TranslationService._init();
   TranslationService._init();
 
-  // 지???�어 목록
+  // 지원 언어 목록
   static const List<SupportedLanguage> supportedLanguages = [
     SupportedLanguage(code: 'en', name: 'English', nativeName: 'English'),
-    SupportedLanguage(code: 'ko', name: 'Korean', nativeName: '?�국??),
-    SupportedLanguage(code: 'ja', name: 'Japanese', nativeName: '?�本�?),
-    SupportedLanguage(code: 'zh', name: 'Chinese', nativeName: '�?��'),
+    SupportedLanguage(code: 'ko', name: 'Korean', nativeName: '한국어'),
+    SupportedLanguage(code: 'ja', name: 'Japanese', nativeName: '日本語'),
+    SupportedLanguage(code: 'zh', name: 'Chinese', nativeName: '中文'),
     SupportedLanguage(code: 'es', name: 'Spanish', nativeName: 'Español'),
     SupportedLanguage(code: 'fr', name: 'French', nativeName: 'Français'),
     SupportedLanguage(code: 'de', name: 'German', nativeName: 'Deutsch'),
     SupportedLanguage(code: 'pt', name: 'Portuguese', nativeName: 'Português'),
-    SupportedLanguage(code: 'ru', name: 'Russian', nativeName: '????кий'),
-    SupportedLanguage(code: 'ar', name: 'Arabic', nativeName: 'ا?عرب?ة'),
-    SupportedLanguage(code: 'hi', name: 'Hindi', nativeName: 'हिन्द�?'),
-    SupportedLanguage(code: 'bn', name: 'Bengali', nativeName: 'বাংল�?),
-    SupportedLanguage(code: 'ur', name: 'Urdu', nativeName: 'ارد?'),
-    SupportedLanguage(code: 'fa', name: 'Persian', nativeName: '?ارس?'),
-    SupportedLanguage(code: 'th', name: 'Thai', nativeName: 'ไท�?),
+    SupportedLanguage(code: 'ru', name: 'Russian', nativeName: 'Русский'),
+    SupportedLanguage(code: 'ar', name: 'Arabic', nativeName: 'العربية'),
+    SupportedLanguage(code: 'hi', name: 'Hindi', nativeName: 'हिन्दी'),
+    SupportedLanguage(code: 'bn', name: 'Bengali', nativeName: 'বাংলা'),
+    SupportedLanguage(code: 'ur', name: 'Urdu', nativeName: 'اردو'),
+    SupportedLanguage(code: 'fa', name: 'Persian', nativeName: 'فارسی'),
+    SupportedLanguage(code: 'th', name: 'Thai', nativeName: 'ไทย'),
     SupportedLanguage(code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt'),
     SupportedLanguage(
       code: 'id',
@@ -47,7 +47,7 @@ class TranslationService {
     SupportedLanguage(code: 'ms', name: 'Malay', nativeName: 'Bahasa Melayu'),
     SupportedLanguage(code: 'tl', name: 'Filipino', nativeName: 'Filipino'),
     SupportedLanguage(code: 'tr', name: 'Turkish', nativeName: 'Türkçe'),
-    SupportedLanguage(code: 'uk', name: 'Ukrainian', nativeName: 'Ук?а?н??ка'),
+    SupportedLanguage(code: 'uk', name: 'Ukrainian', nativeName: 'Українська'),
     SupportedLanguage(code: 'pl', name: 'Polish', nativeName: 'Polski'),
     SupportedLanguage(code: 'nl', name: 'Dutch', nativeName: 'Nederlands'),
     SupportedLanguage(code: 'it', name: 'Italian', nativeName: 'Italiano'),
@@ -58,7 +58,7 @@ class TranslationService {
 
   String get currentLanguage => _currentLanguage;
 
-  /// ?�재 ?�어 ?�보 가?�오�?
+  /// 현재 언어 정보 가져오기
   SupportedLanguage get currentLanguageInfo {
     return supportedLanguages.firstWhere(
       (lang) => lang.code == _currentLanguage,
@@ -66,27 +66,27 @@ class TranslationService {
     );
   }
 
-  /// ?�어 ?�정 초기??
+  /// 언어 설정 초기화
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     _currentLanguage = prefs.getString('nativeLanguage') ?? 'en';
   }
 
-  /// 모국???�정
+  /// 모국어 설정
   Future<void> setLanguage(String languageCode) async {
     _currentLanguage = languageCode;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('nativeLanguage', languageCode);
   }
 
-  /// 번역 ?�요 ?��?
+  /// 번역 필요 여부
   bool get needsTranslation => _currentLanguage != 'en';
 
-  /// ?�스??번역 (캐시 ?�선)
+  /// 텍스트 번역 (캐시 우선)
   Future<String> translate(String text, int wordId, String fieldType) async {
     if (!needsTranslation || text.isEmpty) return text;
 
-    // 1. 캐시 ?�인
+    // 1. 캐시 확인
     final cached = await DatabaseHelper.instance.getTranslation(
       wordId,
       _currentLanguage,
@@ -94,10 +94,10 @@ class TranslationService {
     );
     if (cached != null) return cached;
 
-    // 2. API ?�출
+    // 2. API 호출
     final translated = await _translateWithAPI(text);
 
-    // 3. 캐시 ?�??
+    // 3. 캐시 저장
     if (translated != text) {
       await DatabaseHelper.instance.saveTranslation(
         wordId,
@@ -110,7 +110,7 @@ class TranslationService {
     return translated;
   }
 
-  /// MyMemory API�?번역 (무료, ??1000??
+  /// MyMemory API로 번역 (무료, 일 1000회)
   Future<String> _translateWithAPI(String text) async {
     try {
       final url = Uri.parse(
@@ -125,7 +125,7 @@ class TranslationService {
         final data = json.decode(response.body);
         final translated = data['responseData']?['translatedText'];
         if (translated != null && translated.toString().isNotEmpty) {
-          // MyMemory가 ?�문자�?반환???��? ?�어???�인
+          // MyMemory가 대문자로 반환할 때가 있어서 확인
           if (translated.toString().toUpperCase() != translated.toString()) {
             return translated.toString();
           }
@@ -135,10 +135,10 @@ class TranslationService {
     } catch (e) {
       print('Translation error: $e');
     }
-    return text; // ?�패???�문 반환
+    return text; // 실패시 원문 반환
   }
 
-  /// 배치 번역 (?�러 ?�어 ?�번??
+  /// 배치 번역 (여러 단어 한번에)
   Future<void> translateWords(List<int> wordIds) async {
     if (!needsTranslation) return;
 

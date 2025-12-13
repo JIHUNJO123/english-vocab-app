@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadTodayWord() async {
     final word = await DatabaseHelper.instance.getTodayWord();
     if (word != null) {
-      // 번역 ?�용
+      // 번역 적용
       final translationService = TranslationService.instance;
       await translationService.init();
 
@@ -254,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
-                      "?��",
+                      "📅",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

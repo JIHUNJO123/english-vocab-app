@@ -14,19 +14,19 @@ import 'services/purchase_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Windows, Linux, macOS?�서 sqflite 초기??(???�외)
+  // Windows, Linux, macOS에서 sqflite 초기화 (웹 제외)
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
 
-  // 번역 ?�비??초기??
+  // 번역 서비스 초기화
   await TranslationService.instance.init();
 
-  // 광고 ?�비??초기??
+  // 광고 서비스 초기화
   await AdService.instance.initialize();
 
-  // ?�앱 구매 ?�비??초기??
+  // 인앱 구매 서비스 초기화
   await PurchaseService.instance.initialize();
 
   runApp(
@@ -37,7 +37,7 @@ void main() async {
   );
 }
 
-/// ?�어 �??�마 변경을 ?�한 Provider
+/// 언어 및 테마 변경을 위한 Provider
 class LocaleProvider extends ChangeNotifier {
   Locale _locale = const Locale('en');
   ThemeMode _themeMode = ThemeMode.light;
@@ -52,12 +52,12 @@ class LocaleProvider extends ChangeNotifier {
   Future<void> _loadSavedSettings() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // ?�어 로드
+    // 언어 로드
     await TranslationService.instance.init();
     final langCode = TranslationService.instance.currentLanguage;
     _locale = Locale(langCode);
 
-    // ?�크모드 로드
+    // 다크모드 로드
     final isDarkMode = prefs.getBool('darkMode') ?? false;
     _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
 
@@ -87,7 +87,7 @@ class EnglishVocabApp extends StatelessWidget {
       title: 'English Vocabulary',
       debugShowCheckedModeBanner: false,
 
-      // Localization ?�정
+      // Localization 설정
       locale: localeProvider.locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -128,7 +128,7 @@ class EnglishVocabApp extends StatelessWidget {
           seedColor: const Color(0xFF4A90E2),
           brightness: Brightness.light,
         ),
-        useMaterial3: false, // Material 2 ?�용 (shader 컴파??문제 방�?)
+        useMaterial3: false, // Material 2 사용 (shader 컴파일 문제 방지)
         appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
         cardTheme: CardTheme(
           elevation: 2,

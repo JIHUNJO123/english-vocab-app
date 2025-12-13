@@ -29,7 +29,7 @@ class DatabaseHelper {
   }
 
   Future _createDB(Database db, int version) async {
-    // ?�어 ?�이�?(?�어 ?�본�?
+    // 단어 테이블 (영어 원본만)
     await db.execute('''
       CREATE TABLE words (
         id INTEGER PRIMARY KEY,
@@ -42,7 +42,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // 번역 캐시 ?�이�?
+    // 번역 캐시 테이블
     await db.execute('''
       CREATE TABLE translations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +55,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // ?�덱???�성
+    // 인덱스 생성
     await db.execute('''
       CREATE INDEX idx_translations_lookup 
       ON translations(wordId, languageCode, fieldType)
@@ -67,7 +67,7 @@ class DatabaseHelper {
 
   Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 3) {
-      // 기존 ?�이�???��?�고 ?�로 ?�성 (???�의 ?�이??반영)
+      // 기존 테이블 삭제하고 새로 생성 (새 정의 데이터 반영)
       await db.execute('DROP TABLE IF EXISTS words');
       await db.execute('DROP TABLE IF EXISTS translations');
       await _createDB(db, newVersion);
@@ -93,9 +93,9 @@ class DatabaseHelper {
     }
   }
 
-  // ============ 번역 캐시 메서??============
+  // ============ 번역 캐시 메서드 ============
 
-  /// 번역 캐시?�서 가?�오�?
+  /// 번역 캐시에서 가져오기
   Future<String?> getTranslation(
     int wordId,
     String languageCode,
@@ -114,7 +114,7 @@ class DatabaseHelper {
     return null;
   }
 
-  /// 번역 캐시???�??
+  /// 번역 캐시에 저장
   Future<void> saveTranslation(
     int wordId,
     String languageCode,
@@ -131,7 +131,7 @@ class DatabaseHelper {
     }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  /// ?�정 ?�어??모든 번역 ??��
+  /// 특정 언어의 모든 번역 삭제
   Future<void> clearTranslations(String languageCode) async {
     final db = await instance.database;
     await db.delete(
@@ -141,13 +141,13 @@ class DatabaseHelper {
     );
   }
 
-  /// 모든 번역 캐시 ??��
+  /// 모든 번역 캐시 삭제
   Future<void> clearAllTranslations() async {
     final db = await instance.database;
     await db.delete('translations');
   }
 
-  // ============ ?�어 메서??============
+  // ============ 단어 메서드 ============
 
   Future<List<Word>> getAllWords() async {
     final db = await instance.database;
@@ -233,7 +233,7 @@ class DatabaseHelper {
     return Word.fromDb(result.first);
   }
 
-  /// ?�어??번역 ?�이???�용
+  /// 단어에 번역 데이터 적용
   Future<Word> applyTranslations(Word word, String languageCode) async {
     if (languageCode == 'en') return word;
 
@@ -250,7 +250,7 @@ class DatabaseHelper {
     );
   }
 
-  /// ?�러 ?�어??번역 ?�용
+  /// 여러 단어에 번역 적용
   Future<List<Word>> applyTranslationsToList(
     List<Word> words,
     String languageCode,

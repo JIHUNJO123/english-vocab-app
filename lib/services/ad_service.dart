@@ -15,7 +15,7 @@ class AdService {
   InterstitialAd? _interstitialAd;
   bool _isInterstitialAdLoaded = false;
 
-  // ?�제 광고 ID
+  // 실제 광고 ID
   // Android
   static const String _androidBannerId =
       'ca-app-pub-5837885590326347/4429537819';
@@ -53,7 +53,7 @@ class AdService {
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    // 광고 ?�거 구매 ?��? ?�인
+    // 광고 제거 구매 여부 확인
     final prefs = await SharedPreferences.getInstance();
     _adsRemoved = prefs.getBool('ads_removed') ?? false;
 
@@ -62,7 +62,7 @@ class AdService {
       return;
     }
 
-    // ???�는 ?�스?�톱?�서??광고 비활?�화
+    // 웹 또는 데스크톱에서는 광고 비활성화
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
       _isInitialized = true;
       return;
@@ -105,7 +105,7 @@ class AdService {
     _isBannerAdLoaded = false;
   }
 
-  // ?�면 광고 로드
+  // 전면 광고 로드
   Future<void> loadInterstitialAd() async {
     if (_adsRemoved) return;
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
@@ -123,7 +123,7 @@ class AdService {
             onAdDismissedFullScreenContent: (ad) {
               ad.dispose();
               _isInterstitialAdLoaded = false;
-              loadInterstitialAd(); // ?�음 광고 미리 로드
+              loadInterstitialAd(); // 다음 광고 미리 로드
             },
             onAdFailedToShowFullScreenContent: (ad, error) {
               ad.dispose();
@@ -140,7 +140,7 @@ class AdService {
     );
   }
 
-  // ?�면 광고 ?�시
+  // 전면 광고 표시
   Future<void> showInterstitialAd() async {
     if (_adsRemoved) return;
     if (!_isInterstitialAdLoaded || _interstitialAd == null) return;
@@ -154,7 +154,7 @@ class AdService {
     _isInterstitialAdLoaded = false;
   }
 
-  // 광고 ?�거 구매 ???�출
+  // 광고 제거 구매 시 호출
   Future<void> removeAds() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('ads_removed', true);
@@ -163,7 +163,7 @@ class AdService {
     disposeInterstitialAd();
   }
 
-  // 광고 ?�거 복원 (IAP 복원??
+  // 광고 제거 복원 (IAP 복원용)
   Future<void> restoreAdsRemoved() async {
     final prefs = await SharedPreferences.getInstance();
     _adsRemoved = prefs.getBool('ads_removed') ?? false;

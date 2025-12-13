@@ -243,7 +243,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 번역???�으�?번역 먼�? ?�시
+                  // 번역이 있으면 번역 먼저 표시
                   if (_isTranslating)
                     Row(
                       children: [

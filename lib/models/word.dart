@@ -1,15 +1,15 @@
-/// ?�어 모델 (?�국??지??
-/// ?�어 ?�본 ?�이??+ ?�적 번역
+/// 단어 모델 (다국어 지원)
+/// 영어 원본 데이터 + 동적 번역
 class Word {
   final int id;
   final String word;
   final String level;
   final String partOfSpeech;
-  final String definition; // ?�어 ?�의
-  final String example; // ?�어 ?�문
+  final String definition; // 영어 정의
+  final String example; // 영어 예문
   bool isFavorite;
 
-  // 번역???�스??(?��??�에 ?�정??
+  // 번역된 텍스트 (런타임에 설정됨)
   String? translatedDefinition;
   String? translatedExample;
 
@@ -25,7 +25,7 @@ class Word {
     this.translatedExample,
   });
 
-  /// JSON?�서 ?�성 (?�어 ?�본)
+  /// JSON에서 생성 (영어 원본)
   factory Word.fromJson(Map<String, dynamic> json) {
     return Word(
       id: json['id'],
@@ -38,7 +38,7 @@ class Word {
     );
   }
 
-  /// DB 맵에???�성
+  /// DB 맵에서 생성
   factory Word.fromDb(Map<String, dynamic> json) {
     return Word(
       id: json['id'] as int,
@@ -63,7 +63,7 @@ class Word {
     };
   }
 
-  /// 번역???�의 가?�오�?(번역 ?�으�??�어 ?�본)
+  /// 번역된 정의 가져오기 (번역 없으면 영어 원본)
   String getDefinition(bool useTranslation) {
     if (useTranslation &&
         translatedDefinition != null &&
@@ -73,7 +73,7 @@ class Word {
     return definition;
   }
 
-  /// 번역???�문 가?�오�?(번역 ?�으�??�어 ?�본)
+  /// 번역된 예문 가져오기 (번역 없으면 영어 원본)
   String getExample(bool useTranslation) {
     if (useTranslation &&
         translatedExample != null &&
