@@ -9,9 +9,8 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.wordbook.englishVocabApp
-        certificate: Codemagic
       vars:
-        APP_ID: 6756526069  # App Store Connect Apple ID
+        APP_ID: 6756526069
       flutter: stable
       xcode: latest
       cocoapods: default
