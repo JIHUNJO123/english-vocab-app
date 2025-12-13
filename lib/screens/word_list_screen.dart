@@ -1,0 +1,757 @@
+import 'package:flutter/material.dart';
+import 'package:flip_card/flip_card.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../db/database_helper.dart';
+import '../models/word.dart';
+import '../services/translation_service.dart';
+import '../services/ad_service.dart';
+import '../utils/pos_helper.dart';
+import 'word_detail_screen.dart';
+
+class WordListScreen extends StatefulWidget {
+  final String? level;
+  final bool isFlashcardMode;
+
+  const WordListScreen({super.key, this.level, this.isFlashcardMode = false});
+
+  @override
+  State<WordListScreen> createState() => _WordListScreenState();
+}
+
+class _WordListScreenState extends State<WordListScreen> {
+  List<Word> _words = [];
+  bool _isLoading = true;
+  final FlutterTts _flutterTts = FlutterTts();
+  int _currentFlashcardIndex = 0;
+  late PageController _pageController;
+  String _sortOrder = 'alphabetical'; // 'alphabetical' or 'random'
+  bool _isBannerAdLoaded = false;
+  int _flashcardViewCount = 0; // 플래시카드 전면 광고용 카운터
+
+  // 리스트 모드용 스크롤 컨트롤러
+  final ScrollController _listScrollController = ScrollController();
+  int _lastListPosition = 0;
+
+  // 번역 관련
+  Map<int, String> _translatedDefinitions = {};
+  Map<int, String> _translatedExamples = {};
+  Set<int> _loadingTranslations = {};
+
+  // 위치 저장 키 생성
+  String get _positionKey =>
+      'word_list_position_${widget.level ?? 'all'}_${widget.isFlashcardMode ? 'flashcard' : 'list'}';
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _loadWords();
+    _initTts();
+    _loadBannerAd();
+    _loadInterstitialAd();
+  }
+
+  Future<void> _loadInterstitialAd() async {
+    if (widget.isFlashcardMode) {
+      await AdService.instance.loadInterstitialAd();
+    }
+  }
+
+  Future<void> _loadBannerAd() async {
+    final adService = AdService.instance;
+    await adService.initialize();
+
+    if (!adService.adsRemoved) {
+      await adService.loadBannerAd(
+        onLoaded: () {
+          if (mounted) {
+            setState(() {
+              _isBannerAdLoaded = true;
+            });
+          }
+        },
+      );
+    }
+  }
+
+  Future<void> _initTts() async {
+    await _flutterTts.setLanguage("en-US");
+    await _flutterTts.setSpeechRate(0.5);
+    await _flutterTts.setVolume(1.0);
+  }
+
+  Future<void> _loadWords() async {
+    List<Word> words;
+    if (widget.level != null) {
+      words = await DatabaseHelper.instance.getWordsByLevel(widget.level!);
+    } else {
+      words = await DatabaseHelper.instance.getAllWords();
+    }
+
+    // 저장된 위치 불러오기
+    final prefs = await SharedPreferences.getInstance();
+    final savedPosition = prefs.getInt(_positionKey) ?? 0;
+
+    setState(() {
+      _words = words;
+      _isLoading = false;
+    });
+
+    // 저장된 위치로 이동
+    if (words.isNotEmpty) {
+      final position = savedPosition.clamp(0, words.length - 1);
+      if (widget.isFlashcardMode) {
+        _currentFlashcardIndex = position;
+        // PageController 초기 페이지 설정
+        _pageController = PageController(initialPage: position);
+        setState(() {});
+      } else {
+        _lastListPosition = position;
+        // 리스트 모드에서 저장된 위치로 스크롤
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_listScrollController.hasClients && position > 0) {
+            // 각 아이템 높이를 약 80으로 추정
+            _listScrollController.jumpTo(position * 80.0);
+          }
+        });
+      }
+    }
+  }
+
+  Future<void> _savePosition(int position) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_positionKey, position);
+  }
+
+  Future<void> _loadTranslationForWord(Word word) async {
+    if (_translatedDefinitions.containsKey(word.id)) return;
+    if (_loadingTranslations.contains(word.id)) return;
+
+    final translationService = TranslationService.instance;
+    await translationService.init();
+
+    if (!translationService.needsTranslation) return;
+    if (!mounted) return;
+
+    setState(() => _loadingTranslations.add(word.id));
+
+    final translatedDef = await translationService.translate(
+      word.definition,
+      word.id,
+      'definition',
+    );
+    final translatedEx = await translationService.translate(
+      word.example,
+      word.id,
+      'example',
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _translatedDefinitions[word.id] = translatedDef;
+      _translatedExamples[word.id] = translatedEx;
+      _loadingTranslations.remove(word.id);
+    });
+  }
+
+  void _sortWords(String order) {
+    setState(() {
+      _sortOrder = order;
+      if (order == 'alphabetical') {
+        _words.sort(
+          (a, b) => a.word.toLowerCase().compareTo(b.word.toLowerCase()),
+        );
+      } else if (order == 'random') {
+        _words.shuffle();
+      }
+      _currentFlashcardIndex = 0;
+      if (_pageController.hasClients) {
+        _pageController.jumpToPage(0);
+      }
+    });
+  }
+
+  String _getAlphabeticalText() {
+    // 간단한 언어별 텍스트 반환
+    final locale = Localizations.localeOf(context).languageCode;
+    switch (locale) {
+      case 'ko':
+        return '알파벳순';
+      case 'ja':
+        return 'アルファベット順';
+      case 'zh':
+        return '字母顺序';
+      default:
+        return 'Alphabetical';
+    }
+  }
+
+  String _getRandomText() {
+    final locale = Localizations.localeOf(context).languageCode;
+    switch (locale) {
+      case 'ko':
+        return '랜덤';
+      case 'ja':
+        return 'ランダム';
+      case 'zh':
+        return '随机';
+      default:
+        return 'Random';
+    }
+  }
+
+  Future<void> _speak(String text) async {
+    await _flutterTts.speak(text);
+  }
+
+  Future<void> _toggleFavorite(Word word) async {
+    await DatabaseHelper.instance.toggleFavorite(word.id, !word.isFavorite);
+    setState(() {
+      word.isFavorite = !word.isFavorite;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          word.isFavorite
+              ? AppLocalizations.of(context)!.addedToFavorites
+              : AppLocalizations.of(context)!.removedFromFavorites,
+        ),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _flutterTts.stop();
+    _pageController.dispose();
+    _listScrollController.dispose();
+    AdService.instance.disposeBannerAd();
+    // 종료 시 현재 위치 저장
+    if (widget.isFlashcardMode) {
+      _savePosition(_currentFlashcardIndex);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    String title = l10n.allWords;
+    if (widget.level != null) {
+      title = l10n.levelWords(widget.level!);
+    }
+    if (widget.isFlashcardMode) {
+      title = l10n.flashcard;
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        centerTitle: true,
+        actions: [
+          // 정렬 옵션
+          if (_words.isNotEmpty)
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.sort),
+              tooltip: '정렬',
+              onSelected: _sortWords,
+              itemBuilder:
+                  (context) => [
+                    PopupMenuItem(
+                      value: 'alphabetical',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.sort_by_alpha,
+                            color:
+                                _sortOrder == 'alphabetical'
+                                    ? Theme.of(context).primaryColor
+                                    : null,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _getAlphabeticalText(),
+                            style: TextStyle(
+                              fontWeight:
+                                  _sortOrder == 'alphabetical'
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'random',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.shuffle,
+                            color:
+                                _sortOrder == 'random'
+                                    ? Theme.of(context).primaryColor
+                                    : null,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _getRandomText(),
+                            style: TextStyle(
+                              fontWeight:
+                                  _sortOrder == 'random'
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+            ),
+          if (!widget.isFlashcardMode && _words.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.style),
+              tooltip: l10n.flashcardMode,
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => WordListScreen(
+                          level: widget.level,
+                          isFlashcardMode: true,
+                        ),
+                  ),
+                );
+              },
+            ),
+          if (widget.isFlashcardMode && _words.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.list),
+              tooltip: l10n.listMode,
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => WordListScreen(
+                          level: widget.level,
+                          isFlashcardMode: false,
+                        ),
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _words.isEmpty
+                    ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.inbox, size: 64, color: Colors.grey),
+                          const SizedBox(height: 16),
+                          Text(
+                            l10n.noWords,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    : widget.isFlashcardMode
+                    ? _buildFlashcardMode()
+                    : _buildListMode(),
+          ),
+          _buildBannerAd(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBannerAd() {
+    final adService = AdService.instance;
+
+    if (adService.adsRemoved ||
+        !_isBannerAdLoaded ||
+        adService.bannerAd == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: adService.bannerAd!.size.width.toDouble(),
+      height: adService.bannerAd!.size.height.toDouble(),
+      alignment: Alignment.center,
+      child: AdWidget(ad: adService.bannerAd!),
+    );
+  }
+
+  Widget _buildListMode() {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollNotification) {
+        if (scrollNotification is ScrollEndNotification) {
+          // 스크롤이 끝났을 때 현재 보이는 아이템 인덱스 저장
+          final scrollPosition = _listScrollController.position.pixels;
+          final itemIndex = (scrollPosition / 80.0).round().clamp(
+            0,
+            _words.length - 1,
+          );
+          _savePosition(itemIndex);
+        }
+        return false;
+      },
+      child: ListView.builder(
+        controller: _listScrollController,
+        padding: const EdgeInsets.all(8),
+        itemCount: _words.length,
+        itemBuilder: (context, index) {
+          final word = _words[index];
+          // 리스트 모드에서도 번역 로드
+          _loadTranslationForWord(word);
+          final translatedDef = _translatedDefinitions[word.id];
+          final isLoading = _loadingTranslations.contains(word.id);
+
+          return Card(
+            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
+              title: Text(
+                word.word,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              subtitle:
+                  isLoading
+                      ? Row(
+                        children: [
+                          SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '...',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      )
+                      : Text(
+                        translatedDef ?? word.definition,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                      ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.volume_up),
+                    onPressed: () => _speak(word.word),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      word.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: word.isFavorite ? Colors.red : null,
+                    ),
+                    onPressed: () => _toggleFavorite(word),
+                  ),
+                ],
+              ),
+              onTap: () {
+                // 클릭한 위치 저장
+                _savePosition(index);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WordDetailScreen(word: word),
+                  ),
+                ).then((_) => _loadWords());
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFlashcardMode() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            '${_currentFlashcardIndex + 1} / ${_words.length}',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentFlashcardIndex = index;
+              });
+              // 위치 저장
+              _savePosition(index);
+
+              // 플래시카드 10장마다 전면 광고 표시
+              _flashcardViewCount++;
+              if (_flashcardViewCount % 10 == 0) {
+                AdService.instance.showInterstitialAd();
+              }
+            },
+            itemCount: _words.length,
+            itemBuilder: (context, index) {
+              final word = _words[index];
+              return Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: FlipCard(
+                  direction: FlipDirection.HORIZONTAL,
+                  front: _buildFlashcardFront(word),
+                  back: _buildFlashcardBack(word),
+                ),
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton.icon(
+                onPressed:
+                    _currentFlashcardIndex > 0
+                        ? () {
+                          _pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                        : null,
+                icon: const Icon(Icons.arrow_back),
+                label: Text(AppLocalizations.of(context)!.previous),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => _speak(_words[_currentFlashcardIndex].word),
+                icon: const Icon(Icons.volume_up),
+                label: Text(AppLocalizations.of(context)!.pronunciation),
+              ),
+              ElevatedButton.icon(
+                onPressed:
+                    _currentFlashcardIndex < _words.length - 1
+                        ? () {
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                        : null,
+                icon: const Icon(Icons.arrow_forward),
+                label: Text(AppLocalizations.of(context)!.next),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFlashcardFront(Word word) {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).primaryColor.withAlpha((0.7 * 255).toInt()),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                word.word,
+                style: const TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                translatePartOfSpeech(
+                  AppLocalizations.of(context)!,
+                  word.partOfSpeech,
+                ),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withAlpha((0.8 * 255).toInt()),
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha((0.2 * 255).toInt()),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  word.level,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40),
+              Text(
+                AppLocalizations.of(context)!.tapToFlip,
+                style: TextStyle(
+                  color: Colors.white.withAlpha((0.6 * 255).toInt()),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlashcardBack(Word word) {
+    // 번역 로드
+    _loadTranslationForWord(word);
+    final isLoadingTranslation = _loadingTranslations.contains(word.id);
+    final translatedDef = _translatedDefinitions[word.id];
+    final translatedEx = _translatedExamples[word.id];
+
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+        ),
+        padding: const EdgeInsets.all(24),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                word.word,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (isLoadingTranslation)
+                const CircularProgressIndicator()
+              else
+                Text(
+                  translatedDef ?? word.definition,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      word.example,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (translatedEx != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        translatedEx,
+                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              IconButton(
+                onPressed: () => _toggleFavorite(word),
+                icon: Icon(
+                  word.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: word.isFavorite ? Colors.red : Colors.grey,
+                  size: 32,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getLevelColor(String level) {
+    switch (level) {
+      case 'A1':
+        return Colors.green;
+      case 'A2':
+        return Colors.lightGreen;
+      case 'B1':
+        return Colors.orange;
+      case 'B2':
+        return Colors.deepOrange;
+      case 'C1':
+        return Colors.red;
+      default:
+        return Colors.blue;
+    }
+  }
+}

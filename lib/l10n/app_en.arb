@@ -1,0 +1,154 @@
+﻿{
+  "@@locale": "en",
+  "appTitle": "English Word 10000",
+  "todayWord": "📅 Today's Word",
+  "learning": "Learning",
+  "levelLearning": "Level Learning",
+  "allWords": "All Words",
+  "viewAllWords": "View all words",
+  "favorites": "Favorites",
+  "savedWords": "Saved words",
+  "flashcard": "Flashcard",
+  "cardLearning": "Learn with cards",
+  "search": "Search",
+  "searchWords": "Search words",
+  "settings": "Settings",
+  "noWords": "No words found",
+  "cannotLoadWords": "Cannot load words",
+  "addedToFavorites": "Added to favorites",
+  "removedFromFavorites": "Removed from favorites",
+  "definition": "📖 Definition",
+  "example": "💬 Example",
+  "translating": "Translating...",
+  "listenPronunciation": "Listen Pronunciation",
+  "markAsLearned": "Mark as Learned",
+  "previous": "Previous",
+  "next": "Next",
+  "pronunciation": "Pronounce",
+  "cardCount": "{current} / {total}",
+  "@cardCount": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "tapToFlip": "Tap to flip",
+  "levelA1": "Beginner 1",
+  "levelA2": "Beginner 2",
+  "levelB1": "Intermediate 1",
+  "levelB2": "Intermediate 2",
+  "levelC1": "Advanced",
+  "levelWords": "{level} Words",
+  "@levelWords": {
+    "placeholders": {
+      "level": {"type": "String"}
+    }
+  },
+  "flashcardMode": "Flashcard Mode",
+  "listMode": "List Mode",
+  "language": "Language",
+  "selectLanguage": "Select Your Language",
+  "languageChanged": "Language changed to {language}",
+  "@languageChanged": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
+  "translationInfo": "Translation Info",
+  "translationInfoDesc": "Translations will be downloaded automatically when you view words. Once downloaded, they are cached locally for offline use.",
+  "ok": "OK",
+  "darkMode": "Dark Mode",
+  "speechRate": "Speech Rate",
+  "notifications": "Notifications",
+  "dailyReminder": "Daily Reminder",
+  "about": "About",
+  "version": "Version",
+  "developer": "Developer",
+  "searchHint": "Search for words...",
+  "noSearchResults": "No results found",
+  "typeToSearch": "Type to search for words",
+  "noFavorites": "No favorites yet",
+  "addFavoritesHint": "Add words to favorites by tapping the heart icon",
+  "posNoun": "noun",
+  "posVerb": "verb",
+  "posAdjective": "adjective",
+  "posAdverb": "adverb",
+  "posPronoun": "pronoun",
+  "posPreposition": "preposition",
+  "posConjunction": "conjunction",
+  "posInterjection": "interjection",
+  "posArticle": "article",
+  "posDeterminer": "determiner",
+  "posAuxiliary": "auxiliary verb",
+  "posPhrasal": "phrasal verb",
+  "showTranslationFirst": "Show translation first",
+  "showTranslationFirstDesc": "Display translated meaning before English",
+  "display": "Display",
+  "useDarkTheme": "Use dark theme",
+  "restartToApply": "Restart app to apply theme change",
+  "learningSection": "Learning",
+  "currentSpeed": "Current: {speed}x",
+  "@currentSpeed": {
+    "placeholders": {
+      "speed": {"type": "String"}
+    }
+  },
+  "getDailyReminders": "Get daily learning reminders",
+  "copyright": "Copyright",
+  "copyrightDesc": "All definitions are original or AI-generated",
+  "copyrightNotice": "Copyright Notice",
+  "copyrightContent": "All word definitions and example sentences in this app are original or AI-generated. No copyrighted dictionary content is used.\n\nTranslations are provided by MyMemory API (free translation service).",
+  "privacyPolicy": "Privacy Policy",
+  "privacyContent": "This app does not collect, store, or share any personal information.\n\nTranslation requests are sent to MyMemory API for processing. No user data is stored on external servers.",
+  "alphabetical": "Alphabetical",
+  "random": "Random",
+  "quiz": "Quiz",
+  "testYourself": "Test yourself",
+  "wordQuiz": "Word Quiz",
+  "quizWithLevel": "{level} Quiz",
+  "@quizWithLevel": {
+    "placeholders": {
+      "level": {"type": "String"}
+    }
+  },
+  "wordToMeaningMode": "Word→Meaning",
+  "meaningToWordMode": "Meaning→Word",
+  "quizComplete": "🎉 Quiz Complete!",
+  "correctAnswers": "{percentage}% Correct",
+  "@correctAnswers": {
+    "placeholders": {
+      "percentage": {"type": "int"}
+    }
+  },
+  "exit": "Exit",
+  "tryAgain": "Try Again",
+  "quizCompleteMessage": "Quiz Complete!",
+  "excellent": "Excellent! 🌟",
+  "greatJob": "Great Job! 👏",
+  "goodStart": "Good Start! 💪",
+  "keepPracticing": "Keep Practicing! 📚",
+  "questionProgress": "{current} / {total}",
+  "@questionProgress": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "whatIsTheMeaning": "What is the meaning of this word?",
+  "whichWordMatches": "Which word matches this meaning?",
+  "nextQuestion": "Next",
+  "loading": "Loading...",
+  "removeAds": "Remove Ads",
+  "removeAdsTitle": "Remove All Ads",
+  "removeAdsDesc": "Enjoy ad-free learning experience",
+  "adsRemoved": "Ads Removed",
+  "enjoyAdFree": "Enjoy your ad-free experience!",
+  "restorePurchase": "Restore Purchase",
+  "restorePurchaseDesc": "Reinstalled or switched devices? Tap here to restore your ad-free purchase.",
+  "purchaseFailed": "Purchase failed. Please try again.",
+  "purchaseRestored": "Purchase restored successfully!",
+  "noPurchaseToRestore": "No purchase found to restore",
+  "buy": "Buy"
+}
+
+
