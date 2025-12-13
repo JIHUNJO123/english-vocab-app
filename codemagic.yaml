@@ -8,9 +8,9 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.wordbook.english_vocab_app
+        bundle_identifier: com.wordbook.englishVocabApp
       vars:
-        APP_ID: 앱스토어_앱_ID_입력  # App Store Connect에서 앱 생성 후 입력
+        APP_ID: 6756526069  # App Store Connect Apple ID
       flutter: stable
       xcode: latest
       cocoapods: default
