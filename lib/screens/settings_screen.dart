@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../services/translation_service.dart';
 import '../services/ad_service.dart';
 import '../services/purchase_service.dart';
@@ -108,11 +108,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             subtitle: Text(lang.name),
                             onTap: () async {
-                              // TranslationService 업데이트
+                              // TranslationService ?�데?�트
                               await TranslationService.instance.setLanguage(
                                 lang.code,
                               );
-                              // LocaleProvider 업데이트 (UI 언어 변경)
+                              // LocaleProvider ?�데?�트 (UI ?�어 변�?
                               if (context.mounted) {
                                 Provider.of<LocaleProvider>(
                                   context,
@@ -190,7 +190,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(title: Text(l10n.settings), centerTitle: true),
       body: ListView(
         children: [
-          // Language Settings (가장 중요!)
+          // Language Settings (가??중요!)
           _buildSectionHeader(l10n.language),
           ListTile(
             leading: const Icon(Icons.language),
@@ -212,7 +212,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _isDarkMode = value;
               });
               _saveSetting('darkMode', value);
-              // 다크모드 즉시 적용
+              // ?�크모드 즉시 ?�용
               Provider.of<LocaleProvider>(
                 context,
                 listen: false,
@@ -339,7 +339,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final adService = AdService.instance;
     final purchaseService = PurchaseService.instance;
 
-    // 이미 광고가 제거된 경우
+    // ?��? 광고가 ?�거??경우
     if (adService.adsRemoved) {
       return ListTile(
         leading: const Icon(Icons.check_circle, color: Colors.green),
@@ -348,7 +348,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     }
 
-    // 구매 가능한 경우
+    // 구매 가?�한 경우
     return Column(
       children: [
         ListTile(
@@ -377,7 +377,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           subtitle: Text(l10n.restorePurchaseDesc),
           onTap: () async {
             await purchaseService.restorePurchases();
-            // 복원 후 화면 갱신
+            // 복원 ???�면 갱신
             if (mounted) {
               setState(() {});
               ScaffoldMessenger.of(context).showSnackBar(

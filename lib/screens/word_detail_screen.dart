@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
 import '../services/translation_service.dart';
@@ -243,7 +243,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 번역이 있으면 번역 먼저 표시
+                  // 번역???�으�?번역 먼�? ?�시
                   if (_isTranslating)
                     Row(
                       children: [

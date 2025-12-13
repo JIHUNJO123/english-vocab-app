@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
 import '../services/translation_service.dart';
@@ -30,7 +30,7 @@ class _QuizScreenState extends State<QuizScreen> {
   final FlutterTts _flutterTts = FlutterTts();
   QuizType _quizType = QuizType.wordToMeaning;
 
-  // 번역 관련
+  // 번역 관??
   Map<int, String> _translatedDefinitions = {};
   bool _isLoadingTranslation = false;
 
@@ -39,7 +39,7 @@ class _QuizScreenState extends State<QuizScreen> {
     super.initState();
     _initTts();
     _loadWords();
-    // 전면 광고 미리 로드
+    // ?�면 광고 미리 로드
     AdService.instance.loadInterstitialAd();
   }
 
@@ -58,7 +58,7 @@ class _QuizScreenState extends State<QuizScreen> {
     }
     words.shuffle();
 
-    // 퀴즈용으로 20개씩만 사용 (너무 많으면 지루함)
+    // ?�즈?�으�?20개씩�??�용 (?�무 많으�?지루함)
     if (words.length > 20) {
       words = words.sublist(0, 20);
     }
@@ -105,7 +105,7 @@ class _QuizScreenState extends State<QuizScreen> {
     final correctWord = _words[_currentIndex];
     final options = <Word>[correctWord];
 
-    // 오답 3개 생성
+    // ?�답 3�??�성
     final otherWords = _words.where((w) => w.id != correctWord.id).toList();
     otherWords.shuffle();
 
@@ -153,7 +153,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _showResultDialog() {
-    // 퀴즈 완료 시 전면 광고 표시
+    // ?�즈 ?�료 ???�면 광고 ?�시
     AdService.instance.showInterstitialAd();
 
     final l10n = AppLocalizations.of(context)!;
@@ -225,7 +225,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _restartQuiz() {
-    // 새로운 20개 세트를 위해 전체 단어를 다시 로드
+    // ?�로??20�??�트�??�해 ?�체 ?�어�??�시 로드
     _loadWords();
     setState(() {
       _currentIndex = 0;
@@ -260,7 +260,7 @@ class _QuizScreenState extends State<QuizScreen> {
         ),
         centerTitle: true,
         actions: [
-          // 퀴즈 타입 전환
+          // ?�즈 ?�???�환
           IconButton(
             icon: Icon(
               _quizType == QuizType.wordToMeaning ? Icons.translate : Icons.abc,
@@ -300,7 +300,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Column(
       children: [
-        // 진행률 & 점수
+        // 진행�?& ?�수
         Container(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -356,7 +356,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     child: Column(
                       children: [
                         if (_quizType == QuizType.wordToMeaning) ...[
-                          // 단어 → 뜻 맞추기
+                          // ?�어 ????맞추�?
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -394,7 +394,7 @@ class _QuizScreenState extends State<QuizScreen> {
                             ),
                           ),
                         ] else ...[
-                          // 뜻 → 단어 맞추기
+                          // ?????�어 맞추�?
                           if (_isLoadingTranslation)
                             const CircularProgressIndicator()
                           else
@@ -548,7 +548,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                 ),
 
-                // 다음 버튼
+                // ?�음 버튼
                 if (_answered)
                   Padding(
                     padding: const EdgeInsets.only(top: 16),

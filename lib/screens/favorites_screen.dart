@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
 import '../utils/pos_helper.dart';

@@ -1,6 +1,6 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 
-/// 영어 품사를 현재 언어로 번역하는 헬퍼 함수
+/// ?�어 ?�사�??�재 ?�어�?번역?�는 ?�퍼 ?�수
 String translatePartOfSpeech(AppLocalizations l10n, String pos) {
   final posLower = pos.toLowerCase().trim();
 
@@ -32,6 +32,6 @@ String translatePartOfSpeech(AppLocalizations l10n, String pos) {
     case 'phrasal':
       return l10n.posPhrasal;
     default:
-      return pos; // 번역이 없으면 원본 반환
+      return pos; // 번역???�으�??�본 반환
   }
 }

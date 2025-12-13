@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../db/database_helper.dart';
@@ -29,18 +29,18 @@ class _WordListScreenState extends State<WordListScreen> {
   late PageController _pageController;
   String _sortOrder = 'alphabetical'; // 'alphabetical' or 'random'
   bool _isBannerAdLoaded = false;
-  int _flashcardViewCount = 0; // 플래시카드 전면 광고용 카운터
+  int _flashcardViewCount = 0; // ?�래?�카???�면 광고??카운??
 
-  // 리스트 모드용 스크롤 컨트롤러
+  // 리스??모드???�크�?컨트롤러
   final ScrollController _listScrollController = ScrollController();
   int _lastListPosition = 0;
 
-  // 번역 관련
+  // 번역 관??
   Map<int, String> _translatedDefinitions = {};
   Map<int, String> _translatedExamples = {};
   Set<int> _loadingTranslations = {};
 
-  // 위치 저장 키 생성
+  // ?�치 ?�?????�성
   String get _positionKey =>
       'word_list_position_${widget.level ?? 'all'}_${widget.isFlashcardMode ? 'flashcard' : 'list'}';
 
@@ -91,7 +91,7 @@ class _WordListScreenState extends State<WordListScreen> {
       words = await DatabaseHelper.instance.getAllWords();
     }
 
-    // 저장된 위치 불러오기
+    // ?�?�된 ?�치 불러?�기
     final prefs = await SharedPreferences.getInstance();
     final savedPosition = prefs.getInt(_positionKey) ?? 0;
 
@@ -100,20 +100,20 @@ class _WordListScreenState extends State<WordListScreen> {
       _isLoading = false;
     });
 
-    // 저장된 위치로 이동
+    // ?�?�된 ?�치�??�동
     if (words.isNotEmpty) {
       final position = savedPosition.clamp(0, words.length - 1);
       if (widget.isFlashcardMode) {
         _currentFlashcardIndex = position;
-        // PageController 초기 페이지 설정
+        // PageController 초기 ?�이지 ?�정
         _pageController = PageController(initialPage: position);
         setState(() {});
       } else {
         _lastListPosition = position;
-        // 리스트 모드에서 저장된 위치로 스크롤
+        // 리스??모드?�서 ?�?�된 ?�치�??�크�?
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_listScrollController.hasClients && position > 0) {
-            // 각 아이템 높이를 약 80으로 추정
+            // �??�이???�이�???80?�로 추정
             _listScrollController.jumpTo(position * 80.0);
           }
         });
@@ -175,13 +175,13 @@ class _WordListScreenState extends State<WordListScreen> {
   }
 
   String _getAlphabeticalText() {
-    // 간단한 언어별 텍스트 반환
+    // 간단???�어�??�스??반환
     final locale = Localizations.localeOf(context).languageCode;
     switch (locale) {
       case 'ko':
-        return '알파벳순';
+        return '?�파벳순';
       case 'ja':
-        return 'アルファベット順';
+        return '?�ル?�ァ?�ッ?�順';
       case 'zh':
         return '字母顺序';
       default:
@@ -193,11 +193,11 @@ class _WordListScreenState extends State<WordListScreen> {
     final locale = Localizations.localeOf(context).languageCode;
     switch (locale) {
       case 'ko':
-        return '랜덤';
+        return '?�덤';
       case 'ja':
-        return 'ランダム';
+        return '?�ン?�??;
       case 'zh':
-        return '随机';
+        return '?�机';
       default:
         return 'Random';
     }
@@ -231,7 +231,7 @@ class _WordListScreenState extends State<WordListScreen> {
     _pageController.dispose();
     _listScrollController.dispose();
     AdService.instance.disposeBannerAd();
-    // 종료 시 현재 위치 저장
+    // 종료 ???�재 ?�치 ?�??
     if (widget.isFlashcardMode) {
       _savePosition(_currentFlashcardIndex);
     }
@@ -255,11 +255,11 @@ class _WordListScreenState extends State<WordListScreen> {
         title: Text(title),
         centerTitle: true,
         actions: [
-          // 정렬 옵션
+          // ?�렬 ?�션
           if (_words.isNotEmpty)
             PopupMenuButton<String>(
               icon: const Icon(Icons.sort),
-              tooltip: '정렬',
+              tooltip: '?�렬',
               onSelected: _sortWords,
               itemBuilder:
                   (context) => [
@@ -403,7 +403,7 @@ class _WordListScreenState extends State<WordListScreen> {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollNotification) {
         if (scrollNotification is ScrollEndNotification) {
-          // 스크롤이 끝났을 때 현재 보이는 아이템 인덱스 저장
+          // ?�크롤이 ?�났?????�재 보이???�이???�덱???�??
           final scrollPosition = _listScrollController.position.pixels;
           final itemIndex = (scrollPosition / 80.0).round().clamp(
             0,
@@ -419,7 +419,7 @@ class _WordListScreenState extends State<WordListScreen> {
         itemCount: _words.length,
         itemBuilder: (context, index) {
           final word = _words[index];
-          // 리스트 모드에서도 번역 로드
+          // 리스??모드?�서??번역 로드
           _loadTranslationForWord(word);
           final translatedDef = _translatedDefinitions[word.id];
           final isLoading = _loadingTranslations.contains(word.id);
@@ -483,7 +483,7 @@ class _WordListScreenState extends State<WordListScreen> {
                 ],
               ),
               onTap: () {
-                // 클릭한 위치 저장
+                // ?�릭???�치 ?�??
                 _savePosition(index);
                 Navigator.push(
                   context,
@@ -516,10 +516,10 @@ class _WordListScreenState extends State<WordListScreen> {
               setState(() {
                 _currentFlashcardIndex = index;
               });
-              // 위치 저장
+              // ?�치 ?�??
               _savePosition(index);
 
-              // 플래시카드 10장마다 전면 광고 표시
+              // ?�래?�카??10?�마???�면 광고 ?�시
               _flashcardViewCount++;
               if (_flashcardViewCount % 10 == 0) {
                 AdService.instance.showInterstitialAd();

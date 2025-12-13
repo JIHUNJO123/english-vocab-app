@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter_tts/flutter_tts.dart';
 
-/// 플랫폼별 TTS 서비스
-/// Windows/Linux에서는 TTS를 비활성화하고, iOS/Android/macOS에서만 동작
+/// ?�랫?�별 TTS ?�비??
+/// Windows/Linux?�서??TTS�?비활?�화?�고, iOS/Android/macOS?�서�??�작
 class TtsService {
   static final TtsService instance = TtsService._init();
   FlutterTts? _flutterTts;
@@ -13,7 +13,7 @@ class TtsService {
   }
 
   Future<void> _initTts() async {
-    // Windows와 Linux에서는 flutter_tts가 복잡한 설정이 필요하므로 비활성화
+    // Windows?� Linux?�서??flutter_tts가 복잡???�정???�요?��?�?비활?�화
     if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
       _flutterTts = FlutterTts();
       _isSupported = true;

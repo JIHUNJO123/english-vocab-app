@@ -9,7 +9,7 @@ class PurchaseService {
   static PurchaseService get instance => _instance;
   PurchaseService._internal();
 
-  // 상품 ID
+  // ?�품 ID
   static const String removeAdsProductId = 'remove_ads';
   static const Set<String> _productIds = {removeAdsProductId};
 
@@ -32,7 +32,7 @@ class PurchaseService {
   Function(String)? onPurchaseError;
 
   Future<void> initialize() async {
-    // 웹 또는 데스크톱에서는 IAP 비활성화
+    // ???�는 ?�스?�톱?�서??IAP 비활?�화
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
       _isAvailable = false;
       return;
@@ -44,7 +44,7 @@ class PurchaseService {
       return;
     }
 
-    // 구매 스트림 구독
+    // 구매 ?�트�?구독
     _subscription = _inAppPurchase.purchaseStream.listen(
       _onPurchaseUpdate,
       onError: (error) {
@@ -53,7 +53,7 @@ class PurchaseService {
       },
     );
 
-    // 상품 정보 로드
+    // ?�품 ?�보 로드
     await _loadProducts();
   }
 
@@ -94,7 +94,7 @@ class PurchaseService {
         onPurchaseError?.call(_errorMessage!);
       } else if (purchaseDetails.status == PurchaseStatus.purchased ||
           purchaseDetails.status == PurchaseStatus.restored) {
-        // 구매 성공 - 광고 제거 처리
+        // 구매 ?�공 - 광고 ?�거 처리
         if (purchaseDetails.productID == removeAdsProductId) {
           await AdService.instance.removeAds();
           onPurchaseSuccess?.call();
@@ -102,14 +102,14 @@ class PurchaseService {
         }
       }
 
-      // 구매 완료 처리
+      // 구매 ?�료 처리
       if (purchaseDetails.pendingCompletePurchase) {
         await _inAppPurchase.completePurchase(purchaseDetails);
       }
     }
   }
 
-  // 광고 제거 구매
+  // 광고 ?�거 구매
   Future<bool> buyRemoveAds() async {
     if (!_isAvailable) {
       _errorMessage = 'In-app purchase is not available';
@@ -130,7 +130,7 @@ class PurchaseService {
       return false;
     }
 
-    // 비소모성 상품으로 구매
+    // 비소모성 ?�품?�로 구매
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
     return await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
   }
@@ -141,7 +141,7 @@ class PurchaseService {
     await _inAppPurchase.restorePurchases();
   }
 
-  // 광고 제거 상품 가격 가져오기
+  // 광고 ?�거 ?�품 가�?가?�오�?
   String? getRemoveAdsPrice() {
     final product =
         _products.where((p) => p.id == removeAdsProductId).firstOrNull;

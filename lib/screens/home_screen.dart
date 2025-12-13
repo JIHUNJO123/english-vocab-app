@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadTodayWord() async {
     final word = await DatabaseHelper.instance.getTodayWord();
     if (word != null) {
-      // 번역 적용
+      // 번역 ?�용
       final translationService = TranslationService.instance;
       await translationService.init();
 
@@ -254,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
-                      "📅",
+                      "?��",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
