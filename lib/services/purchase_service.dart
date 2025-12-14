@@ -61,7 +61,7 @@ class PurchaseService {
     if (!_isAvailable) return;
 
     debugPrint('Loading products for IDs: $_productIds');
-    
+
     final ProductDetailsResponse response = await _inAppPurchase
         .queryProductDetails(_productIds);
 
@@ -73,7 +73,8 @@ class PurchaseService {
 
     if (response.notFoundIDs.isNotEmpty) {
       debugPrint('Products not found: ${response.notFoundIDs}');
-      _errorMessage = 'Product ID not found: ${response.notFoundIDs.join(", ")}';
+      _errorMessage =
+          'Product ID not found: ${response.notFoundIDs.join(", ")}';
     }
 
     _products = response.productDetails;
@@ -90,8 +91,10 @@ class PurchaseService {
   }
 
   Future<void> _handlePurchase(PurchaseDetails purchaseDetails) async {
-    debugPrint('_handlePurchase: status=${purchaseDetails.status}, productID=${purchaseDetails.productID}');
-    
+    debugPrint(
+      '_handlePurchase: status=${purchaseDetails.status}, productID=${purchaseDetails.productID}',
+    );
+
     if (purchaseDetails.status == PurchaseStatus.pending) {
       _isPurchasePending = true;
       debugPrint('  Purchase pending...');
@@ -129,7 +132,7 @@ class PurchaseService {
     debugPrint('buyRemoveAds called');
     debugPrint('  isAvailable: $_isAvailable');
     debugPrint('  products count: ${_products.length}');
-    
+
     if (!_isAvailable) {
       _errorMessage = 'In-app purchase is not available';
       debugPrint('  Error: $_errorMessage');
@@ -137,15 +140,15 @@ class PurchaseService {
     }
 
     if (_products.isEmpty) {
-      _errorMessage = 'No products available. Please check your internet connection.';
+      _errorMessage =
+          'No products available. Please check your internet connection.';
       debugPrint('  Error: $_errorMessage');
       return false;
     }
 
-    final ProductDetails? product = _products.cast<ProductDetails?>().firstWhere(
-      (p) => p?.id == removeAdsProductId,
-      orElse: () => null,
-    );
+    final ProductDetails? product = _products
+        .cast<ProductDetails?>()
+        .firstWhere((p) => p?.id == removeAdsProductId, orElse: () => null);
 
     if (product == null) {
       _errorMessage = 'Product "$removeAdsProductId" not found';
@@ -154,11 +157,13 @@ class PurchaseService {
     }
 
     debugPrint('  Purchasing product: ${product.id} - ${product.price}');
-    
+
     // 비소모성 상품으로 구매
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
     try {
-      final result = await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+      final result = await _inAppPurchase.buyNonConsumable(
+        purchaseParam: purchaseParam,
+      );
       debugPrint('  Purchase initiated: $result');
       return result;
     } catch (e) {

@@ -30,7 +30,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _setupPurchaseCallbacks() {
     final purchaseService = PurchaseService.instance;
-    
+
     purchaseService.onPurchaseSuccess = () {
       if (mounted) {
         setState(() {});
@@ -42,17 +42,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
       }
     };
-    
+
     purchaseService.onPurchaseError = (error) {
       if (mounted) {
         setState(() {
           _isPurchasing = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
         );
       }
     };
@@ -401,45 +398,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
           title: Text(l10n.removeAdsTitle),
           subtitle: Text(l10n.removeAdsDesc),
           trailing: ElevatedButton(
-            onPressed: _isPurchasing ? null : () async {
-              setState(() {
-                _isPurchasing = true;
-              });
-              
-              try {
-                final success = await purchaseService.buyRemoveAds();
-                if (!success && mounted) {
-                  setState(() {
-                    _isPurchasing = false;
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        purchaseService.errorMessage ?? l10n.purchaseFailed,
-                      ),
-                    ),
-                  );
-                }
-              } catch (e) {
-                if (mounted) {
-                  setState(() {
-                    _isPurchasing = false;
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(e.toString()),
-                    ),
-                  );
-                }
-              }
-            },
-            child: _isPurchasing 
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(purchaseService.getRemoveAdsPrice() ?? l10n.buy),
+            onPressed:
+                _isPurchasing
+                    ? null
+                    : () async {
+                      setState(() {
+                        _isPurchasing = true;
+                      });
+
+                      try {
+                        final success = await purchaseService.buyRemoveAds();
+                        if (!success && mounted) {
+                          setState(() {
+                            _isPurchasing = false;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                purchaseService.errorMessage ??
+                                    l10n.purchaseFailed,
+                              ),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          setState(() {
+                            _isPurchasing = false;
+                          });
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.toString())));
+                        }
+                      }
+                    },
+            child:
+                _isPurchasing
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : Text(purchaseService.getRemoveAdsPrice() ?? l10n.buy),
           ),
         ),
         ListTile(

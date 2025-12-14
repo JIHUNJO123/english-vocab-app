@@ -73,11 +73,22 @@ class AdService {
   }
 
   Future<void> loadBannerAd({Function()? onLoaded}) async {
-    if (_adsRemoved) return;
-    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
+    debugPrint('loadBannerAd called');
+    debugPrint('  adsRemoved: $_adsRemoved');
+
+    if (_adsRemoved) {
+      debugPrint('  Ads removed, skipping banner load');
+      return;
+    }
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
+      debugPrint('  Not mobile platform, skipping');
+      return;
+    }
 
     _bannerAd?.dispose();
     _isBannerAdLoaded = false;
+
+    debugPrint('  Loading banner with adUnitId: $bannerAdUnitId');
 
     _bannerAd = BannerAd(
       adUnitId: bannerAdUnitId,
@@ -85,11 +96,14 @@ class AdService {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
+          debugPrint('  BannerAd loaded successfully!');
           _isBannerAdLoaded = true;
           onLoaded?.call();
         },
         onAdFailedToLoad: (ad, error) {
-          debugPrint('BannerAd failed to load: $error');
+          debugPrint(
+            '  BannerAd failed to load: ${error.code} - ${error.message}',
+          );
           ad.dispose();
           _isBannerAdLoaded = false;
         },

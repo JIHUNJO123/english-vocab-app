@@ -119,11 +119,25 @@ class TranslationService {
         '&langpair=en|$_currentLanguage',
       );
 
+      print('Translation API call: en -> $_currentLanguage');
+      print(
+        '  Text: ${text.substring(0, text.length > 50 ? 50 : text.length)}...',
+      );
+
       final response = await http.get(url).timeout(const Duration(seconds: 10));
+
+      print('  Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final translated = data['responseData']?['translatedText'];
+        final status = data['responseStatus'];
+
+        print('  API status: $status');
+        print(
+          '  Translated: ${translated?.toString().substring(0, (translated?.toString().length ?? 0) > 50 ? 50 : (translated?.toString().length ?? 0))}...',
+        );
+
         if (translated != null && translated.toString().isNotEmpty) {
           // MyMemory가 대문자로 반환할 때가 있어서 확인
           if (translated.toString().toUpperCase() != translated.toString()) {
@@ -135,6 +149,7 @@ class TranslationService {
     } catch (e) {
       print('Translation error: $e');
     }
+    print('  Translation failed, returning original text');
     return text; // 실패시 원문 반환
   }
 
