@@ -250,29 +250,116 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
 
           // 네비게이션 버튼
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton.icon(
-                  onPressed: _currentIndex > 0 ? _previousCard : null,
-                  icon: const Icon(Icons.arrow_back),
-                  label: Text(l10n.previous),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _flipCard,
-                  icon: Icon(
-                    _showAnswer ? Icons.flip_to_front : Icons.flip_to_back,
+                // Previous 버튼
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: _currentIndex > 0
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey.shade300,
+                    shape: BoxShape.circle,
+                    boxShadow: _currentIndex > 0
+                        ? [
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.primary.withAlpha(100),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]
+                        : null,
                   ),
-                  label: Text(_showAnswer ? '앞면' : '뒤집기'),
+                  child: IconButton(
+                    onPressed: _currentIndex > 0 ? _previousCard : null,
+                    icon: Icon(
+                      Icons.arrow_back_rounded,
+                      color: _currentIndex > 0 ? Colors.white : Colors.grey,
+                    ),
+                    iconSize: 28,
+                  ),
                 ),
-                ElevatedButton.icon(
-                  onPressed:
-                      _currentIndex < _shuffledFavorites.length - 1
-                          ? _nextCard
-                          : null,
-                  icon: const Icon(Icons.arrow_forward),
-                  label: Text(l10n.next),
+                const SizedBox(width: 16),
+                // Flip 버튼
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: Colors.purple,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.purple.withAlpha(100),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    onPressed: _flipCard,
+                    icon: Icon(
+                      _showAnswer ? Icons.flip_to_front : Icons.flip_to_back,
+                      color: Colors.white,
+                    ),
+                    iconSize: 28,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Pronounce 버튼
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: Colors.orange,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.orange.withAlpha(100),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    onPressed: () => _speak(_shuffledFavorites[_currentIndex].word),
+                    icon: const Icon(Icons.volume_up_rounded, color: Colors.white),
+                    iconSize: 36,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Next 버튼
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: _currentIndex < _shuffledFavorites.length - 1
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey.shade300,
+                    shape: BoxShape.circle,
+                    boxShadow: _currentIndex < _shuffledFavorites.length - 1
+                        ? [
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.primary.withAlpha(100),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: IconButton(
+                    onPressed:
+                        _currentIndex < _shuffledFavorites.length - 1
+                            ? _nextCard
+                            : null,
+                    icon: Icon(
+                      Icons.arrow_forward_rounded,
+                      color: _currentIndex < _shuffledFavorites.length - 1 ? Colors.white : Colors.grey,
+                    ),
+                    iconSize: 28,
+                  ),
                 ),
               ],
             ),

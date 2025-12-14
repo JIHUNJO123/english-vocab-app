@@ -553,40 +553,104 @@ class _WordListScreenState extends State<WordListScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton.icon(
-                onPressed:
-                    _currentFlashcardIndex > 0
-                        ? () {
-                          _pageController.previousPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        }
-                        : null,
-                icon: const Icon(Icons.arrow_back),
-                label: Text(AppLocalizations.of(context)!.previous),
+              // Previous 버튼
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: _currentFlashcardIndex > 0
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey.shade300,
+                  shape: BoxShape.circle,
+                  boxShadow: _currentFlashcardIndex > 0
+                      ? [
+                          BoxShadow(
+                            color: Theme.of(context).colorScheme.primary.withAlpha(100),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: IconButton(
+                  onPressed:
+                      _currentFlashcardIndex > 0
+                          ? () {
+                            _pageController.previousPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          }
+                          : null,
+                  icon: Icon(
+                    Icons.arrow_back_rounded,
+                    color: _currentFlashcardIndex > 0 ? Colors.white : Colors.grey,
+                  ),
+                  iconSize: 28,
+                ),
               ),
-              ElevatedButton.icon(
-                onPressed: () => _speak(_words[_currentFlashcardIndex].word),
-                icon: const Icon(Icons.volume_up),
-                label: Text(AppLocalizations.of(context)!.pronunciation),
+              const SizedBox(width: 24),
+              // Pronounce 버튼 (가장 크게)
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.withAlpha(100),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  onPressed: () => _speak(_words[_currentFlashcardIndex].word),
+                  icon: const Icon(Icons.volume_up_rounded, color: Colors.white),
+                  iconSize: 36,
+                ),
               ),
-              ElevatedButton.icon(
-                onPressed:
-                    _currentFlashcardIndex < _words.length - 1
-                        ? () {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        }
-                        : null,
-                icon: const Icon(Icons.arrow_forward),
-                label: Text(AppLocalizations.of(context)!.next),
+              const SizedBox(width: 24),
+              // Next 버튼
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: _currentFlashcardIndex < _words.length - 1
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey.shade300,
+                  shape: BoxShape.circle,
+                  boxShadow: _currentFlashcardIndex < _words.length - 1
+                      ? [
+                          BoxShadow(
+                            color: Theme.of(context).colorScheme.primary.withAlpha(100),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: IconButton(
+                  onPressed:
+                      _currentFlashcardIndex < _words.length - 1
+                          ? () {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          }
+                          : null,
+                  icon: Icon(
+                    Icons.arrow_forward_rounded,
+                    color: _currentFlashcardIndex < _words.length - 1 ? Colors.white : Colors.grey,
+                  ),
+                  iconSize: 28,
+                ),
               ),
             ],
           ),
