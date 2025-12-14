@@ -359,7 +359,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get buy => 'Kopen';
 
   @override
-  String get wordFontSize => 'Flashcard Word Size';
+  String get wordFontSize => 'Flashcard Idiom Size';
 
   @override
   String get fontSizeSmall => 'Small';

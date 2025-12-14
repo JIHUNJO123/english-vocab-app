@@ -9,10 +9,10 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'English Word 10000';
+  String get appTitle => 'English Idiom 1000';
 
   @override
-  String get todayWord => '📅 Today\'s Word';
+  String get todayWord => ' Today\'s Idiom';
 
   @override
   String get learning => 'Learning';
@@ -21,16 +21,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelLearning => 'Level Learning';
 
   @override
-  String get allWords => 'All Words';
+  String get allWords => 'All Idioms';
 
   @override
-  String get viewAllWords => 'View all words';
+  String get viewAllWords => 'View all idioms';
 
   @override
   String get favorites => 'Favorites';
 
   @override
-  String get savedWords => 'Saved words';
+  String get savedWords => 'Saved idioms';
 
   @override
   String get flashcard => 'Flashcard';
@@ -42,16 +42,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get search => 'Search';
 
   @override
-  String get searchWords => 'Search words';
+  String get searchWords => 'Search idioms';
 
   @override
   String get settings => 'Settings';
 
   @override
-  String get noWords => 'No words found';
+  String get noWords => 'No idioms found';
 
   @override
-  String get cannotLoadWords => 'Cannot load words';
+  String get cannotLoadWords => 'Cannot load idioms';
 
   @override
   String get addedToFavorites => 'Added to favorites';
@@ -60,10 +60,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removedFromFavorites => 'Removed from favorites';
 
   @override
-  String get definition => '📖 Definition';
+  String get definition => ' Definition';
 
   @override
-  String get example => '💬 Example';
+  String get example => ' Example';
 
   @override
   String get translating => 'Translating...';
@@ -108,7 +108,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String levelWords(String level) {
-    return '$level Words';
+    return '$level Idioms';
   }
 
   @override
@@ -132,7 +132,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get translationInfo => 'Translation Info';
 
   @override
-  String get translationInfoDesc => 'Translations will be downloaded automatically when you view words. Once downloaded, they are cached locally for offline use.';
+  String get translationInfoDesc => 'Translations will be downloaded automatically when you view idioms. Once downloaded, they are cached locally for offline use.';
 
   @override
   String get ok => 'OK';
@@ -159,19 +159,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get developer => 'Developer';
 
   @override
-  String get searchHint => 'Search for words...';
+  String get searchHint => 'Search for idioms...';
 
   @override
   String get noSearchResults => 'No results found';
 
   @override
-  String get typeToSearch => 'Type to search for words';
+  String get typeToSearch => 'Type to search for idioms';
 
   @override
   String get noFavorites => 'No favorites yet';
 
   @override
-  String get addFavoritesHint => 'Add words to favorites by tapping the heart icon';
+  String get addFavoritesHint => 'Add idioms to favorites by tapping the heart icon';
 
   @override
   String get posNoun => 'noun';
@@ -245,13 +245,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copyrightNotice => 'Copyright Notice';
 
   @override
-  String get copyrightContent => 'All word definitions and example sentences in this app are original or AI-generated. No copyrighted dictionary content is used.\n\nTranslations are provided by MyMemory API (free translation service).';
+  String get copyrightContent => 'All idiom definitions and example sentences in this app are original or AI-generated. No copyrighted dictionary content is used.\\n\\nTranslations are provided by MyMemory API (free translation service).';
 
   @override
   String get privacyPolicy => 'Privacy Policy';
 
   @override
-  String get privacyContent => 'This app does not collect, store, or share any personal information.\n\nTranslation requests are sent to MyMemory API for processing. No user data is stored on external servers.';
+  String get privacyContent => 'This app does not collect, store, or share any personal information.\\n\\nTranslation requests are sent to MyMemory API for processing. No user data is stored on external servers.';
 
   @override
   String get alphabetical => 'Alphabetical';
@@ -266,7 +266,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get testYourself => 'Test yourself';
 
   @override
-  String get wordQuiz => 'Word Quiz';
+  String get wordQuiz => 'Idiom Quiz';
 
   @override
   String quizWithLevel(String level) {
@@ -274,13 +274,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get wordToMeaningMode => 'Word→Meaning';
+  String get wordToMeaningMode => 'IdiomMeaning';
 
   @override
-  String get meaningToWordMode => 'Meaning→Word';
+  String get meaningToWordMode => 'MeaningIdiom';
 
   @override
-  String get quizComplete => '🎉 Quiz Complete!';
+  String get quizComplete => ' Quiz Complete!';
 
   @override
   String correctAnswers(int percentage) {
@@ -297,16 +297,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quizCompleteMessage => 'Quiz Complete!';
 
   @override
-  String get excellent => 'Excellent! 🌟';
+  String get excellent => 'Excellent! ';
 
   @override
-  String get greatJob => 'Great Job! 👏';
+  String get greatJob => 'Great Job! ';
 
   @override
-  String get goodStart => 'Good Start! 💪';
+  String get goodStart => 'Good Start! ';
 
   @override
-  String get keepPracticing => 'Keep Practicing! 📚';
+  String get keepPracticing => 'Keep Practicing! ';
 
   @override
   String questionProgress(int current, int total) {
@@ -314,10 +314,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get whatIsTheMeaning => 'What is the meaning of this word?';
+  String get whatIsTheMeaning => 'What is the meaning of this idiom?';
 
   @override
-  String get whichWordMatches => 'Which word matches this meaning?';
+  String get whichWordMatches => 'Which idiom matches this meaning?';
 
   @override
   String get nextQuestion => 'Next';
@@ -359,7 +359,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buy => 'Buy';
 
   @override
-  String get wordFontSize => 'Flashcard Word Size';
+  String get wordFontSize => 'Flashcard Idiom Size';
 
   @override
   String get fontSizeSmall => 'Small';

@@ -1,10 +1,10 @@
-/// 단어 모델 (다국어 지원)
+﻿/// 단어 모델 (다국어 지원)
 /// 영어 원본 데이터 + 동적 번역
 class Word {
   final int id;
   final String word;
   final String level;
-  final String partOfSpeech;
+  final String? partOfSpeech;
   final String definition; // 영어 정의
   final String example; // 영어 예문
   bool isFavorite;
@@ -17,7 +17,7 @@ class Word {
     required this.id,
     required this.word,
     required this.level,
-    required this.partOfSpeech,
+    this.partOfSpeech,
     required this.definition,
     required this.example,
     this.isFavorite = false,
@@ -44,7 +44,7 @@ class Word {
       id: json['id'] as int,
       word: json['word'] as String,
       level: json['level'] as String,
-      partOfSpeech: json['partOfSpeech'] as String,
+      partOfSpeech: json['partOfSpeech'] as String?,
       definition: json['definition'] as String,
       example: json['example'] as String,
       isFavorite: (json['isFavorite'] as int) == 1,

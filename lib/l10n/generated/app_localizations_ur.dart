@@ -359,7 +359,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get buy => 'خریدیں';
 
   @override
-  String get wordFontSize => 'Flashcard Word Size';
+  String get wordFontSize => 'Flashcard Idiom Size';
 
   @override
   String get fontSizeSmall => 'Small';

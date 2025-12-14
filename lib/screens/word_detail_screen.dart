@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
 import '../services/translation_service.dart';
@@ -107,6 +107,8 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final posText = translatePartOfSpeech(AppLocalizations.of(context)!, _word.partOfSpeech);
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(_word.word),
@@ -140,9 +142,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                   gradient: LinearGradient(
                     colors: [
                       Theme.of(context).primaryColor,
-                      Theme.of(
-                        context,
-                      ).primaryColor.withAlpha((0.7 * 255).toInt()),
+                      Theme.of(context).primaryColor.withAlpha((0.7 * 255).toInt()),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -162,27 +162,26 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withAlpha((0.2 * 255).toInt()),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            translatePartOfSpeech(
-                              AppLocalizations.of(context)!,
-                              _word.partOfSpeech,
+                        if (posText.isNotEmpty) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
                             ),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontStyle: FontStyle.italic,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withAlpha((0.2 * 255).toInt()),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              posText,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontStyle: FontStyle.italic,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
+                          const SizedBox(width: 8),
+                        ],
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -214,7 +213,6 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 번역이 있으면 번역 먼저 표시
                   if (_isTranslating)
                     Row(
                       children: [
@@ -230,8 +228,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                         ),
                       ],
                     )
-                  else if (_hasTranslation &&
-                      _translatedDefinition != null) ...[
+                  else if (_hasTranslation && _translatedDefinition != null) ...[
                     Text(
                       _translatedDefinition!,
                       style: const TextStyle(

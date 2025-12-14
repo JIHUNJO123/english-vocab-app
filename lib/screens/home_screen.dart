@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';

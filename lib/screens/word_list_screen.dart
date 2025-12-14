@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
-import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
+import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../db/database_helper.dart';
@@ -681,11 +681,12 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                translatePartOfSpeech(
-                  AppLocalizations.of(context)!,
-                  word.partOfSpeech,
-                ),
+              if (translatePartOfSpeech(AppLocalizations.of(context)!, word.partOfSpeech).isNotEmpty)
+                Text(
+                  translatePartOfSpeech(
+                    AppLocalizations.of(context)!,
+                    word.partOfSpeech,
+                  ),
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white.withAlpha((0.8 * 255).toInt()),
@@ -832,3 +833,4 @@ class _WordListScreenState extends State<WordListScreen> {
     }
   }
 }
+

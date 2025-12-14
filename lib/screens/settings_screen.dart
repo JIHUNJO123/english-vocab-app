@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
+import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
 import '../services/translation_service.dart';
 import '../services/ad_service.dart';
 import '../services/purchase_service.dart';
