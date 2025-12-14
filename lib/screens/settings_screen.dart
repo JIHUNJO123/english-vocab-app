@@ -16,7 +16,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _isDarkMode = false;
-  double _speechRate = 0.5;
   bool _notificationEnabled = true;
   String _selectedLanguage = 'en';
   double _wordFontSize = 1.0; // 0.8 ~ 1.4 (기본 1.0)
@@ -32,7 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await TranslationService.instance.init();
     setState(() {
       _isDarkMode = prefs.getBool('darkMode') ?? false;
-      _speechRate = prefs.getDouble('speechRate') ?? 0.5;
+      
       _notificationEnabled = prefs.getBool('notificationEnabled') ?? true;
       _selectedLanguage = TranslationService.instance.currentLanguage;
       _wordFontSize = prefs.getDouble('wordFontSize') ?? 1.0;
@@ -238,32 +237,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _wordFontSize = value;
                   });
                   _saveSetting('wordFontSize', value);
-                },
-              ),
-            ),
-          ),
-          const Divider(),
-
-          // Learning Settings
-          _buildSectionHeader(l10n.learningSection),
-          ListTile(
-            title: Text(l10n.speechRate),
-            subtitle: Text(
-              l10n.currentSpeed((_speechRate * 2).toStringAsFixed(1)),
-            ),
-            trailing: SizedBox(
-              width: 200,
-              child: Slider(
-                value: _speechRate,
-                min: 0.25,
-                max: 1.0,
-                divisions: 3,
-                label: '${(_speechRate * 2).toStringAsFixed(1)}x',
-                onChanged: (value) {
-                  setState(() {
-                    _speechRate = value;
-                  });
-                  _saveSetting('speechRate', value);
                 },
               ),
             ),
