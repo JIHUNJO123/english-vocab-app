@@ -31,7 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await TranslationService.instance.init();
     setState(() {
       _isDarkMode = prefs.getBool('darkMode') ?? false;
-      
+
       _notificationEnabled = prefs.getBool('notificationEnabled') ?? true;
       _selectedLanguage = TranslationService.instance.currentLanguage;
       _wordFontSize = prefs.getDouble('wordFontSize') ?? 1.0;

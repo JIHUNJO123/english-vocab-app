@@ -496,12 +496,12 @@ class _QuizScreenState extends State<QuizScreen> {
                                                 ),
                                               )
                                           : Text(
-                                                option.word,
-                                                style: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
+                                            option.word,
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                 ),
                               ],
                             ),

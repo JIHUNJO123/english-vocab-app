@@ -277,9 +277,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ? Icons.favorite
                                           : Icons.favorite_border,
                                       color:
-                                          word.isFavorite
-                                              ? Colors.red
-                                              : null,
+                                          word.isFavorite ? Colors.red : null,
                                     ),
                                     onPressed: () => _toggleFavorite(word),
                                   ),
