@@ -116,7 +116,14 @@
   "purchaseFailed": "구매에 실패했습니다. 다시 시도해주세요.",
   "purchaseRestored": "구매가 복원되었습니다!",
   "noPurchaseToRestore": "복원할 구매 내역이 없습니다",
-  "buy": "구매"
+  "buy": "구매",
+  "wordFontSize": "단어 글자 크기",
+  "fontSizeSmall": "작게",
+  "fontSizeMediumSmall": "약간 작게",
+  "fontSizeNormal": "보통",
+  "fontSizeMediumLarge": "약간 크게",
+  "fontSizeLarge": "크게",
+  "fontSizeExtraLarge": "매우 크게"
 }
 
 

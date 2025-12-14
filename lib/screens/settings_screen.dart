@@ -19,6 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _speechRate = 0.5;
   bool _notificationEnabled = true;
   String _selectedLanguage = 'en';
+  double _wordFontSize = 1.0; // 0.8 ~ 1.4 (기본 1.0)
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _speechRate = prefs.getDouble('speechRate') ?? 0.5;
       _notificationEnabled = prefs.getBool('notificationEnabled') ?? true;
       _selectedLanguage = TranslationService.instance.currentLanguage;
+      _wordFontSize = prefs.getDouble('wordFontSize') ?? 1.0;
     });
   }
 
@@ -219,6 +221,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ).toggleDarkMode(value);
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.text_fields),
+            title: Text(l10n.wordFontSize),
+            subtitle: Text(_getFontSizeLabel(l10n)),
+            trailing: SizedBox(
+              width: 180,
+              child: Slider(
+                value: _wordFontSize,
+                min: 0.8,
+                max: 1.4,
+                divisions: 6,
+                label: _getFontSizeLabel(l10n),
+                onChanged: (value) {
+                  setState(() {
+                    _wordFontSize = value;
+                  });
+                  _saveSetting('wordFontSize', value);
+                },
+              ),
+            ),
+          ),
           const Divider(),
 
           // Learning Settings
@@ -333,6 +356,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  String _getFontSizeLabel(AppLocalizations l10n) {
+    if (_wordFontSize <= 0.85) return l10n.fontSizeSmall;
+    if (_wordFontSize <= 0.95) return l10n.fontSizeMediumSmall;
+    if (_wordFontSize <= 1.05) return l10n.fontSizeNormal;
+    if (_wordFontSize <= 1.15) return l10n.fontSizeMediumLarge;
+    if (_wordFontSize <= 1.25) return l10n.fontSizeLarge;
+    return l10n.fontSizeExtraLarge;
   }
 
   Widget _buildRemoveAdsSection(AppLocalizations l10n) {

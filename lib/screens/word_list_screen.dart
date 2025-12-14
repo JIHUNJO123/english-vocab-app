@@ -31,6 +31,7 @@ class _WordListScreenState extends State<WordListScreen> {
   String _sortOrder = 'alphabetical'; // 'alphabetical' or 'random'
   bool _isBannerAdLoaded = false;
   int _flashcardViewCount = 0; // 플래시카드 전면 광고용 카운터
+  double _wordFontSize = 1.0; // 단어 폰트 크기 배율
 
   // 리스트 모드용 스크롤 컨트롤러
   final ScrollController _listScrollController = ScrollController();
@@ -53,6 +54,14 @@ class _WordListScreenState extends State<WordListScreen> {
     _initTts();
     _loadBannerAd();
     _loadInterstitialAd();
+    _loadFontSize();
+  }
+
+  Future<void> _loadFontSize() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _wordFontSize = prefs.getDouble('wordFontSize') ?? 1.0;
+    });
   }
 
   Future<void> _loadInterstitialAd() async {
@@ -708,8 +717,8 @@ class _WordListScreenState extends State<WordListScreen> {
             children: [
               Text(
                 word.word,
-                style: const TextStyle(
-                  fontSize: 36,
+                style: TextStyle(
+                  fontSize: 36 * _wordFontSize,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -782,7 +791,7 @@ class _WordListScreenState extends State<WordListScreen> {
               Text(
                 word.word,
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 32 * _wordFontSize,
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).primaryColor,
                 ),
@@ -794,8 +803,8 @@ class _WordListScreenState extends State<WordListScreen> {
               else
                 Text(
                   translatedDef ?? word.definition,
-                  style: const TextStyle(
-                    fontSize: 22,
+                  style: TextStyle(
+                    fontSize: 22 * _wordFontSize,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                     height: 1.3,

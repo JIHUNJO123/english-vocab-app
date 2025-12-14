@@ -148,7 +148,14 @@
   "purchaseFailed": "Purchase failed. Please try again.",
   "purchaseRestored": "Purchase restored successfully!",
   "noPurchaseToRestore": "No purchase found to restore",
-  "buy": "Buy"
+  "buy": "Buy",
+  "wordFontSize": "Word Font Size",
+  "fontSizeSmall": "Small",
+  "fontSizeMediumSmall": "Medium Small",
+  "fontSizeNormal": "Normal",
+  "fontSizeMediumLarge": "Medium Large",
+  "fontSizeLarge": "Large",
+  "fontSizeExtraLarge": "Extra Large"
 }
 
 

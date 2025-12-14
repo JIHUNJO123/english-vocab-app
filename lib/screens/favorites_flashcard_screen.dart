@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../models/word.dart';
 import '../services/translation_service.dart';
@@ -29,6 +30,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   String? _translatedDefinition;
   String? _translatedExample;
   bool _isLoadingTranslation = false;
+  double _wordFontSize = 1.0; // 단어 폰트 크기 배율
 
   @override
   void initState() {
@@ -37,6 +39,14 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
     _initTts();
     _initAnimation();
     _loadTranslation();
+    _loadFontSize();
+  }
+
+  Future<void> _loadFontSize() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _wordFontSize = prefs.getDouble('wordFontSize') ?? 1.0;
+    });
   }
 
   void _initAnimation() {
@@ -395,7 +405,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
         children: [
           Text(
             word.word,
-            style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 36 * _wordFontSize, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           IconButton(
@@ -438,10 +448,10 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             // 단어 (크고 눈에 띄게)
             Text(
               word.word,
-              style: const TextStyle(
-                fontSize: 28,
+              style: TextStyle(
+                fontSize: 28 * _wordFontSize,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1565C0),
+                color: const Color(0xFF1565C0),
               ),
             ),
             const SizedBox(height: 6),
@@ -460,8 +470,8 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             else ...[
               Text(
                 _translatedDefinition ?? word.definition,
-                style: const TextStyle(
-                  fontSize: 20,
+                style: TextStyle(
+                  fontSize: 20 * _wordFontSize,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                   height: 1.3,
