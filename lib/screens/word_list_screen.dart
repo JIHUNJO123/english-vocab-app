@@ -171,6 +171,9 @@ class _WordListScreenState extends State<WordListScreen> {
   }
 
   void _sortWords(String order) {
+    // 현재 보고 있는 단어 저장
+    final currentWord = _words.isNotEmpty ? _words[_currentFlashcardIndex] : null;
+    
     setState(() {
       _sortOrder = order;
       if (order == 'alphabetical') {
@@ -180,9 +183,17 @@ class _WordListScreenState extends State<WordListScreen> {
       } else if (order == 'random') {
         _words.shuffle();
       }
-      _currentFlashcardIndex = 0;
+      
+      // 현재 보고 있던 단어의 새 위치 찾기
+      if (currentWord != null) {
+        final newIndex = _words.indexWhere((w) => w.id == currentWord.id);
+        _currentFlashcardIndex = newIndex >= 0 ? newIndex : 0;
+      } else {
+        _currentFlashcardIndex = 0;
+      }
+      
       if (_pageController.hasClients) {
-        _pageController.jumpToPage(0);
+        _pageController.jumpToPage(_currentFlashcardIndex);
       }
     });
   }
