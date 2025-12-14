@@ -60,6 +60,8 @@ class PurchaseService {
   Future<void> _loadProducts() async {
     if (!_isAvailable) return;
 
+    debugPrint('Loading products for IDs: $_productIds');
+    
     final ProductDetailsResponse response = await _inAppPurchase
         .queryProductDetails(_productIds);
 
@@ -71,10 +73,14 @@ class PurchaseService {
 
     if (response.notFoundIDs.isNotEmpty) {
       debugPrint('Products not found: ${response.notFoundIDs}');
+      _errorMessage = 'Product ID not found: ${response.notFoundIDs.join(", ")}';
     }
 
     _products = response.productDetails;
     debugPrint('Products loaded: ${_products.length}');
+    for (var p in _products) {
+      debugPrint('  - ${p.id}: ${p.title} - ${p.price}');
+    }
   }
 
   void _onPurchaseUpdate(List<PurchaseDetails> purchaseDetailsList) {
@@ -84,26 +90,35 @@ class PurchaseService {
   }
 
   Future<void> _handlePurchase(PurchaseDetails purchaseDetails) async {
+    debugPrint('_handlePurchase: status=${purchaseDetails.status}, productID=${purchaseDetails.productID}');
+    
     if (purchaseDetails.status == PurchaseStatus.pending) {
       _isPurchasePending = true;
+      debugPrint('  Purchase pending...');
     } else {
       _isPurchasePending = false;
 
       if (purchaseDetails.status == PurchaseStatus.error) {
         _errorMessage = purchaseDetails.error?.message ?? 'Purchase failed';
+        debugPrint('  Purchase error: $_errorMessage');
         onPurchaseError?.call(_errorMessage!);
       } else if (purchaseDetails.status == PurchaseStatus.purchased ||
           purchaseDetails.status == PurchaseStatus.restored) {
+        debugPrint('  Purchase successful or restored!');
         // 구매 성공 - 광고 제거 처리
         if (purchaseDetails.productID == removeAdsProductId) {
           await AdService.instance.removeAds();
           onPurchaseSuccess?.call();
-          debugPrint('Ads removed successfully');
+          debugPrint('  Ads removed successfully');
         }
+      } else if (purchaseDetails.status == PurchaseStatus.canceled) {
+        debugPrint('  Purchase canceled by user');
+        _errorMessage = 'Purchase canceled';
       }
 
       // 구매 완료 처리
       if (purchaseDetails.pendingCompletePurchase) {
+        debugPrint('  Completing purchase...');
         await _inAppPurchase.completePurchase(purchaseDetails);
       }
     }
@@ -111,28 +126,46 @@ class PurchaseService {
 
   // 광고 제거 구매
   Future<bool> buyRemoveAds() async {
+    debugPrint('buyRemoveAds called');
+    debugPrint('  isAvailable: $_isAvailable');
+    debugPrint('  products count: ${_products.length}');
+    
     if (!_isAvailable) {
       _errorMessage = 'In-app purchase is not available';
+      debugPrint('  Error: $_errorMessage');
       return false;
     }
 
-    final ProductDetails? product = _products.firstWhere(
-      (p) => p.id == removeAdsProductId,
-      orElse:
-          () =>
-              _products.isEmpty
-                  ? throw Exception('Product not found')
-                  : _products.first,
+    if (_products.isEmpty) {
+      _errorMessage = 'No products available. Please check your internet connection.';
+      debugPrint('  Error: $_errorMessage');
+      return false;
+    }
+
+    final ProductDetails? product = _products.cast<ProductDetails?>().firstWhere(
+      (p) => p?.id == removeAdsProductId,
+      orElse: () => null,
     );
 
-    if (product == null || _products.isEmpty) {
-      _errorMessage = 'Product not found';
+    if (product == null) {
+      _errorMessage = 'Product "$removeAdsProductId" not found';
+      debugPrint('  Error: $_errorMessage');
       return false;
     }
 
+    debugPrint('  Purchasing product: ${product.id} - ${product.price}');
+    
     // 비소모성 상품으로 구매
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
-    return await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+    try {
+      final result = await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+      debugPrint('  Purchase initiated: $result');
+      return result;
+    } catch (e) {
+      _errorMessage = e.toString();
+      debugPrint('  Purchase error: $e');
+      return false;
+    }
   }
 
   // 구매 복원

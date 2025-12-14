@@ -19,11 +19,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationEnabled = true;
   String _selectedLanguage = 'en';
   double _wordFontSize = 1.0; // 0.8 ~ 1.4 (기본 1.0)
+  bool _isPurchasing = false;
 
   @override
   void initState() {
     super.initState();
     _loadSettings();
+    _setupPurchaseCallbacks();
+  }
+
+  void _setupPurchaseCallbacks() {
+    final purchaseService = PurchaseService.instance;
+    
+    purchaseService.onPurchaseSuccess = () {
+      if (mounted) {
+        setState(() {});
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.purchaseRestored),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    };
+    
+    purchaseService.onPurchaseError = (error) {
+      if (mounted) {
+        setState(() {
+          _isPurchasing = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    };
+  }
+
+  @override
+  void dispose() {
+    // 콜백 해제
+    PurchaseService.instance.onPurchaseSuccess = null;
+    PurchaseService.instance.onPurchaseError = null;
+    super.dispose();
   }
 
   Future<void> _loadSettings() async {
@@ -361,19 +401,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
           title: Text(l10n.removeAdsTitle),
           subtitle: Text(l10n.removeAdsDesc),
           trailing: ElevatedButton(
-            onPressed: () async {
-              final success = await purchaseService.buyRemoveAds();
-              if (!success && mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      purchaseService.errorMessage ?? l10n.purchaseFailed,
+            onPressed: _isPurchasing ? null : () async {
+              setState(() {
+                _isPurchasing = true;
+              });
+              
+              try {
+                final success = await purchaseService.buyRemoveAds();
+                if (!success && mounted) {
+                  setState(() {
+                    _isPurchasing = false;
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        purchaseService.errorMessage ?? l10n.purchaseFailed,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  setState(() {
+                    _isPurchasing = false;
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                    ),
+                  );
+                }
               }
             },
-            child: Text(purchaseService.getRemoveAdsPrice() ?? l10n.buy),
+            child: _isPurchasing 
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(purchaseService.getRemoveAdsPrice() ?? l10n.buy),
           ),
         ),
         ListTile(
@@ -382,8 +448,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           subtitle: Text(l10n.restorePurchaseDesc),
           onTap: () async {
             await purchaseService.restorePurchases();
-            // 복원 후 화면 갱신
+            // 복원 후 화면 갱신 (약간의 딜레이 후)
+            await Future.delayed(const Duration(milliseconds: 500));
             if (mounted) {
+              await AdService.instance.restoreAdsRemoved();
               setState(() {});
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
