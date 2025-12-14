@@ -391,12 +391,18 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              title.toUpperCase(),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[500],
+                letterSpacing: 1.2,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             child,
           ],
+        ),
         ),
       ),
     );

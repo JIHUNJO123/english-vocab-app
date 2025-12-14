@@ -417,42 +417,55 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // 단어 (조금 작게)
             Text(
               word.word,
-              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[600],
+              ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               translatePartOfSpeech(l10n, word.partOfSpeech),
               style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
+                fontSize: 12,
+                color: Colors.grey[500],
                 fontStyle: FontStyle.italic,
               ),
             ),
             const SizedBox(height: 16),
+            // 의미 (가장 크고 눈에 띄게)
             if (_isLoadingTranslation)
               const CircularProgressIndicator()
             else ...[
               Text(
                 _translatedDefinition ?? word.definition,
-                style: const TextStyle(fontSize: 18),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1565C0),
+                  height: 1.3,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
+              // 예문 (덜 눈에 띄게)
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Colors.white.withAlpha(150),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
                   children: [
                     Text(
                       word.example,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        fontSize: 13,
                         fontStyle: FontStyle.italic,
+                        color: Colors.grey[600],
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -460,7 +473,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
                       const SizedBox(height: 8),
                       Text(
                         _translatedExample!,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                         textAlign: TextAlign.center,
                       ),
                     ],

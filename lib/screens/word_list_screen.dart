@@ -762,40 +762,47 @@ class _WordListScreenState extends State<WordListScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // 단어 (조금 작게)
               Text(
                 word.word,
                 style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
+              // 의미 (가장 크고 눈에 띄게)
               if (isLoadingTranslation)
                 const CircularProgressIndicator()
               else
                 Text(
                   translatedDef ?? word.definition,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                    height: 1.3,
                   ),
                   textAlign: TextAlign.center,
                 ),
               const SizedBox(height: 24),
+              // 예문 섹션 (덜 눈에 띄게)
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: Colors.grey[50],
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[200]!),
                 ),
                 child: Column(
                   children: [
                     Text(
                       word.example,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontStyle: FontStyle.italic,
+                        color: Colors.grey[600],
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -803,7 +810,7 @@ class _WordListScreenState extends State<WordListScreen> {
                       const SizedBox(height: 8),
                       Text(
                         translatedEx,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                        style: TextStyle(fontSize: 13, color: Colors.grey[500]),
                         textAlign: TextAlign.center,
                       ),
                     ],
