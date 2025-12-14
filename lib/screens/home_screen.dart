@@ -1,11 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
-import '../utils/pos_helper.dart';
 import '../services/translation_service.dart';
 import '../services/ad_service.dart';
 import 'word_list_screen.dart';
@@ -25,14 +22,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Word? _todayWord;
   String? _translatedDefinition;
   bool _isLoading = true;
-  final FlutterTts _flutterTts = FlutterTts();
   bool _isBannerAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _loadTodayWord();
-    _initTts();
     _loadBannerAd();
   }
 
@@ -51,26 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
     }
-  }
-
-  Future<void> _initTts() async {
-    // iOS에서 오디오 세션 설정
-    if (Platform.isIOS) {
-      await _flutterTts.setSharedInstance(true);
-      await _flutterTts.setIosAudioCategory(
-        IosTextToSpeechAudioCategory.ambient,
-        [
-          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-          IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-        ],
-        IosTextToSpeechAudioMode.voicePrompt,
-      );
-    }
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setSpeechRate(Platform.isIOS ? 0.4 : 0.5);
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.0);
   }
 
   Future<void> _loadTodayWord() async {
@@ -106,13 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _speak(String text) async {
-    await _flutterTts.speak(text);
-  }
-
   @override
   void dispose() {
-    _flutterTts.stop();
     AdService.instance.disposeBannerAd();
     super.dispose();
   }
@@ -306,14 +276,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => _speak(_todayWord!.word),
-                    icon: const Icon(
-                      Icons.volume_up,
-                      color: Colors.white,
-                      size: 28,
                     ),
                   ),
                 ],

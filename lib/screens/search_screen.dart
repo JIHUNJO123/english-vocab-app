@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
@@ -19,34 +17,10 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Word> _searchResults = [];
   bool _isSearching = false;
   bool _hasSearched = false;
-  final FlutterTts _flutterTts = FlutterTts();
 
   @override
   void initState() {
     super.initState();
-    _initTts();
-  }
-
-  Future<void> _initTts() async {
-    if (Platform.isIOS) {
-      await _flutterTts.setSharedInstance(true);
-      await _flutterTts.setIosAudioCategory(
-        IosTextToSpeechAudioCategory.ambient,
-        [
-          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-          IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-        ],
-        IosTextToSpeechAudioMode.voicePrompt,
-      );
-    }
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setSpeechRate(Platform.isIOS ? 0.4 : 0.5);
-    await _flutterTts.setVolume(1.0);
-  }
-
-  Future<void> _speak(String text) async {
-    await _flutterTts.speak(text);
   }
 
   Future<void> _search(String query) async {
@@ -109,7 +83,6 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     _searchController.dispose();
-    _flutterTts.stop();
     super.dispose();
   }
 
@@ -298,26 +271,17 @@ class _SearchScreenState extends State<SearchScreen> {
                                       ),
                                     ],
                                   ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.volume_up),
-                                        onPressed: () => _speak(word.word),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
+                                  trailing: IconButton(
+                                    icon: Icon(
+                                      word.isFavorite
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color:
                                           word.isFavorite
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
-                                          color:
-                                              word.isFavorite
-                                                  ? Colors.red
-                                                  : null,
-                                        ),
-                                        onPressed: () => _toggleFavorite(word),
-                                      ),
-                                    ],
+                                              ? Colors.red
+                                              : null,
+                                    ),
+                                    onPressed: () => _toggleFavorite(word),
                                   ),
                                   onTap: () {
                                     Navigator.push(

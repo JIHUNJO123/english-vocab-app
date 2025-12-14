@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
@@ -28,7 +26,6 @@ class _QuizScreenState extends State<QuizScreen> {
   bool _answered = false;
   int? _selectedAnswer;
   List<Word> _currentOptions = [];
-  final FlutterTts _flutterTts = FlutterTts();
   QuizType _quizType = QuizType.wordToMeaning;
 
   // 번역 관련
@@ -38,28 +35,9 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    _initTts();
     _loadWords();
     // 전면 광고 미리 로드
     AdService.instance.loadInterstitialAd();
-  }
-
-  Future<void> _initTts() async {
-    if (Platform.isIOS) {
-      await _flutterTts.setSharedInstance(true);
-      await _flutterTts.setIosAudioCategory(
-        IosTextToSpeechAudioCategory.ambient,
-        [
-          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-          IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-        ],
-        IosTextToSpeechAudioMode.voicePrompt,
-      );
-    }
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setSpeechRate(Platform.isIOS ? 0.4 : 0.5);
-    await _flutterTts.setVolume(1.0);
   }
 
   Future<void> _loadWords() async {
@@ -249,13 +227,8 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
-  Future<void> _speak(String text) async {
-    await _flutterTts.speak(text);
-  }
-
   @override
   void dispose() {
-    _flutterTts.stop();
     AdService.instance.disposeInterstitialAd();
     super.dispose();
   }
@@ -370,21 +343,12 @@ class _QuizScreenState extends State<QuizScreen> {
                       children: [
                         if (_quizType == QuizType.wordToMeaning) ...[
                           // 단어 → 뜻 맞추기
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                currentWord.word,
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.volume_up),
-                                onPressed: () => _speak(currentWord.word),
-                              ),
-                            ],
+                          Text(
+                            currentWord.word,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -531,26 +495,13 @@ class _QuizScreenState extends State<QuizScreen> {
                                                   fontSize: 16,
                                                 ),
                                               )
-                                          : Row(
-                                            children: [
-                                              Text(
+                                          : Text(
                                                 option.word,
                                                 style: const TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              if (_answered)
-                                                IconButton(
-                                                  icon: const Icon(
-                                                    Icons.volume_up,
-                                                    size: 20,
-                                                  ),
-                                                  onPressed:
-                                                      () => _speak(option.word),
-                                                ),
-                                            ],
-                                          ),
                                 ),
                               ],
                             ),

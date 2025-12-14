@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
@@ -18,31 +16,11 @@ class FavoritesScreen extends StatefulWidget {
 class _FavoritesScreenState extends State<FavoritesScreen> {
   List<Word> _favorites = [];
   bool _isLoading = true;
-  final FlutterTts _flutterTts = FlutterTts();
 
   @override
   void initState() {
     super.initState();
     _loadFavorites();
-    _initTts();
-  }
-
-  Future<void> _initTts() async {
-    if (Platform.isIOS) {
-      await _flutterTts.setSharedInstance(true);
-      await _flutterTts.setIosAudioCategory(
-        IosTextToSpeechAudioCategory.ambient,
-        [
-          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-          IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-        ],
-        IosTextToSpeechAudioMode.voicePrompt,
-      );
-    }
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setSpeechRate(Platform.isIOS ? 0.4 : 0.5);
-    await _flutterTts.setVolume(1.0);
   }
 
   Future<void> _loadFavorites() async {
@@ -51,10 +29,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       _favorites = favorites;
       _isLoading = false;
     });
-  }
-
-  Future<void> _speak(String text) async {
-    await _flutterTts.speak(text);
   }
 
   Future<void> _removeFavorite(Word word) async {
@@ -76,12 +50,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         duration: const Duration(seconds: 3),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _flutterTts.stop();
-    super.dispose();
   }
 
   Color _getLevelColor(String level) {
@@ -288,10 +256,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: () => _speak(word.word),
                         ),
                         onTap: () {
                           Navigator.push(

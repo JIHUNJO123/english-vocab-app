@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -25,7 +23,6 @@ class WordListScreen extends StatefulWidget {
 class _WordListScreenState extends State<WordListScreen> {
   List<Word> _words = [];
   bool _isLoading = true;
-  final FlutterTts _flutterTts = FlutterTts();
   int _currentFlashcardIndex = 0;
   late PageController _pageController;
   String _sortOrder = 'alphabetical'; // 'alphabetical' or 'random'
@@ -51,7 +48,6 @@ class _WordListScreenState extends State<WordListScreen> {
     super.initState();
     _pageController = PageController();
     _loadWords();
-    _initTts();
     _loadBannerAd();
     _loadInterstitialAd();
     _loadFontSize();
@@ -85,24 +81,6 @@ class _WordListScreenState extends State<WordListScreen> {
         },
       );
     }
-  }
-
-  Future<void> _initTts() async {
-    if (Platform.isIOS) {
-      await _flutterTts.setSharedInstance(true);
-      await _flutterTts.setIosAudioCategory(
-        IosTextToSpeechAudioCategory.ambient,
-        [
-          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-          IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-        ],
-        IosTextToSpeechAudioMode.voicePrompt,
-      );
-    }
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setSpeechRate(Platform.isIOS ? 0.4 : 0.5);
-    await _flutterTts.setVolume(1.0);
   }
 
   Future<void> _loadWords() async {
@@ -237,10 +215,6 @@ class _WordListScreenState extends State<WordListScreen> {
     }
   }
 
-  Future<void> _speak(String text) async {
-    await _flutterTts.speak(text);
-  }
-
   Future<void> _toggleFavorite(Word word) async {
     await DatabaseHelper.instance.toggleFavorite(word.id, !word.isFavorite);
     setState(() {
@@ -261,7 +235,6 @@ class _WordListScreenState extends State<WordListScreen> {
 
   @override
   void dispose() {
-    _flutterTts.stop();
     _pageController.dispose();
     _listScrollController.dispose();
     AdService.instance.disposeBannerAd();
@@ -500,21 +473,12 @@ class _WordListScreenState extends State<WordListScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                       ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.volume_up),
-                    onPressed: () => _speak(word.word),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      word.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: word.isFavorite ? Colors.red : null,
-                    ),
-                    onPressed: () => _toggleFavorite(word),
-                  ),
-                ],
+              trailing: IconButton(
+                icon: Icon(
+                  word.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: word.isFavorite ? Colors.red : null,
+                ),
+                onPressed: () => _toggleFavorite(word),
               ),
               onTap: () {
                 // 클릭한 위치 저장
@@ -619,32 +583,7 @@ class _WordListScreenState extends State<WordListScreen> {
                   iconSize: 28,
                 ),
               ),
-              const SizedBox(width: 24),
-              // Pronounce 버튼 (가장 크게)
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.orange.withAlpha(100),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  onPressed: () => _speak(_words[_currentFlashcardIndex].word),
-                  icon: const Icon(
-                    Icons.volume_up_rounded,
-                    color: Colors.white,
-                  ),
-                  iconSize: 36,
-                ),
-              ),
-              const SizedBox(width: 24),
+              const SizedBox(width: 48),
               // Next 버튼
               Container(
                 width: 56,

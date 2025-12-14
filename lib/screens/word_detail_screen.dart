@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
@@ -18,7 +16,6 @@ class WordDetailScreen extends StatefulWidget {
 
 class _WordDetailScreenState extends State<WordDetailScreen> {
   late Word _word;
-  final FlutterTts _flutterTts = FlutterTts();
   bool _isTranslating = false;
   String? _translatedDefinition;
   String? _translatedExample;
@@ -27,27 +24,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
   void initState() {
     super.initState();
     _word = widget.word;
-    _initTts();
     _loadTranslations();
-  }
-
-  Future<void> _initTts() async {
-    if (Platform.isIOS) {
-      await _flutterTts.setSharedInstance(true);
-      await _flutterTts.setIosAudioCategory(
-        IosTextToSpeechAudioCategory.ambient,
-        [
-          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-          IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-        ],
-        IosTextToSpeechAudioMode.voicePrompt,
-      );
-    }
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setSpeechRate(Platform.isIOS ? 0.4 : 0.5);
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.0);
   }
 
   Future<void> _loadTranslations() async {
@@ -84,10 +61,6 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
     }
   }
 
-  Future<void> _speak(String text) async {
-    await _flutterTts.speak(text);
-  }
-
   Future<void> _toggleFavorite() async {
     await DatabaseHelper.instance.toggleFavorite(_word.id, !_word.isFavorite);
     setState(() {
@@ -112,7 +85,6 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
 
   @override
   void dispose() {
-    _flutterTts.stop();
     super.dispose();
   }
 
@@ -178,27 +150,13 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                 ),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _word.word,
-                          style: const TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        IconButton(
-                          onPressed: () => _speak(_word.word),
-                          icon: const Icon(
-                            Icons.volume_up,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      _word.word,
+                      style: const TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -305,25 +263,12 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _word.example,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => _speak(_word.example),
-                        icon: Icon(
-                          Icons.volume_up,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    _word.example,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                   if (_hasTranslation && _translatedExample != null) ...[
                     const SizedBox(height: 8),
@@ -338,42 +283,24 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
             const SizedBox(height: 24),
 
             // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed:
-                        () => _speak(
-                          '${_word.word}. ${_word.definition}. ${_word.example}',
-                        ),
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('Listen All'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+            Center(
+              child: OutlinedButton.icon(
+                onPressed: _toggleFavorite,
+                icon: Icon(
+                  _word.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: _word.isFavorite ? Colors.red : null,
+                ),
+                label: Text(_word.isFavorite ? 'Unfavorite' : 'Favorite'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _toggleFavorite,
-                    icon: Icon(
-                      _word.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: _word.isFavorite ? Colors.red : null,
-                    ),
-                    label: Text(_word.isFavorite ? 'Unfavorite' : 'Favorite'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),

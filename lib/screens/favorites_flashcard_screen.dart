@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../models/word.dart';
@@ -21,7 +19,6 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
     with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   bool _showAnswer = false;
-  final FlutterTts _flutterTts = FlutterTts();
   late List<Word> _shuffledFavorites;
   late AnimationController _flipController;
   late Animation<double> _flipAnimation;
@@ -36,7 +33,6 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   void initState() {
     super.initState();
     _shuffledFavorites = List.from(widget.favorites)..shuffle();
-    _initTts();
     _initAnimation();
     _loadTranslation();
     _loadFontSize();
@@ -57,24 +53,6 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
     _flipAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _flipController, curve: Curves.easeInOut),
     );
-  }
-
-  Future<void> _initTts() async {
-    if (Platform.isIOS) {
-      await _flutterTts.setSharedInstance(true);
-      await _flutterTts.setIosAudioCategory(
-        IosTextToSpeechAudioCategory.ambient,
-        [
-          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-          IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-        ],
-        IosTextToSpeechAudioMode.voicePrompt,
-      );
-    }
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setSpeechRate(Platform.isIOS ? 0.4 : 0.5);
-    await _flutterTts.setVolume(1.0);
   }
 
   Future<void> _loadTranslation() async {
@@ -109,10 +87,6 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
         _translatedExample = null;
       });
     }
-  }
-
-  Future<void> _speak(String text) async {
-    await _flutterTts.speak(text);
   }
 
   void _flipCard() {
@@ -166,7 +140,6 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
 
   @override
   void dispose() {
-    _flutterTts.stop();
     _flipController.dispose();
     super.dispose();
   }
@@ -324,33 +297,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
                     iconSize: 28,
                   ),
                 ),
-                const SizedBox(width: 16),
-                // Pronounce 버튼
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: Colors.orange,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.orange.withAlpha(100),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: IconButton(
-                    onPressed:
-                        () => _speak(_shuffledFavorites[_currentIndex].word),
-                    icon: const Icon(
-                      Icons.volume_up_rounded,
-                      color: Colors.white,
-                    ),
-                    iconSize: 36,
-                  ),
-                ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 32),
                 // Next 버튼
                 Container(
                   width: 56,
@@ -409,11 +356,6 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
               fontSize: 36 * _wordFontSize,
               fontWeight: FontWeight.bold,
             ),
-          ),
-          const SizedBox(height: 8),
-          IconButton(
-            icon: const Icon(Icons.volume_up, size: 32),
-            onPressed: () => _speak(word.word),
           ),
           const SizedBox(height: 16),
           Container(
