@@ -1,8 +1,8 @@
-workflows:
+﻿workflows:
   ios-workflow:
     name: iOS Release
     max_build_duration: 120
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     integrations:
       app_store_connect: Codemagic
     environment:
@@ -20,17 +20,13 @@ workflows:
           xcode-project use-profiles
       - name: Get Flutter packages
         script: |
-          flutter pub get
-      - name: Generate localizations
-        script: |
-          flutter gen-l10n
+          flutter packages pub get
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
       - name: Flutter build ipa
         script: |
           flutter build ipa --release \
-            --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_ID") + 1)) \
             --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
@@ -46,4 +42,4 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        submit_to_app_store: false  # 수동 제출 권장
+        submit_to_app_store: false
