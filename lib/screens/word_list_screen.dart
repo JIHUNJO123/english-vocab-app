@@ -47,9 +47,13 @@ class _WordListScreenState extends State<WordListScreen> {
   Set<int> _loadingTranslations = {};
   bool _apiNoticeShown = false;
 
-  // ��ġ ���� Ű ����
+  // 위치 저장 키
   String get _positionKey =>
       'word_list_position_${widget.level ?? 'all'}_${widget.isFlashcardMode ? 'flashcard' : 'list'}';
+  
+  // 페이지 저장 키 (리스트 모드)
+  String get _pageKey =>
+      'word_list_page_${widget.level ?? 'all'}';
 
   @override
   void initState() {
@@ -120,7 +124,14 @@ class _WordListScreenState extends State<WordListScreen> {
       _totalWords = await DatabaseHelper.instance.getWordsCount(
         level: widget.level,
       );
-      await _loadPage(0);
+
+      // 저장된 페이지 위치 복원
+      final prefs = await SharedPreferences.getInstance();
+      final savedPage = prefs.getInt(_pageKey) ?? 0;
+      final maxPage = (_totalWords / _pageSize).ceil() - 1;
+      final initialPage = savedPage.clamp(0, maxPage > 0 ? maxPage : 0);
+
+      await _loadPage(initialPage);
     }
   }
 
@@ -144,6 +155,9 @@ class _WordListScreenState extends State<WordListScreen> {
       _isLoading = false;
       _isLoadingPage = false;
     });
+    
+    // 페이지 저장
+    _saveCurrentPage(page);
   }
 
   void _goToPage(int page) {
@@ -151,6 +165,11 @@ class _WordListScreenState extends State<WordListScreen> {
     if (page < 0 || page > maxPage) return;
     _loadPage(page);
     _listScrollController.jumpTo(0);
+  }
+
+  Future<void> _saveCurrentPage(int page) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_pageKey, page);
   }
 
   Future<void> _savePosition(int position) async {

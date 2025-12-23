@@ -6,6 +6,7 @@ import '../utils/pos_helper.dart';
 import '../services/translation_service.dart';
 import 'word_detail_screen.dart';
 import 'favorites_flashcard_screen.dart';
+import 'quiz_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -113,6 +114,19 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 setState(() {
                   _showNativeLanguage = !_showNativeLanguage;
                 });
+              },
+            ),
+          if (_favorites.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.quiz),
+              tooltip: l10n.quiz,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const QuizScreen(favoritesOnly: true),
+                  ),
+                );
               },
             ),
           if (_favorites.isNotEmpty)
