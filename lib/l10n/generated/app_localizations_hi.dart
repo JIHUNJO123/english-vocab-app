@@ -9,10 +9,10 @@ class AppLocalizationsHi extends AppLocalizations {
   AppLocalizationsHi([String locale = 'hi']) : super(locale);
 
   @override
-  String get appTitle => 'English Word 10000';
+  String get appTitle => 'Essential English 10000';
 
   @override
-  String get todayWord => '📅 आज का शब्द';
+  String get todayWord => 'आज का मुहावरा';
 
   @override
   String get learning => 'सीखना';
@@ -21,16 +21,16 @@ class AppLocalizationsHi extends AppLocalizations {
   String get levelLearning => 'स्तर के अनुसार सीखना';
 
   @override
-  String get allWords => 'सभी शब्द';
+  String get allWords => 'सभी मुहावरे';
 
   @override
-  String get viewAllWords => 'सभी शब्द देखें';
+  String get viewAllWords => 'सभी मुहावरे देखें';
 
   @override
   String get favorites => 'पसंदीदा';
 
   @override
-  String get savedWords => 'सहेजे गए शब्द';
+  String get savedWords => 'सहेजे गए मुहावरे';
 
   @override
   String get flashcard => 'फ्लैशकार्ड';
@@ -42,16 +42,16 @@ class AppLocalizationsHi extends AppLocalizations {
   String get search => 'खोजें';
 
   @override
-  String get searchWords => 'शब्द खोजें';
+  String get searchWords => 'मुहावरे खोजें';
 
   @override
   String get settings => 'सेटिंग्स';
 
   @override
-  String get noWords => 'कोई शब्द नहीं मिला';
+  String get noWords => 'कोई मुहावरा नहीं मिला';
 
   @override
-  String get cannotLoadWords => 'शब्द लोड नहीं हो सकते';
+  String get cannotLoadWords => 'मुहावरे लोड नहीं हो सकते';
 
   @override
   String get addedToFavorites => 'पसंदीदा में जोड़ा गया';
@@ -108,7 +108,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String levelWords(String level) {
-    return '$level शब्द';
+    return '$level मुहावरे';
   }
 
   @override
@@ -159,7 +159,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get developer => 'डेवलपर';
 
   @override
-  String get searchHint => 'शब्द खोजें...';
+  String get searchHint => 'मुहावरे खोजें...';
 
   @override
   String get noSearchResults => 'कोई परिणाम नहीं मिला';
@@ -245,13 +245,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get copyrightNotice => 'कॉपीराइट नोटिस';
 
   @override
-  String get copyrightContent => 'इस ऐप में सभी शब्द परिभाषाएं और उदाहरण वाक्य मूल हैं या AI द्वारा उत्पन्न हैं। कोई कॉपीराइट शब्दकोश सामग्री का उपयोग नहीं किया गया है।\n\nअनुवाद MyMemory API (मुफ्त अनुवाद सेवा) द्वारा प्रदान किए जाते हैं।';
+  String get copyrightContent => 'इस ऐप में सभी मुहावरे परिभाषाएं और उदाहरण वाक्य मूल हैं या AI द्वारा उत्पन्न हैं। कोई कॉपीराइट शब्दकोश सामग्री का उपयोग नहीं किया गया है।';
 
   @override
   String get privacyPolicy => 'गोपनीयता नीति';
 
   @override
-  String get privacyContent => 'यह ऐप कोई व्यक्तिगत जानकारी एकत्र, संग्रहीत या साझा नहीं करता है।\n\nअनुवाद अनुरोध प्रसंस्करण के लिए MyMemory API को भेजे जाते हैं। कोई उपयोगकर्ता डेटा बाहरी सर्वर पर संग्रहीत नहीं किया जाता है।';
+  String get privacyContent => 'यह ऐप कोई व्यक्तिगत जानकारी एकत्र, संग्रहीत या साझा नहीं करता है।';
 
   @override
   String get alphabetical => 'वर्णानुक्रम';
@@ -266,7 +266,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get testYourself => 'खुद को परखें';
 
   @override
-  String get wordQuiz => 'शब्द क्विज़';
+  String get wordQuiz => 'मुहावरा क्विज़';
 
   @override
   String quizWithLevel(String level) {
@@ -274,10 +274,10 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get wordToMeaningMode => 'शब्द→अर्थ';
+  String get wordToMeaningMode => 'मुहावरा→अर्थ';
 
   @override
-  String get meaningToWordMode => 'अर्थ→शब्द';
+  String get meaningToWordMode => 'अर्थ→मुहावरा';
 
   @override
   String get quizComplete => '🎉 क्विज़ पूरा!';
@@ -314,10 +314,10 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get whatIsTheMeaning => 'इस शब्द का अर्थ क्या है?';
+  String get whatIsTheMeaning => 'इस मुहावरे का अर्थ क्या है?';
 
   @override
-  String get whichWordMatches => 'कौन सा शब्द इस अर्थ से मेल खाता है?';
+  String get whichWordMatches => 'कौन सा मुहावरा इस अर्थ से मेल खाता है?';
 
   @override
   String get nextQuestion => 'अगला';
@@ -359,7 +359,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get buy => 'खरीदें';
 
   @override
-  String get wordFontSize => 'Flashcard Idiom Size';
+  String get wordFontSize => 'Flashcard Word Size';
 
   @override
   String get fontSizeSmall => 'Small';
@@ -380,5 +380,5 @@ class AppLocalizationsHi extends AppLocalizations {
   String get fontSizeExtraLarge => 'Extra Large';
 
   @override
-  String get cancel => 'रद्द';
+  String get apiTranslationNotice => 'Translations are being provided via API (online translation)';
 }

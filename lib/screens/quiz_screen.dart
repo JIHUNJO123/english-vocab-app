@@ -10,9 +10,8 @@ enum QuizType { wordToMeaning, meaningToWord }
 
 class QuizScreen extends StatefulWidget {
   final String? level;
-  final bool favoritesOnly;
 
-  const QuizScreen({super.key, this.level, this.favoritesOnly = false});
+  const QuizScreen({super.key, this.level});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -29,30 +28,29 @@ class _QuizScreenState extends State<QuizScreen> {
   List<Word> _currentOptions = [];
   QuizType _quizType = QuizType.wordToMeaning;
 
-  // ¹ø¿ª °ü·Ã
+  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   Map<int, String> _translatedDefinitions = {};
   bool _isLoadingTranslation = false;
+  bool _apiNoticeShown = false;
 
   @override
   void initState() {
     super.initState();
     _loadWords();
-    // Àü¸é ±¤°í ¹Ì¸® ·Îµå
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½Îµï¿½
     AdService.instance.loadInterstitialAd();
   }
 
   Future<void> _loadWords() async {
     List<Word> words;
-    if (widget.favoritesOnly) {
-      words = await DatabaseHelper.instance.getFavorites();
-    } else if (widget.level != null) {
+    if (widget.level != null) {
       words = await DatabaseHelper.instance.getWordsByLevel(widget.level!);
     } else {
       words = await DatabaseHelper.instance.getAllWords();
     }
     words.shuffle();
 
-    // ÄûÁî¿ëÀ¸·Î 20°³¾¿¸¸ »ç¿ë (³Ê¹« ¸¹À¸¸é Áö·çÇÔ)
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 20ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (ï¿½Ê¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
     if (words.length > 20) {
       words = words.sublist(0, 20);
     }
@@ -74,23 +72,21 @@ class _QuizScreenState extends State<QuizScreen> {
     if (!translationService.needsTranslation) return;
     if (!mounted) return;
 
-    setState(() => _isLoadingTranslation = true);
+    // ë‚´ìž¥ ë²ˆì—­ë§Œ ì‚¬ìš© (API í˜¸ì¶œ ì—†ìŒ)
+    final langCode = translationService.currentLanguage;
 
     for (final word in _currentOptions) {
       if (!mounted) return;
       if (!_translatedDefinitions.containsKey(word.id)) {
-        final translated = await translationService.translate(
-          word.definition,
-          word.id,
-          'definition',
-        );
-        if (!mounted) return;
-        _translatedDefinitions[word.id] = translated;
+        final embeddedDef = word.getEmbeddedTranslation(langCode, 'definition');
+        if (embeddedDef != null && embeddedDef.isNotEmpty) {
+          _translatedDefinitions[word.id] = embeddedDef;
+        }
       }
     }
 
     if (!mounted) return;
-    setState(() => _isLoadingTranslation = false);
+    setState(() {});
   }
 
   void _generateOptions() {
@@ -99,7 +95,7 @@ class _QuizScreenState extends State<QuizScreen> {
     final correctWord = _words[_currentIndex];
     final options = <Word>[correctWord];
 
-    // ¿À´ä 3°³ »ý¼º
+    // ï¿½ï¿½ï¿½ï¿½ 3ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     final otherWords = _words.where((w) => w.id != correctWord.id).toList();
     otherWords.shuffle();
 
@@ -147,7 +143,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _showResultDialog() {
-    // ÄûÁî ¿Ï·á ½Ã Àü¸é ±¤°í Ç¥½Ã
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
     AdService.instance.showInterstitialAd();
 
     final l10n = AppLocalizations.of(context)!;
@@ -219,7 +215,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _restartQuiz() {
-    // »õ·Î¿î 20°³ ¼¼Æ®¸¦ À§ÇØ ÀüÃ¼ ´Ü¾î¸¦ ´Ù½Ã ·Îµå
+    // ï¿½ï¿½ï¿½Î¿ï¿½ 20ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½Ü¾î¸¦ ï¿½Ù½ï¿½ ï¿½Îµï¿½
     _loadWords();
     setState(() {
       _currentIndex = 0;
@@ -249,7 +245,7 @@ class _QuizScreenState extends State<QuizScreen> {
         ),
         centerTitle: true,
         actions: [
-          // ÄûÁî Å¸ÀÔ ÀüÈ¯
+          // ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½È¯
           IconButton(
             icon: Icon(
               _quizType == QuizType.wordToMeaning ? Icons.translate : Icons.abc,
@@ -289,7 +285,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Column(
       children: [
-        // ÁøÇà·ü & Á¡¼ö
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ & ï¿½ï¿½ï¿½ï¿½
         Container(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -330,13 +326,13 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ),
 
-        // ¹®Á¦ Ä«µå
+        // ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // ¹®Á¦
+                // ï¿½ï¿½ï¿½ï¿½
                 Card(
                   elevation: 4,
                   child: Container(
@@ -345,7 +341,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     child: Column(
                       children: [
                         if (_quizType == QuizType.wordToMeaning) ...[
-                          // ´Ü¾î ¡æ ¶æ ¸ÂÃß±â
+                          // ï¿½Ü¾ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ß±ï¿½
                           Text(
                             currentWord.word,
                             style: const TextStyle(
@@ -374,7 +370,7 @@ class _QuizScreenState extends State<QuizScreen> {
                             ),
                           ),
                         ] else ...[
-                          // ¶æ ¡æ ´Ü¾î ¸ÂÃß±â
+                          // ï¿½ï¿½ ï¿½ï¿½ ï¿½Ü¾ï¿½ ï¿½ï¿½ï¿½ß±ï¿½
                           if (_isLoadingTranslation)
                             const CircularProgressIndicator()
                           else
@@ -400,7 +396,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
                 const SizedBox(height: 16),
 
-                // º¸±â
+                // ï¿½ï¿½ï¿½ï¿½
                 Expanded(
                   child: ListView.builder(
                     itemCount: _currentOptions.length,
@@ -515,7 +511,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                 ),
 
-                // ´ÙÀ½ ¹öÆ°
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°
                 if (_answered)
                   Padding(
                     padding: const EdgeInsets.only(top: 16),

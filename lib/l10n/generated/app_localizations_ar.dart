@@ -9,10 +9,10 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'English Word 10000';
+  String get appTitle => 'Essential English 10000';
 
   @override
-  String get todayWord => '📅 كلمة اليوم';
+  String get todayWord => 'تعبير اليوم';
 
   @override
   String get learning => 'التعلم';
@@ -21,16 +21,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get levelLearning => 'التعلم حسب المستوى';
 
   @override
-  String get allWords => 'كل الكلمات';
+  String get allWords => 'كل التعابير';
 
   @override
-  String get viewAllWords => 'عرض جميع الكلمات';
+  String get viewAllWords => 'عرض جميع التعابير';
 
   @override
   String get favorites => 'المفضلة';
 
   @override
-  String get savedWords => 'الكلمات المحفوظة';
+  String get savedWords => 'التعابير المحفوظة';
 
   @override
   String get flashcard => 'بطاقات تعليمية';
@@ -42,16 +42,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get search => 'بحث';
 
   @override
-  String get searchWords => 'البحث عن كلمات';
+  String get searchWords => 'البحث عن تعابير';
 
   @override
   String get settings => 'الإعدادات';
 
   @override
-  String get noWords => 'لا توجد كلمات';
+  String get noWords => 'لا توجد تعابير';
 
   @override
-  String get cannotLoadWords => 'لا يمكن تحميل الكلمات';
+  String get cannotLoadWords => 'لا يمكن تحميل التعابير';
 
   @override
   String get addedToFavorites => 'تمت الإضافة للمفضلة';
@@ -108,7 +108,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String levelWords(String level) {
-    return 'كلمات $level';
+    return 'تعابير $level';
   }
 
   @override
@@ -171,7 +171,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noFavorites => 'لا توجد مفضلات بعد';
 
   @override
-  String get addFavoritesHint => 'أضف كلمات للمفضلة بالنقر على أيقونة القلب';
+  String get addFavoritesHint => 'أضف تعابير للمفضلة بالنقر على أيقونة القلب';
 
   @override
   String get posNoun => 'اسم';
@@ -245,13 +245,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get copyrightNotice => 'إشعار حقوق النشر';
 
   @override
-  String get copyrightContent => 'جميع تعريفات الكلمات والجمل المثال في هذا التطبيق أصلية أو مولدة بالذكاء الاصطناعي. لم يتم استخدام محتوى قاموس محمي بحقوق النشر.\n\nالترجمات مقدمة من MyMemory API (خدمة ترجمة مجانية).';
+  String get copyrightContent => 'جميع تعريفات التعابير والجمل المثال في هذا التطبيق أصلية أو مولدة بالذكاء الاصطناعي. لم يتم استخدام محتوى قاموس محمي بحقوق النشر.';
 
   @override
   String get privacyPolicy => 'سياسة الخصوصية';
 
   @override
-  String get privacyContent => 'هذا التطبيق لا يجمع أو يخزن أو يشارك أي معلومات شخصية.\n\nيتم إرسال طلبات الترجمة إلى MyMemory API للمعالجة. لا يتم تخزين بيانات المستخدم على خوادم خارجية.';
+  String get privacyContent => 'هذا التطبيق لا يجمع أو يخزن أو يشارك أي معلومات شخصية.';
 
   @override
   String get alphabetical => 'أبجدي';
@@ -266,7 +266,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get testYourself => 'اختبر نفسك';
 
   @override
-  String get wordQuiz => 'اختبار الكلمات';
+  String get wordQuiz => 'اختبار التعابير';
 
   @override
   String quizWithLevel(String level) {
@@ -274,10 +274,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get wordToMeaningMode => 'كلمة→معنى';
+  String get wordToMeaningMode => 'تعبير→معنى';
 
   @override
-  String get meaningToWordMode => 'معنى→كلمة';
+  String get meaningToWordMode => 'معنى→تعبير';
 
   @override
   String get quizComplete => '🎉 اكتمل الاختبار!';
@@ -314,10 +314,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get whatIsTheMeaning => 'ما معنى هذه الكلمة؟';
+  String get whatIsTheMeaning => 'ما معنى هذا التعبير؟';
 
   @override
-  String get whichWordMatches => 'أي كلمة تتطابق مع هذا المعنى؟';
+  String get whichWordMatches => 'أي تعبير يتطابق مع هذا المعنى؟';
 
   @override
   String get nextQuestion => 'التالي';
@@ -359,7 +359,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get buy => 'شراء';
 
   @override
-  String get wordFontSize => 'Flashcard Idiom Size';
+  String get wordFontSize => 'Flashcard Word Size';
 
   @override
   String get fontSizeSmall => 'Small';
@@ -380,5 +380,5 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fontSizeExtraLarge => 'Extra Large';
 
   @override
-  String get cancel => 'إلغاء';
+  String get apiTranslationNotice => 'Translations are being provided via API (online translation)';
 }

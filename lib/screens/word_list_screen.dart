@@ -13,14 +13,8 @@ import 'word_detail_screen.dart';
 class WordListScreen extends StatefulWidget {
   final String? level;
   final bool isFlashcardMode;
-  final bool favoritesOnly;
 
-  const WordListScreen({
-    super.key,
-    this.level,
-    this.isFlashcardMode = false,
-    this.favoritesOnly = false,
-  });
+  const WordListScreen({super.key, this.level, this.isFlashcardMode = false});
 
   @override
   State<WordListScreen> createState() => _WordListScreenState();
@@ -30,41 +24,41 @@ class _WordListScreenState extends State<WordListScreen> {
   List<Word> _words = [];
   bool _isLoading = true;
   int _currentFlashcardIndex = 0;
-  PageController? _pageController;
+  late PageController _pageController;
   String _sortOrder = 'alphabetical'; // 'alphabetical' or 'random'
   bool _isBannerAdLoaded = false;
-  int _flashcardViewCount = 0; // ÇÃ·¡½ÃÄ«µå Àü¸é ±¤°í¿ë Ä«¿îÅÍ
-  double _wordFontSize = 1.0; // ´Ü¾î ÆùÆ® Å©±â ¹èÀ²
-  bool _showNativeLanguage = true; // ¸ğ±¹¾î/¿µ¾î ÀüÈ¯ (±âº»: ¸ğ±¹¾î)
+  int _flashcardViewCount = 0;
+  double _wordFontSize = 1.0;
+  bool _showNativeLanguage = true;
 
-  // ¸®½ºÆ® ¸ğµå¿ë ½ºÅ©·Ñ ÄÁÆ®·Ñ·¯
+  // í˜ì´ì§€ë„¤ì´ì…˜
+  int _currentPage = 0;
+  int _totalWords = 0;
+  static const int _pageSize = 50;
+  bool _isLoadingPage = false;
+
+  // ë¦¬ìŠ¤íŠ¸ ëª¨ë“œ ìŠ¤í¬ë¡¤ ì»¨íŠ¸ë¡¤ëŸ¬
   final ScrollController _listScrollController = ScrollController();
   int _lastListPosition = 0;
-  int _initialPagePosition = 0; // ÃÊ±â ÆäÀÌÁö À§Ä¡ ÀúÀå
 
-  // ¹ø¿ª °ü·Ã
+  // ë²ˆì—­ ê´€ë ¨
   Map<int, String> _translatedDefinitions = {};
   Map<int, String> _translatedExamples = {};
   Set<int> _loadingTranslations = {};
+  bool _apiNoticeShown = false;
 
-  // À§Ä¡ ÀúÀå Å° »ı¼º
+  // ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ Å° ï¿½ï¿½ï¿½ï¿½
   String get _positionKey =>
-      'word_list_position_${widget.favoritesOnly ? 'favorites' : (widget.level ?? 'all')}_${widget.isFlashcardMode ? 'flashcard' : 'list'}';
+      'word_list_position_${widget.level ?? 'all'}_${widget.isFlashcardMode ? 'flashcard' : 'list'}';
 
   @override
   void initState() {
     super.initState();
-    _loadSavedPosition().then((_) {
-      _loadWords();
-    });
+    _pageController = PageController();
+    _loadWords();
     _loadBannerAd();
     _loadInterstitialAd();
     _loadFontSize();
-  }
-
-  Future<void> _loadSavedPosition() async {
-    final prefs = await SharedPreferences.getInstance();
-    _initialPagePosition = prefs.getInt(_positionKey) ?? 0;
   }
 
   Future<void> _loadFontSize() async {
@@ -98,59 +92,65 @@ class _WordListScreenState extends State<WordListScreen> {
   }
 
   Future<void> _loadWords() async {
-    List<Word> words;
-    if (widget.favoritesOnly) {
-      words = await DatabaseHelper.instance.getFavorites();
-    } else if (widget.level != null) {
-      words = await DatabaseHelper.instance.getWordsByLevel(widget.level!);
-    } else {
-      words = await DatabaseHelper.instance.getAllWords();
-    }
-
-    // ÀúÀåµÈ À§Ä¡·Î ÀÌµ¿
-    if (words.isNotEmpty) {
-      final position = _initialPagePosition.clamp(0, words.length - 1);
-      if (widget.isFlashcardMode) {
-        _currentFlashcardIndex = position;
-        // PageController ÃÊ±â ÆäÀÌÁö ¼³Á¤
-        _pageController = PageController(initialPage: position);
+    // í”Œë˜ì‹œì¹´ë“œ ëª¨ë“œëŠ” ê¸°ì¡´ ë°©ì‹ ìœ ì§€ (ì „ì²´ ë¡œë“œ)
+    if (widget.isFlashcardMode) {
+      List<Word> words;
+      if (widget.level != null) {
+        words = await DatabaseHelper.instance.getWordsByLevel(widget.level!);
       } else {
-        _lastListPosition = position;
+        words = await DatabaseHelper.instance.getAllWords();
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final savedPosition = prefs.getInt(_positionKey) ?? 0;
+
+      setState(() {
+        _words = words;
+        _isLoading = false;
+      });
+
+      if (words.isNotEmpty) {
+        final position = savedPosition.clamp(0, words.length - 1);
+        _currentFlashcardIndex = position;
+        _pageController = PageController(initialPage: position);
+        setState(() {});
       }
     } else {
-      _pageController = PageController();
-    }
-
-    setState(() {
-      _words = words;
-      _isLoading = false;
-    });
-
-    // ¸®½ºÆ® ¸ğµå¿¡¼­ ÀúÀåµÈ À§Ä¡·Î ½ºÅ©·Ñ
-    if (!widget.isFlashcardMode &&
-        words.isNotEmpty &&
-        _initialPagePosition > 0) {
-      _scrollToSavedPosition(_initialPagePosition.clamp(0, words.length - 1));
+      // ë¦¬ìŠ¤íŠ¸ ëª¨ë“œëŠ” í˜ì´ì§€ë„¤ì´ì…˜ ì‚¬ìš©
+      _totalWords = await DatabaseHelper.instance.getWordsCount(
+        level: widget.level,
+      );
+      await _loadPage(0);
     }
   }
 
-  void _scrollToSavedPosition(int position) {
-    if (position <= 0) return;
+  Future<void> _loadPage(int page) async {
+    if (_isLoadingPage) return;
 
-    void tryScroll() {
-      if (!mounted) return;
-      if (_listScrollController.hasClients) {
-        // °¢ ¾ÆÀÌÅÛ ³ôÀÌ¸¦ ¾à 80À¸·Î ÃßÁ¤
-        final targetOffset = position * 80.0;
-        final maxScroll = _listScrollController.position.maxScrollExtent;
-        _listScrollController.jumpTo(targetOffset.clamp(0.0, maxScroll));
-      } else {
-        // ¾ÆÁ÷ ÁØºñµÇÁö ¾Ê¾ÒÀ¸¸é ´ÙÀ½ ÇÁ·¹ÀÓ¿¡¼­ ´Ù½Ã ½Ãµµ
-        WidgetsBinding.instance.addPostFrameCallback((_) => tryScroll());
-      }
-    }
+    setState(() {
+      _isLoadingPage = true;
+      if (page == 0) _isLoading = true;
+    });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => tryScroll());
+    final words = await DatabaseHelper.instance.getWordsPaginated(
+      level: widget.level,
+      page: page,
+      pageSize: _pageSize,
+    );
+
+    setState(() {
+      _words = words;
+      _currentPage = page;
+      _isLoading = false;
+      _isLoadingPage = false;
+    });
+  }
+
+  void _goToPage(int page) {
+    final maxPage = (_totalWords / _pageSize).ceil() - 1;
+    if (page < 0 || page > maxPage) return;
+    _loadPage(page);
+    _listScrollController.jumpTo(0);
   }
 
   Future<void> _savePosition(int position) async {
@@ -160,7 +160,6 @@ class _WordListScreenState extends State<WordListScreen> {
 
   Future<void> _loadTranslationForWord(Word word) async {
     if (_translatedDefinitions.containsKey(word.id)) return;
-    if (_loadingTranslations.contains(word.id)) return;
 
     final translationService = TranslationService.instance;
     await translationService.init();
@@ -168,29 +167,24 @@ class _WordListScreenState extends State<WordListScreen> {
     if (!translationService.needsTranslation) return;
     if (!mounted) return;
 
-    setState(() => _loadingTranslations.add(word.id));
-
-    final translatedDef = await translationService.translate(
-      word.definition,
-      word.id,
-      'definition',
-    );
-    final translatedEx = await translationService.translate(
-      word.example,
-      word.id,
-      'example',
-    );
+    // ë‚´ì¥ ë²ˆì—­ë§Œ ì‚¬ìš© (API í˜¸ì¶œ ì—†ìŒ)
+    final langCode = translationService.currentLanguage;
+    final embeddedDef = word.getEmbeddedTranslation(langCode, 'definition');
+    final embeddedEx = word.getEmbeddedTranslation(langCode, 'example');
 
     if (!mounted) return;
     setState(() {
-      _translatedDefinitions[word.id] = translatedDef;
-      _translatedExamples[word.id] = translatedEx;
-      _loadingTranslations.remove(word.id);
+      if (embeddedDef != null && embeddedDef.isNotEmpty) {
+        _translatedDefinitions[word.id] = embeddedDef;
+      }
+      if (embeddedEx != null && embeddedEx.isNotEmpty) {
+        _translatedExamples[word.id] = embeddedEx;
+      }
     });
   }
 
   void _sortWords(String order) {
-    // ÇöÀç º¸°í ÀÖ´Â ´Ü¾î ÀúÀå
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ü¾ï¿½ ï¿½ï¿½ï¿½ï¿½
     final currentWord =
         _words.isNotEmpty ? _words[_currentFlashcardIndex] : null;
 
@@ -204,7 +198,7 @@ class _WordListScreenState extends State<WordListScreen> {
         _words.shuffle();
       }
 
-      // ÇöÀç º¸°í ÀÖ´ø ´Ü¾îÀÇ »õ À§Ä¡ Ã£±â
+      // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ü¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä¡ Ã£ï¿½ï¿½
       if (currentWord != null) {
         final newIndex = _words.indexWhere((w) => w.id == currentWord.id);
         _currentFlashcardIndex = newIndex >= 0 ? newIndex : 0;
@@ -212,39 +206,20 @@ class _WordListScreenState extends State<WordListScreen> {
         _currentFlashcardIndex = 0;
       }
 
-      if (_pageController != null && _pageController!.hasClients) {
-        _pageController!.jumpToPage(_currentFlashcardIndex);
+      if (_pageController.hasClients) {
+        _pageController.jumpToPage(_currentFlashcardIndex);
       }
     });
   }
 
   String _getAlphabeticalText() {
-    // °£´ÜÇÑ ¾ğ¾îº° ÅØ½ºÆ® ¹İÈ¯
-    final locale = Localizations.localeOf(context).languageCode;
-    switch (locale) {
-      case 'ko':
-        return '¾ËÆÄºª¼ø';
-      case 'ja':
-        return '«¢«ë«Õ«¡«Ù«Ã«Èâ÷';
-      case 'zh':
-        return 'í®Ù½?ßí';
-      default:
-        return 'Alphabetical';
-    }
+    final l10n = AppLocalizations.of(context)!;
+    return l10n.alphabetical;
   }
 
   String _getRandomText() {
-    final locale = Localizations.localeOf(context).languageCode;
-    switch (locale) {
-      case 'ko':
-        return '·£´ı';
-      case 'ja':
-        return '«é«ó«À«à';
-      case 'zh':
-        return '?Ïõ';
-      default:
-        return 'Random';
-    }
+    final l10n = AppLocalizations.of(context)!;
+    return l10n.random;
   }
 
   Future<void> _toggleFavorite(Word word) async {
@@ -267,18 +242,13 @@ class _WordListScreenState extends State<WordListScreen> {
 
   @override
   void dispose() {
-    _pageController?.dispose();
-    // Á¾·á ½Ã ÇöÀç À§Ä¡ ÀúÀå
-    if (widget.isFlashcardMode) {
-      _savePosition(_currentFlashcardIndex);
-    } else {
-      // ¸®½ºÆ® ¸ğµå¿¡¼­µµ ÇöÀç À§Ä¡ ÀúÀå - _lastListPosition »ç¿ë
-      if (_words.isNotEmpty) {
-        _savePosition(_lastListPosition.clamp(0, _words.length - 1));
-      }
-    }
+    _pageController.dispose();
     _listScrollController.dispose();
     AdService.instance.disposeBannerAd();
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
+    if (widget.isFlashcardMode) {
+      _savePosition(_currentFlashcardIndex);
+    }
     super.dispose();
   }
 
@@ -299,7 +269,7 @@ class _WordListScreenState extends State<WordListScreen> {
         title: Text(title),
         centerTitle: true,
         actions: [
-          // ¿µ¾î/¸ğ±¹¾î ÀüÈ¯ ¹öÆ°
+          // ï¿½ï¿½ï¿½ï¿½/ï¿½ğ±¹¾ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½Æ°
           if (_words.isNotEmpty && TranslationService.instance.needsTranslation)
             IconButton(
               icon: Icon(
@@ -314,11 +284,11 @@ class _WordListScreenState extends State<WordListScreen> {
                 });
               },
             ),
-          // Á¤·Ä ¿É¼Ç
+          // ï¿½ï¿½ï¿½ï¿½ ï¿½É¼ï¿½
           if (_words.isNotEmpty)
             PopupMenuButton<String>(
               icon: const Icon(Icons.sort),
-              tooltip: 'Á¤·Ä',
+              tooltip: 'ï¿½ï¿½ï¿½ï¿½',
               onSelected: _sortWords,
               itemBuilder:
                   (context) => [
@@ -459,114 +429,205 @@ class _WordListScreenState extends State<WordListScreen> {
   }
 
   Widget _buildListMode() {
-    return NotificationListener<ScrollNotification>(
-      onNotification: (scrollNotification) {
-        if (scrollNotification is ScrollUpdateNotification ||
-            scrollNotification is ScrollEndNotification) {
-          // ½ºÅ©·ÑÇÒ ¶§¸¶´Ù ÇöÀç º¸ÀÌ´Â ¾ÆÀÌÅÛ ÀÎµ¦½º ÀúÀå
-          if (_listScrollController.hasClients) {
-            final scrollPosition = _listScrollController.position.pixels;
-            final itemIndex = (scrollPosition / 80.0).round().clamp(
-              0,
-              _words.length - 1,
-            );
-            _lastListPosition = itemIndex; // Ç×»ó ¾÷µ¥ÀÌÆ®
-            if (scrollNotification is ScrollEndNotification) {
-              _savePosition(itemIndex); // ½ºÅ©·Ñ ³¡³µÀ» ¶§¸¸ ÀúÀå
-            }
-          }
-        }
-        return false;
-      },
-      child: ListView.builder(
-        controller: _listScrollController,
-        padding: const EdgeInsets.all(8),
-        itemCount: _words.length,
-        itemBuilder: (context, index) {
-          final word = _words[index];
-          // ¸®½ºÆ® ¸ğµå¿¡¼­µµ ¹ø¿ª ·Îµå
-          _loadTranslationForWord(word);
-          final translatedDef = _translatedDefinitions[word.id];
-          final isLoading = _loadingTranslations.contains(word.id);
+    final maxPage = (_totalWords / _pageSize).ceil() - 1;
+    final startIndex = _currentPage * _pageSize + 1;
+    final endIndex = (startIndex + _words.length - 1).clamp(1, _totalWords);
 
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
+    return Column(
+      children: [
+        // í˜ì´ì§€ ë„¤ë¹„ê²Œì´ì…˜ ë°”
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
-              title: Text(
-                word.word,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // ì´ì „ í˜ì´ì§€
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed:
+                    _currentPage > 0 ? () => _goToPage(_currentPage - 1) : null,
               ),
-              subtitle:
-                  isLoading && _showNativeLanguage
-                      ? Row(
-                        children: [
-                          SizedBox(
-                            width: 12,
-                            height: 12,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '...',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      )
-                      : Text(
-                        _showNativeLanguage
-                            ? (translatedDef ?? word.definition)
-                            : word.definition,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                      ),
-              trailing: IconButton(
-                icon: Icon(
-                  word.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: word.isFavorite ? Colors.red : null,
-                ),
-                onPressed: () => _toggleFavorite(word),
-              ),
-              onTap: () async {
-                // Å¬¸¯ÇÑ À§Ä¡ ÀúÀå
-                _savePosition(index);
-                final result = await Navigator.push<int>(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => WordDetailScreen(
-                          word: word,
-                          wordList: List<Word>.from(_words),
-                          currentIndex: index,
-                        ),
+              // í˜ì´ì§€ ì •ë³´
+              GestureDetector(
+                onTap: () => _showPageSelector(),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                );
-                if (result != null && result != index && mounted) {
-                  _listScrollController.animateTo(
-                    result * 80.0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '$startIndex - $endIndex / $_totalWords',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              // ë‹¤ìŒ í˜ì´ì§€
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed:
+                    _currentPage < maxPage
+                        ? () => _goToPage(_currentPage + 1)
+                        : null,
+              ),
+            ],
+          ),
+        ),
+        // ë‹¨ì–´ ë¦¬ìŠ¤íŠ¸
+        Expanded(
+          child:
+              _isLoadingPage
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                    controller: _listScrollController,
+                    padding: const EdgeInsets.all(8),
+                    itemCount: _words.length,
+                    itemBuilder: (context, index) {
+                      final word = _words[index];
+                      _loadTranslationForWord(word);
+                      final translatedDef = _translatedDefinitions[word.id];
+                      final isLoading = _loadingTranslations.contains(word.id);
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 8,
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          title: Text(
+                            word.word,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          subtitle:
+                              isLoading && _showNativeLanguage
+                                  ? Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 12,
+                                        height: 12,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.grey[400],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        '...',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                  : Text(
+                                    _showNativeLanguage
+                                        ? (translatedDef ?? '')
+                                        : word.definition,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                          trailing: IconButton(
+                            icon: Icon(
+                              word.isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: word.isFavorite ? Colors.red : null,
+                            ),
+                            onPressed: () => _toggleFavorite(word),
+                          ),
+                          onTap: () {
+                            final globalIndex =
+                                _currentPage * _pageSize + index;
+                            _savePosition(globalIndex);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => WordDetailScreen(word: word),
+                              ),
+                            ).then((_) => _loadPage(_currentPage));
+                          },
+                        ),
+                      );
+                    },
+                  ),
+        ),
+      ],
+    );
+  }
+
+  void _showPageSelector() {
+    final maxPage = (_totalWords / _pageSize).ceil();
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Go to Page'),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 300,
+              child: ListView.builder(
+                itemCount: maxPage,
+                itemBuilder: (context, index) {
+                  final start = index * _pageSize + 1;
+                  final end = ((index + 1) * _pageSize).clamp(1, _totalWords);
+                  final isCurrentPage = index == _currentPage;
+                  return ListTile(
+                    title: Text(
+                      'Page ${index + 1}: $start - $end',
+                      style: TextStyle(
+                        fontWeight:
+                            isCurrentPage ? FontWeight.bold : FontWeight.normal,
+                        color:
+                            isCurrentPage
+                                ? Theme.of(context).primaryColor
+                                : null,
+                      ),
+                    ),
+                    trailing:
+                        isCurrentPage
+                            ? const Icon(Icons.check, color: Colors.green)
+                            : null,
+                    onTap: () {
+                      Navigator.pop(context);
+                      _goToPage(index);
+                    },
                   );
-                }
-                _loadWords();
-              },
+                },
+              ),
             ),
-          );
-        },
-      ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
     );
   }
 
@@ -581,44 +642,41 @@ class _WordListScreenState extends State<WordListScreen> {
           ),
         ),
         Expanded(
-          child:
-              _pageController == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentFlashcardIndex = index;
-                      });
-                      // À§Ä¡ ÀúÀå
-                      _savePosition(index);
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentFlashcardIndex = index;
+              });
+              // ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
+              _savePosition(index);
 
-                      // ÇÃ·¡½ÃÄ«µå 10Àå¸¶´Ù Àü¸é ±¤°í Ç¥½Ã
-                      _flashcardViewCount++;
-                      if (_flashcardViewCount % 10 == 0) {
-                        AdService.instance.showInterstitialAd();
-                      }
-                    },
-                    itemCount: _words.length,
-                    itemBuilder: (context, index) {
-                      final word = _words[index];
-                      return Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: FlipCard(
-                          direction: FlipDirection.HORIZONTAL,
-                          front: _buildFlashcardFront(word),
-                          back: _buildFlashcardBack(word),
-                        ),
-                      );
-                    },
-                  ),
+              // ï¿½Ã·ï¿½ï¿½ï¿½Ä«ï¿½ï¿½ 10ï¿½å¸¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
+              _flashcardViewCount++;
+              if (_flashcardViewCount % 10 == 0) {
+                AdService.instance.showInterstitialAd();
+              }
+            },
+            itemCount: _words.length,
+            itemBuilder: (context, index) {
+              final word = _words[index];
+              return Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: FlipCard(
+                  direction: FlipDirection.HORIZONTAL,
+                  front: _buildFlashcardFront(word),
+                  back: _buildFlashcardBack(word),
+                ),
+              );
+            },
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Previous ¹öÆ°
+              // Previous ï¿½ï¿½Æ°
               Container(
                 width: 56,
                 height: 56,
@@ -643,9 +701,9 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
                 child: IconButton(
                   onPressed:
-                      _currentFlashcardIndex > 0 && _pageController != null
+                      _currentFlashcardIndex > 0
                           ? () {
-                            _pageController!.previousPage(
+                            _pageController.previousPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                             );
@@ -660,7 +718,7 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
               ),
               const SizedBox(width: 48),
-              // Next ¹öÆ°
+              // Next ï¿½ï¿½Æ°
               Container(
                 width: 56,
                 height: 56,
@@ -685,10 +743,9 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
                 child: IconButton(
                   onPressed:
-                      _currentFlashcardIndex < _words.length - 1 &&
-                              _pageController != null
+                      _currentFlashcardIndex < _words.length - 1
                           ? () {
-                            _pageController!.nextPage(
+                            _pageController.nextPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                             );
@@ -740,21 +797,17 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              if (translatePartOfSpeech(
-                AppLocalizations.of(context)!,
-                word.partOfSpeech,
-              ).isNotEmpty)
-                Text(
-                  translatePartOfSpeech(
-                    AppLocalizations.of(context)!,
-                    word.partOfSpeech,
-                  ),
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withAlpha((0.8 * 255).toInt()),
-                    fontStyle: FontStyle.italic,
-                  ),
+              Text(
+                translatePartOfSpeech(
+                  AppLocalizations.of(context)!,
+                  word.partOfSpeech,
                 ),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withAlpha((0.8 * 255).toInt()),
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
               const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -788,7 +841,7 @@ class _WordListScreenState extends State<WordListScreen> {
   }
 
   Widget _buildFlashcardBack(Word word) {
-    // ¹ø¿ª ·Îµå
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
     _loadTranslationForWord(word);
     final isLoadingTranslation = _loadingTranslations.contains(word.id);
     final translatedDef = _translatedDefinitions[word.id];
@@ -807,7 +860,7 @@ class _WordListScreenState extends State<WordListScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // ´Ü¾î (Å©°í ´«¿¡ ¶ç°Ô)
+              // ï¿½Ü¾ï¿½ (Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)
               Text(
                 word.word,
                 style: TextStyle(
@@ -817,12 +870,12 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              // ÀÇ¹Ì (Å©°í ´«¿¡ ¶ç°Ô)
+              // ì˜ë¯¸ (í¬ê³  ëˆˆì— ë„ê²Œ)
               if (isLoadingTranslation)
                 const CircularProgressIndicator()
               else
                 Text(
-                  translatedDef ?? word.definition,
+                  translatedDef ?? '',
                   style: TextStyle(
                     fontSize: 22 * _wordFontSize,
                     fontWeight: FontWeight.w600,
@@ -832,7 +885,7 @@ class _WordListScreenState extends State<WordListScreen> {
                   textAlign: TextAlign.center,
                 ),
               const SizedBox(height: 24),
-              // ¿¹¹® ¼½¼Ç (´ú ´«¿¡ ¶ç°Ô)
+              // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(

@@ -6,29 +6,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_ar.dart';
-import 'app_localizations_bn.dart';
 import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
-import 'app_localizations_fa.dart';
 import 'app_localizations_fr.dart';
 import 'app_localizations_hi.dart';
-import 'app_localizations_id.dart';
-import 'app_localizations_it.dart';
 import 'app_localizations_ja.dart';
 import 'app_localizations_ko.dart';
-import 'app_localizations_ms.dart';
-import 'app_localizations_nl.dart';
-import 'app_localizations_pl.dart';
 import 'app_localizations_pt.dart';
 import 'app_localizations_ru.dart';
-import 'app_localizations_sv.dart';
-import 'app_localizations_th.dart';
-import 'app_localizations_tl.dart';
-import 'app_localizations_tr.dart';
-import 'app_localizations_uk.dart';
-import 'app_localizations_ur.dart';
-import 'app_localizations_vi.dart';
 import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
@@ -115,42 +101,28 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
-    Locale('bn'),
     Locale('de'),
     Locale('en'),
     Locale('es'),
-    Locale('fa'),
     Locale('fr'),
     Locale('hi'),
-    Locale('id'),
-    Locale('it'),
     Locale('ja'),
     Locale('ko'),
-    Locale('ms'),
-    Locale('nl'),
-    Locale('pl'),
     Locale('pt'),
     Locale('ru'),
-    Locale('sv'),
-    Locale('th'),
-    Locale('tl'),
-    Locale('tr'),
-    Locale('uk'),
-    Locale('ur'),
-    Locale('vi'),
     Locale('zh')
   ];
 
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'English Idiom 1000'**
+  /// **'Essential English 10000'**
   String get appTitle;
 
   /// No description provided for @todayWord.
   ///
   /// In en, this message translates to:
-  /// **' Today\'s Idiom'**
+  /// **'Today\'s Word'**
   String get todayWord;
 
   /// No description provided for @learning.
@@ -168,13 +140,13 @@ abstract class AppLocalizations {
   /// No description provided for @allWords.
   ///
   /// In en, this message translates to:
-  /// **'All Idioms'**
+  /// **'All Words'**
   String get allWords;
 
   /// No description provided for @viewAllWords.
   ///
   /// In en, this message translates to:
-  /// **'View all idioms'**
+  /// **'View All Words'**
   String get viewAllWords;
 
   /// No description provided for @favorites.
@@ -186,7 +158,7 @@ abstract class AppLocalizations {
   /// No description provided for @savedWords.
   ///
   /// In en, this message translates to:
-  /// **'Saved idioms'**
+  /// **'Saved Words'**
   String get savedWords;
 
   /// No description provided for @flashcard.
@@ -210,7 +182,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchWords.
   ///
   /// In en, this message translates to:
-  /// **'Search idioms'**
+  /// **'Search Words'**
   String get searchWords;
 
   /// No description provided for @settings.
@@ -222,13 +194,13 @@ abstract class AppLocalizations {
   /// No description provided for @noWords.
   ///
   /// In en, this message translates to:
-  /// **'No idioms found'**
+  /// **'No words found'**
   String get noWords;
 
   /// No description provided for @cannotLoadWords.
   ///
   /// In en, this message translates to:
-  /// **'Cannot load idioms'**
+  /// **'Cannot load words'**
   String get cannotLoadWords;
 
   /// No description provided for @addedToFavorites.
@@ -246,13 +218,13 @@ abstract class AppLocalizations {
   /// No description provided for @definition.
   ///
   /// In en, this message translates to:
-  /// **' Definition'**
+  /// **'📖 Definition'**
   String get definition;
 
   /// No description provided for @example.
   ///
   /// In en, this message translates to:
-  /// **' Example'**
+  /// **'💬 Example'**
   String get example;
 
   /// No description provided for @translating.
@@ -336,7 +308,7 @@ abstract class AppLocalizations {
   /// No description provided for @levelWords.
   ///
   /// In en, this message translates to:
-  /// **'{level} Idioms'**
+  /// **'{level} Words'**
   String levelWords(String level);
 
   /// No description provided for @flashcardMode.
@@ -378,7 +350,7 @@ abstract class AppLocalizations {
   /// No description provided for @translationInfoDesc.
   ///
   /// In en, this message translates to:
-  /// **'Translations will be downloaded automatically when you view idioms. Once downloaded, they are cached locally for offline use.'**
+  /// **'Translations will be downloaded automatically when you view words. Once downloaded, they are cached locally for offline use.'**
   String get translationInfoDesc;
 
   /// No description provided for @ok.
@@ -432,7 +404,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:
-  /// **'Search for idioms...'**
+  /// **'Search for words...'**
   String get searchHint;
 
   /// No description provided for @noSearchResults.
@@ -444,7 +416,7 @@ abstract class AppLocalizations {
   /// No description provided for @typeToSearch.
   ///
   /// In en, this message translates to:
-  /// **'Type to search for idioms'**
+  /// **'Type to Search for words...'**
   String get typeToSearch;
 
   /// No description provided for @noFavorites.
@@ -456,7 +428,7 @@ abstract class AppLocalizations {
   /// No description provided for @addFavoritesHint.
   ///
   /// In en, this message translates to:
-  /// **'Add idioms to favorites by tapping the heart icon'**
+  /// **'Add words to favorites by tapping the heart icon'**
   String get addFavoritesHint;
 
   /// No description provided for @posNoun.
@@ -600,7 +572,7 @@ abstract class AppLocalizations {
   /// No description provided for @copyrightContent.
   ///
   /// In en, this message translates to:
-  /// **'All idiom definitions and example sentences in this app are original or AI-generated. No copyrighted dictionary content is used.\\n\\nTranslations are provided by MyMemory API (free translation service).'**
+  /// **'All word definitions and example sentences in this app are original or AI-generated. No copyrighted dictionary content is used.'**
   String get copyrightContent;
 
   /// No description provided for @privacyPolicy.
@@ -612,7 +584,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContent.
   ///
   /// In en, this message translates to:
-  /// **'This app does not collect, store, or share any personal information.\\n\\nTranslation requests are sent to MyMemory API for processing. No user data is stored on external servers.'**
+  /// **'This app does not collect, store, or share any personal information.'**
   String get privacyContent;
 
   /// No description provided for @alphabetical.
@@ -642,7 +614,7 @@ abstract class AppLocalizations {
   /// No description provided for @wordQuiz.
   ///
   /// In en, this message translates to:
-  /// **'Idiom Quiz'**
+  /// **'Word Quiz'**
   String get wordQuiz;
 
   /// No description provided for @quizWithLevel.
@@ -654,19 +626,19 @@ abstract class AppLocalizations {
   /// No description provided for @wordToMeaningMode.
   ///
   /// In en, this message translates to:
-  /// **'IdiomMeaning'**
+  /// **'Word→Meaning'**
   String get wordToMeaningMode;
 
   /// No description provided for @meaningToWordMode.
   ///
   /// In en, this message translates to:
-  /// **'MeaningIdiom'**
+  /// **'Meaning→Word'**
   String get meaningToWordMode;
 
   /// No description provided for @quizComplete.
   ///
   /// In en, this message translates to:
-  /// **' Quiz Complete!'**
+  /// **'🎉 Quiz Complete!'**
   String get quizComplete;
 
   /// No description provided for @correctAnswers.
@@ -696,25 +668,25 @@ abstract class AppLocalizations {
   /// No description provided for @excellent.
   ///
   /// In en, this message translates to:
-  /// **'Excellent! '**
+  /// **'Excellent! 🌟'**
   String get excellent;
 
   /// No description provided for @greatJob.
   ///
   /// In en, this message translates to:
-  /// **'Great Job! '**
+  /// **'Great Job! 👏'**
   String get greatJob;
 
   /// No description provided for @goodStart.
   ///
   /// In en, this message translates to:
-  /// **'Good Start! '**
+  /// **'Good Start! 💪'**
   String get goodStart;
 
   /// No description provided for @keepPracticing.
   ///
   /// In en, this message translates to:
-  /// **'Keep Practicing! '**
+  /// **'Keep Practicing! 📚'**
   String get keepPracticing;
 
   /// No description provided for @questionProgress.
@@ -726,13 +698,13 @@ abstract class AppLocalizations {
   /// No description provided for @whatIsTheMeaning.
   ///
   /// In en, this message translates to:
-  /// **'What is the meaning of this idiom?'**
+  /// **'What is the meaning of this word?'**
   String get whatIsTheMeaning;
 
   /// No description provided for @whichWordMatches.
   ///
   /// In en, this message translates to:
-  /// **'Which idiom matches this meaning?'**
+  /// **'Which word matches this meaning?'**
   String get whichWordMatches;
 
   /// No description provided for @nextQuestion.
@@ -816,7 +788,7 @@ abstract class AppLocalizations {
   /// No description provided for @wordFontSize.
   ///
   /// In en, this message translates to:
-  /// **'Flashcard Idiom Size'**
+  /// **'Flashcard Word Size'**
   String get wordFontSize;
 
   /// No description provided for @fontSizeSmall.
@@ -855,11 +827,11 @@ abstract class AppLocalizations {
   /// **'Extra Large'**
   String get fontSizeExtraLarge;
 
-  /// No description provided for @cancel.
+  /// No description provided for @apiTranslationNotice.
   ///
   /// In en, this message translates to:
-  /// **'Cancel'**
-  String get cancel;
+  /// **'Translations are being provided via API (online translation)'**
+  String get apiTranslationNotice;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -871,7 +843,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['ar', 'bn', 'de', 'en', 'es', 'fa', 'fr', 'hi', 'id', 'it', 'ja', 'ko', 'ms', 'nl', 'pl', 'pt', 'ru', 'sv', 'th', 'tl', 'tr', 'uk', 'ur', 'vi', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['ar', 'de', 'en', 'es', 'fr', 'hi', 'ja', 'ko', 'pt', 'ru', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -883,29 +855,15 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'ar': return AppLocalizationsAr();
-    case 'bn': return AppLocalizationsBn();
     case 'de': return AppLocalizationsDe();
     case 'en': return AppLocalizationsEn();
     case 'es': return AppLocalizationsEs();
-    case 'fa': return AppLocalizationsFa();
     case 'fr': return AppLocalizationsFr();
     case 'hi': return AppLocalizationsHi();
-    case 'id': return AppLocalizationsId();
-    case 'it': return AppLocalizationsIt();
     case 'ja': return AppLocalizationsJa();
     case 'ko': return AppLocalizationsKo();
-    case 'ms': return AppLocalizationsMs();
-    case 'nl': return AppLocalizationsNl();
-    case 'pl': return AppLocalizationsPl();
     case 'pt': return AppLocalizationsPt();
     case 'ru': return AppLocalizationsRu();
-    case 'sv': return AppLocalizationsSv();
-    case 'th': return AppLocalizationsTh();
-    case 'tl': return AppLocalizationsTl();
-    case 'tr': return AppLocalizationsTr();
-    case 'uk': return AppLocalizationsUk();
-    case 'ur': return AppLocalizationsUr();
-    case 'vi': return AppLocalizationsVi();
     case 'zh': return AppLocalizationsZh();
   }
 

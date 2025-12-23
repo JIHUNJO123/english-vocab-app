@@ -9,10 +9,10 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get appTitle => 'English Word 10000';
+  String get appTitle => 'Essential English 10000';
 
   @override
-  String get todayWord => '📅 Wort des Tages';
+  String get todayWord => 'Wort des Tages';
 
   @override
   String get learning => 'Lernen';
@@ -48,7 +48,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings => 'Einstellungen';
 
   @override
-  String get noWords => 'Keine Wörter';
+  String get noWords => 'Keine Wörter gefunden';
 
   @override
   String get cannotLoadWords => 'Laden fehlgeschlagen';
@@ -245,13 +245,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get copyrightNotice => 'Urheberrechtshinweis';
 
   @override
-  String get copyrightContent => 'Alle Wortdefinitionen und Beispielsätze in dieser App sind original oder KI-generiert. Es werden keine urheberrechtlich geschützten Wörterbuchinhalte verwendet.\n\nÜbersetzungen werden von MyMemory API (kostenloser Übersetzungsdienst) bereitgestellt.';
+  String get copyrightContent => 'Alle Wortdefinitionen und Beispielsätze in dieser App sind original oder KI-generiert. Es werden keine urheberrechtlich geschützten Wörterbuchinhalte verwendet.';
 
   @override
   String get privacyPolicy => 'Datenschutzrichtlinie';
 
   @override
-  String get privacyContent => 'Diese App sammelt, speichert oder teilt keine persönlichen Informationen.\n\nÜbersetzungsanfragen werden an MyMemory API zur Verarbeitung gesendet. Benutzerdaten werden nicht auf externen Servern gespeichert.';
+  String get privacyContent => 'Diese App sammelt, speichert oder teilt keine persönlichen Informationen.';
 
   @override
   String get alphabetical => 'Alphabetisch';
@@ -266,7 +266,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get testYourself => 'Teste dich';
 
   @override
-  String get wordQuiz => 'Vokabelquiz';
+  String get wordQuiz => 'Wörter-Quiz';
 
   @override
   String quizWithLevel(String level) {
@@ -359,7 +359,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get buy => 'Kaufen';
 
   @override
-  String get wordFontSize => 'Flashcard Idiom Size';
+  String get wordFontSize => 'Flashcard Word Size';
 
   @override
   String get fontSizeSmall => 'Small';
@@ -380,5 +380,5 @@ class AppLocalizationsDe extends AppLocalizations {
   String get fontSizeExtraLarge => 'Extra Large';
 
   @override
-  String get cancel => 'Abbrechen';
+  String get apiTranslationNotice => 'Translations are being provided via API (online translation)';
 }

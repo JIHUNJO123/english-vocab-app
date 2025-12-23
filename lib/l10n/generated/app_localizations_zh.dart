@@ -9,10 +9,10 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appTitle => 'English Word 10000';
+  String get appTitle => 'Essential English 10000';
 
   @override
-  String get todayWord => '📅 今日单词';
+  String get todayWord => '今日单词';
 
   @override
   String get learning => '学习';
@@ -245,13 +245,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copyrightNotice => '版权声明';
 
   @override
-  String get copyrightContent => '此应用程序中的所有单词定义和例句均为原创或AI生成。未使用受版权保护的词典内容。\n\n翻译由MyMemory API（免费翻译服务）提供。';
+  String get copyrightContent => '此应用程序中的所有单词定义和例句均为原创或AI生成。未使用受版权保护的词典内容。';
 
   @override
   String get privacyPolicy => '隐私政策';
 
   @override
-  String get privacyContent => '此应用程序不收集、存储或分享任何个人信息。\n\n翻译请求发送到MyMemory API进行处理。用户数据不会存储在外部服务器上。';
+  String get privacyContent => '此应用程序不收集、存储或分享任何个人信息。';
 
   @override
   String get alphabetical => '字母顺序';
@@ -359,7 +359,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get buy => '购买';
 
   @override
-  String get wordFontSize => 'Flashcard Idiom Size';
+  String get wordFontSize => 'Flashcard Word Size';
 
   @override
   String get fontSizeSmall => 'Small';
@@ -380,5 +380,5 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fontSizeExtraLarge => 'Extra Large';
 
   @override
-  String get cancel => '取消';
+  String get apiTranslationNotice => 'Translations are being provided via API (online translation)';
 }

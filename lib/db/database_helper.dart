@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -20,16 +22,35 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(
-      path,
-      version: 3,
-      onCreate: _createDB,
-      onUpgrade: _upgradeDB,
-    );
+    // ì›¹ì—ì„œëŠ” JSON íŒŒì‹± ë°©ì‹ ì‚¬ìš©
+    if (kIsWeb) {
+      return await openDatabase(path, version: 1, onCreate: _createDBFromJson);
+    }
+
+    // ëª¨ë°”ì¼: Pre-built DB ë³µì‚¬ ë°©ì‹
+    final exists = await databaseExists(path);
+    if (!exists) {
+      print('DEBUG: Copying pre-built database from assets...');
+
+      // assetsì—ì„œ DB íŒŒì¼ ë¡œë“œ
+      final data = await rootBundle.load('assets/data/words.db');
+      final bytes = data.buffer.asUint8List();
+
+      // ë””ë ‰í† ë¦¬ ìƒì„±
+      await Directory(dirname(path)).create(recursive: true);
+
+      // íŒŒì¼ ë³µì‚¬
+      await File(path).writeAsBytes(bytes, flush: true);
+      print('DEBUG: Database copied successfully');
+    }
+
+    return await openDatabase(path, version: 1);
   }
 
-  Future _createDB(Database db, int version) async {
-    // ´Ü¾î Å×ÀÌºí (¿µ¾î ¿øº»¸¸)
+  // ì›¹ìš©: JSONì—ì„œ DB ìƒì„±
+  Future<void> _createDBFromJson(Database db, int version) async {
+    print('DEBUG: Creating database from JSON (web)...');
+
     await db.execute('''
       CREATE TABLE words (
         id INTEGER PRIMARY KEY,
@@ -38,11 +59,11 @@ class DatabaseHelper {
         partOfSpeech TEXT NOT NULL,
         definition TEXT NOT NULL,
         example TEXT NOT NULL,
-        isFavorite INTEGER DEFAULT 0
+        isFavorite INTEGER DEFAULT 0,
+        translations TEXT
       )
     ''');
 
-    // ¹ø¿ª Ä³½Ã Å×ÀÌºí
     await db.execute('''
       CREATE TABLE translations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,47 +76,37 @@ class DatabaseHelper {
       )
     ''');
 
-    // ÀÎµ¦½º »ı¼º
-    await db.execute('''
-      CREATE INDEX idx_translations_lookup 
-      ON translations(wordId, languageCode, fieldType)
-    ''');
-
-    // Load initial data from JSON
-    await _loadInitialData(db);
-  }
-
-  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 3) {
-      // ±âÁ¸ Å×ÀÌºí »èÁ¦ÇÏ°í »õ·Î »ı¼º (»õ Á¤ÀÇ µ¥ÀÌÅÍ ¹İ¿µ)
-      await db.execute('DROP TABLE IF EXISTS words');
-      await db.execute('DROP TABLE IF EXISTS translations');
-      await _createDB(db, newVersion);
-    }
-  }
-
-  Future<void> _loadInitialData(Database db) async {
+    // JSON ë¡œë“œ ë° ì‚½ì…
     final String response = await rootBundle.loadString(
       'assets/data/words.json',
     );
     final List<dynamic> data = json.decode(response);
 
+    final batch = db.batch();
     for (var wordJson in data) {
-      await db.insert('words', {
-        'id': wordJson['id'],
-        'word': wordJson['word'],
-        'level': wordJson['level'],
-        'partOfSpeech': wordJson['partOfSpeech'],
-        'definition': wordJson['definition'],
-        'example': wordJson['example'],
+      String? translationsJson;
+      if (wordJson['translations'] != null) {
+        translationsJson = json.encode(wordJson['translations']);
+      }
+
+      batch.insert('words', {
+        'id': wordJson['id'] ?? 0,
+        'word': wordJson['word'] ?? '',
+        'level': wordJson['level'] ?? '',
+        'partOfSpeech': wordJson['partOfSpeech'] ?? '',
+        'definition': wordJson['definition'] ?? '',
+        'example': wordJson['example'] ?? '',
         'isFavorite': 0,
+        'translations': translationsJson,
       });
     }
+    await batch.commit(noResult: true);
+    print('DEBUG: Database created from JSON');
   }
 
-  // ============ ¹ø¿ª Ä³½Ã ¸Ş¼­µå ============
+  // ============ ë²ˆì—­ ìºì‹œ ë©”ì„œë“œ ============
 
-  /// ¹ø¿ª Ä³½Ã¿¡¼­ °¡Á®¿À±â
+  /// ë²ˆì—­ ìºì‹œì—ì„œ ê°€ì ¸ì˜¤ê¸°
   Future<String?> getTranslation(
     int wordId,
     String languageCode,
@@ -114,7 +125,7 @@ class DatabaseHelper {
     return null;
   }
 
-  /// ¹ø¿ª Ä³½Ã¿¡ ÀúÀå
+  /// ë²ˆì—­ ìºì‹œì— ì €ì¥
   Future<void> saveTranslation(
     int wordId,
     String languageCode,
@@ -131,7 +142,7 @@ class DatabaseHelper {
     }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  /// Æ¯Á¤ ¾ğ¾îÀÇ ¸ğµç ¹ø¿ª »èÁ¦
+  /// Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   Future<void> clearTranslations(String languageCode) async {
     final db = await instance.database;
     await db.delete(
@@ -141,18 +152,50 @@ class DatabaseHelper {
     );
   }
 
-  /// ¸ğµç ¹ø¿ª Ä³½Ã »èÁ¦
+  /// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   Future<void> clearAllTranslations() async {
     final db = await instance.database;
     await db.delete('translations');
   }
 
-  // ============ ´Ü¾î ¸Ş¼­µå ============
+  // ============ ë‹¨ì–´ ë©”ì„œë“œ ============
 
   Future<List<Word>> getAllWords() async {
     final db = await instance.database;
     final result = await db.query('words', orderBy: 'word ASC');
     return result.map((json) => Word.fromDb(json)).toList();
+  }
+
+  /// í˜ì´ì§€ë„¤ì´ì…˜ìœ¼ë¡œ ë‹¨ì–´ ê°€ì ¸ì˜¤ê¸°
+  Future<List<Word>> getWordsPaginated({
+    String? level,
+    int page = 0,
+    int pageSize = 50,
+  }) async {
+    final db = await instance.database;
+    final offset = page * pageSize;
+
+    final result = await db.query(
+      'words',
+      where: level != null ? 'level = ?' : null,
+      whereArgs: level != null ? [level] : null,
+      orderBy: 'word ASC',
+      limit: pageSize,
+      offset: offset,
+    );
+    return result.map((json) => Word.fromDb(json)).toList();
+  }
+
+  /// ì „ì²´ ë‹¨ì–´ ìˆ˜ ê°€ì ¸ì˜¤ê¸°
+  Future<int> getWordsCount({String? level}) async {
+    final db = await instance.database;
+    final result = await db.rawQuery(
+      level != null
+          ? 'SELECT COUNT(*) as count FROM words WHERE level = ?'
+          : 'SELECT COUNT(*) as count FROM words',
+      level != null ? [level] : null,
+    );
+    return result.first['count'] as int;
   }
 
   Future<List<Word>> getWordsByLevel(String level) async {
@@ -233,7 +276,49 @@ class DatabaseHelper {
     return Word.fromDb(result.first);
   }
 
-  /// ´Ü¾î¿¡ ¹ø¿ª µ¥ÀÌÅÍ Àû¿ë
+  /// JSONì—ì„œ ì§ì ‘ ë¡œë“œí•˜ì—¬ ì˜¤ëŠ˜ì˜ ë‹¨ì–´ ê°€ì ¸ì˜¤ê¸° (ë‚´ì¥ ë²ˆì—­ í¬í•¨)
+  Future<Word?> getTodayWordWithTranslations() async {
+    try {
+      final String response = await rootBundle.loadString(
+        'assets/data/words.json',
+      );
+      final List<dynamic> data = json.decode(response);
+
+      if (data.isEmpty) return null;
+
+      // Use date as seed for consistent daily word
+      final today = DateTime.now();
+      final seed = today.year * 10000 + today.month * 100 + today.day;
+      final index = seed % data.length;
+
+      final word = Word.fromJson(data[index]);
+
+      // DBì—ì„œ ì¦ê²¨ì°¾ê¸° ìƒíƒœ ê°€ì ¸ì˜¤ê¸°
+      try {
+        final db = await instance.database;
+        final dbResult = await db.query(
+          'words',
+          columns: ['isFavorite'],
+          where: 'id = ?',
+          whereArgs: [word.id],
+        );
+
+        if (dbResult.isNotEmpty) {
+          word.isFavorite = (dbResult.first['isFavorite'] as int) == 1;
+        }
+      } catch (dbError) {
+        print('DB error (ignored): $dbError');
+        // DB ì˜¤ë¥˜ëŠ” ë¬´ì‹œí•˜ê³  JSONì—ì„œ ë¡œë“œí•œ ë‹¨ì–´ ë°˜í™˜
+      }
+
+      return word;
+    } catch (e) {
+      print('Error loading today word: $e');
+      return null;
+    }
+  }
+
+  /// ï¿½Ü¾î¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   Future<Word> applyTranslations(Word word, String languageCode) async {
     if (languageCode == 'en') return word;
 
@@ -250,7 +335,7 @@ class DatabaseHelper {
     );
   }
 
-  /// ¿©·¯ ´Ü¾î¿¡ ¹ø¿ª Àû¿ë
+  /// ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¾î¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   Future<List<Word>> applyTranslationsToList(
     List<Word> words,
     String languageCode,

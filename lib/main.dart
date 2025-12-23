@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'db/database_helper.dart';
 import 'screens/home_screen.dart';
 import 'services/translation_service.dart';
 import 'services/ad_service.dart';
@@ -15,23 +16,23 @@ import 'services/purchase_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ÇÃ·§Æûº° sqflite ÃÊ±âÈ­
+  // í”Œë«í¼ë³„ sqflite ì´ˆê¸°í™”
   if (kIsWeb) {
-    // À¥¿¡¼­ sqflite ÃÊ±âÈ­
+    // ì›¹ì—ì„œ sqflite ì´ˆê¸°í™”
     databaseFactory = databaseFactoryFfiWeb;
   } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    // Windows, Linux, macOS¿¡¼­ sqflite ÃÊ±âÈ­
+    // Windows, Linux, macOSì—ì„œ sqflite ì´ˆê¸°í™”
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
 
-  // ¹ø¿ª ¼­ºñ½º ÃÊ±âÈ­
+  // ë²ˆì—­ ì„œë¹„ìŠ¤ ì´ˆê¸°í™”
   await TranslationService.instance.init();
 
-  // ±¤°í ¼­ºñ½º ÃÊ±âÈ­
+  // ê´‘ê³  ì„œë¹„ìŠ¤ ì´ˆê¸°í™”
   await AdService.instance.initialize();
 
-  // ÀÎ¾Û ±¸¸Å ¼­ºñ½º ÃÊ±âÈ­
+  // ì¸ì•± êµ¬ë§¤ ì„œë¹„ìŠ¤ ì´ˆê¸°í™”
   await PurchaseService.instance.initialize();
 
   runApp(
@@ -42,7 +43,7 @@ void main() async {
   );
 }
 
-/// ¾ğ¾î ¹× Å×¸¶ º¯°æÀ» À§ÇÑ Provider
+/// ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½×¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Provider
 class LocaleProvider extends ChangeNotifier {
   Locale _locale = const Locale('en');
   ThemeMode _themeMode = ThemeMode.light;
@@ -57,12 +58,12 @@ class LocaleProvider extends ChangeNotifier {
   Future<void> _loadSavedSettings() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // ¾ğ¾î ·Îµå
+    // ï¿½ï¿½ï¿½ ï¿½Îµï¿½
     await TranslationService.instance.init();
     final langCode = TranslationService.instance.currentLanguage;
     _locale = Locale(langCode);
 
-    // ´ÙÅ©¸ğµå ·Îµå
+    // ï¿½ï¿½Å©ï¿½ï¿½ï¿½ ï¿½Îµï¿½
     final isDarkMode = prefs.getBool('darkMode') ?? false;
     _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
 
@@ -92,7 +93,7 @@ class EnglishVocabApp extends StatelessWidget {
       title: 'English Vocabulary',
       debugShowCheckedModeBanner: false,
 
-      // Localization ¼³Á¤
+      // Localization ï¿½ï¿½ï¿½ï¿½
       locale: localeProvider.locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -112,20 +113,6 @@ class EnglishVocabApp extends StatelessWidget {
         Locale('ru'),
         Locale('ar'),
         Locale('hi'),
-        Locale('bn'),
-        Locale('ur'),
-        Locale('fa'),
-        Locale('th'),
-        Locale('vi'),
-        Locale('id'),
-        Locale('ms'),
-        Locale('tl'),
-        Locale('tr'),
-        Locale('uk'),
-        Locale('pl'),
-        Locale('nl'),
-        Locale('it'),
-        Locale('sv'),
       ],
 
       theme: ThemeData(
@@ -133,7 +120,7 @@ class EnglishVocabApp extends StatelessWidget {
           seedColor: const Color(0xFF4A90E2),
           brightness: Brightness.light,
         ),
-        useMaterial3: false, // Material 2 »ç¿ë (shader ÄÄÆÄÀÏ ¹®Á¦ ¹æÁö)
+        useMaterial3: false, // Material 2 ï¿½ï¿½ï¿½ (shader ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
         cardTheme: CardThemeData(
           elevation: 2,
@@ -180,6 +167,87 @@ class EnglishVocabApp extends StatelessWidget {
       ),
       themeMode: localeProvider.themeMode,
       home: const HomeScreen(),
+    );
+  }
+}
+
+/// ìŠ¤í”Œë˜ì‹œ í™”ë©´ - DB ì´ˆê¸°í™” ëŒ€ê¸°
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  String _statusMessage = 'Loading...';
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      setState(() => _statusMessage = 'Initializing database...');
+
+      // DB ì´ˆê¸°í™” (10,000ê°œ ë‹¨ì–´ ë¡œë“œ) - ìµœëŒ€ 60ì´ˆ ëŒ€ê¸°
+      await DatabaseHelper.instance.database.timeout(
+        const Duration(seconds: 60),
+        onTimeout: () {
+          throw Exception('Database initialization timeout');
+        },
+      );
+
+      setState(() => _statusMessage = 'Ready!');
+
+      // ì ì‹œ ëŒ€ê¸° í›„ ì´ë™
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      print('SplashScreen error: $e');
+      setState(() => _statusMessage = 'Error: $e');
+
+      // ì—ëŸ¬ê°€ ë°œìƒí•´ë„ 3ì´ˆ í›„ í™ˆìœ¼ë¡œ ì´ë™ ì‹œë„
+      await Future.delayed(const Duration(seconds: 3));
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.book, size: 80, color: Color(0xFF4A90E2)),
+            const SizedBox(height: 24),
+            const Text(
+              'English Vocabulary',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 32),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(
+              _statusMessage,
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

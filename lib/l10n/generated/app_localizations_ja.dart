@@ -9,10 +9,10 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get appTitle => 'English Word 10000';
+  String get appTitle => 'Essential English 10000';
 
   @override
-  String get todayWord => '📅 今日の単語';
+  String get todayWord => '今日の単語';
 
   @override
   String get learning => '学習';
@@ -245,13 +245,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get copyrightNotice => '著作権情報';
 
   @override
-  String get copyrightContent => 'このアプリのすべての単語定義と例文はオリジナルまたはAIで生成されています。著作権のある辞書コンテンツは使用されていません。\n\n翻訳はMyMemory API（無料翻訳サービス）で提供されています。';
+  String get copyrightContent => 'このアプリのすべての単語定義と例文はオリジナルまたはAIで生成されています。著作権のある辞書コンテンツは使用されていません。';
 
   @override
   String get privacyPolicy => 'プライバシーポリシー';
 
   @override
-  String get privacyContent => 'このアプリは個人情報を収集、保存、共有しません。\n\n翻訳リクエストはMyMemory APIに送信されて処理されます。ユーザーデータは外部サーバーに保存されません。';
+  String get privacyContent => 'このアプリは個人情報を収集、保存、共有しません。';
 
   @override
   String get alphabetical => 'アルファベット順';
@@ -359,7 +359,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buy => '購入';
 
   @override
-  String get wordFontSize => 'Flashcard Idiom Size';
+  String get wordFontSize => 'Flashcard Word Size';
 
   @override
   String get fontSizeSmall => 'Small';
@@ -380,5 +380,5 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fontSizeExtraLarge => 'Extra Large';
 
   @override
-  String get cancel => 'キャンセル';
+  String get apiTranslationNotice => 'Translations are being provided via API (online translation)';
 }

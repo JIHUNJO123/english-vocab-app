@@ -23,11 +23,12 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   late AnimationController _flipController;
   late Animation<double> _flipAnimation;
 
-  // ¹ø¿ª °ü·Ã
+  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   String? _translatedDefinition;
   String? _translatedExample;
   bool _isLoadingTranslation = false;
-  double _wordFontSize = 1.0; // ´Ü¾î ÆùÆ® Å©±â ¹èÀ²
+  double _wordFontSize = 1.0; // ï¿½Ü¾ï¿½ ï¿½ï¿½Æ® Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+  bool _apiNoticeShown = false;
 
   @override
   void initState() {
@@ -63,23 +64,14 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
     await translationService.init();
 
     if (translationService.needsTranslation) {
-      setState(() => _isLoadingTranslation = true);
-
-      final translatedDef = await translationService.translate(
-        word.definition,
-        word.id,
-        'definition',
-      );
-      final translatedEx = await translationService.translate(
-        word.example,
-        word.id,
-        'example',
-      );
+      // ë‚´ì¥ ë²ˆì—­ë§Œ ì‚¬ìš© (API í˜¸ì¶œ ì—†ìŒ)
+      final langCode = translationService.currentLanguage;
+      final embeddedDef = word.getEmbeddedTranslation(langCode, 'definition');
+      final embeddedEx = word.getEmbeddedTranslation(langCode, 'example');
 
       setState(() {
-        _translatedDefinition = translatedDef;
-        _translatedExample = translatedEx;
-        _isLoadingTranslation = false;
+        _translatedDefinition = embeddedDef;
+        _translatedExample = embeddedEx;
       });
     } else {
       setState(() {
@@ -164,14 +156,14 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.shuffle),
-            tooltip: '¼¯±â',
+            tooltip: 'ï¿½ï¿½ï¿½ï¿½',
             onPressed: _shuffleCards,
           ),
         ],
       ),
       body: Column(
         children: [
-          // ÁøÇà Ç¥½Ã
+          // ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -192,7 +184,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             ),
           ),
 
-          // ÇÃ·¡½ÃÄ«µå
+          // ï¿½Ã·ï¿½ï¿½ï¿½Ä«ï¿½ï¿½
           Expanded(
             child: GestureDetector(
               onTap: _flipCard,
@@ -231,7 +223,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             ),
           ),
 
-          // ³×ºñ°ÔÀÌ¼Ç ¹öÆ°
+          // ï¿½×ºï¿½ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½Æ°
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 24.0,
@@ -240,7 +232,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Previous ¹öÆ°
+                // Previous ï¿½ï¿½Æ°
                 Container(
                   width: 56,
                   height: 56,
@@ -273,7 +265,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Flip ¹öÆ°
+                // Flip ï¿½ï¿½Æ°
                 Container(
                   width: 56,
                   height: 56,
@@ -298,7 +290,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
                   ),
                 ),
                 const SizedBox(width: 32),
-                // Next ¹öÆ°
+                // Next ï¿½ï¿½Æ°
                 Container(
                   width: 56,
                   height: 56,
@@ -345,7 +337,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   }
 
   Widget _buildFrontCard(Word word, AppLocalizations l10n) {
-    // ¾Õ¸é: ¿µ¾î ´Ü¾î º¸¿©ÁÖ±â (´Ü¾î º¸°í ¶æ ¸ÂÃß±â)
+    // ï¿½Õ¸ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ (ï¿½Ü¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ß±ï¿½)
     return _buildCard(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -383,14 +375,14 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   }
 
   Widget _buildBackCard(Word word, AppLocalizations l10n) {
-    // µŞ¸é: ¹ø¿ªµÈ ¶æ°ú ¿¹¹®
+    // ï¿½Ş¸ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     return _buildCard(
       color: Colors.blue[50],
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ´Ü¾î (Å©°í ´«¿¡ ¶ç°Ô)
+            // ï¿½Ü¾ï¿½ (Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)
             Text(
               word.word,
               style: TextStyle(
@@ -409,12 +401,12 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
               ),
             ),
             const SizedBox(height: 16),
-            // ÀÇ¹Ì (Å©°í ´«¿¡ ¶ç°Ô)
+            // ì˜ë¯¸ (í¬ê³  ëˆˆì— ë„ê²Œ)
             if (_isLoadingTranslation)
               const CircularProgressIndicator()
             else ...[
               Text(
-                _translatedDefinition ?? word.definition,
+                _translatedDefinition ?? '',
                 style: TextStyle(
                   fontSize: 20 * _wordFontSize,
                   fontWeight: FontWeight.w600,
@@ -424,7 +416,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              // ¿¹¹® (´ú ´«¿¡ ¶ç°Ô)
+              // ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(

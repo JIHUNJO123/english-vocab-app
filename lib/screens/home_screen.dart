@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _translatedDefinition;
   bool _isLoading = true;
   bool _isBannerAdLoaded = false;
-  String? _lastLanguage; // ¸¶Áö¸· ·ÎµåµÈ ¾ğ¾î ÃßÀû
+  String? _lastLanguage; // ë§ˆì§€ë§‰ ë¡œë“œëœ ì–¸ì–´ ì¶”ì 
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // ¾ğ¾î º¯°æ °¨ÁöÇÏ¿© ¿À´ÃÀÇ ´Ü¾î »õ·Î°íÄ§
+    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¾ï¿½ ï¿½ï¿½ï¿½Î°ï¿½Ä§
     final currentLanguage = TranslationService.instance.currentLanguage;
     if (_lastLanguage != null && _lastLanguage != currentLanguage) {
       _loadTodayWord();
@@ -61,35 +61,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadTodayWord() async {
-    final word = await DatabaseHelper.instance.getTodayWord();
+    // JSONì—ì„œ ë‚´ì¥ ë²ˆì—­ì´ í¬í•¨ëœ ë‹¨ì–´ ë¡œë“œ (API í˜¸ì¶œ ì—†ìŒ)
+    final word = await DatabaseHelper.instance.getTodayWordWithTranslations();
     if (word != null) {
-      // ¹ø¿ª Àû¿ë
       final translationService = TranslationService.instance;
       await translationService.init();
 
+      String? translated;
       if (translationService.needsTranslation) {
-        final translated = await translationService.translate(
-          word.definition,
-          word.id,
-          'definition',
-        );
+        // ë‚´ì¥ ë²ˆì—­ë§Œ ì‚¬ìš© (API í˜¸ì¶œ ì—†ìŒ)
+        final langCode = translationService.currentLanguage;
+        translated = word.getEmbeddedTranslation(langCode, 'definition');
+      }
+
+      if (mounted) {
         setState(() {
           _todayWord = word;
           _translatedDefinition = translated;
           _isLoading = false;
         });
-      } else {
+      }
+    } else {
+      if (mounted) {
         setState(() {
-          _todayWord = word;
-          _translatedDefinition = null;
+          _todayWord = null;
           _isLoading = false;
         });
       }
-    } else {
-      setState(() {
-        _todayWord = null;
-        _isLoading = false;
-      });
     }
   }
 
@@ -162,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          // ¹è³Ê ±¤°í
+          // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
           _buildBannerAd(),
         ],
       ),
@@ -249,12 +247,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.white.withAlpha((0.2 * 255).toInt()),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
-                      "??",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          l10n.todayWord,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Container(
@@ -306,156 +315,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showLevelSelectionDialog({required bool isFlashcard}) {
-    final l10n = AppLocalizations.of(context)!;
-
-    final levels = [
-      {'level': 'A1', 'name': l10n.levelA1},
-      {'level': 'A2', 'name': l10n.levelA2},
-      {'level': 'B1', 'name': l10n.levelB1},
-      {'level': 'B2', 'name': l10n.levelB2},
-      {'level': 'C1', 'name': l10n.levelC1},
-    ];
-
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(isFlashcard ? l10n.flashcard : l10n.quiz),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // All Words option
-                  ListTile(
-                    leading: const Icon(Icons.list_alt, color: Colors.blue),
-                    title: Text(l10n.allWords),
-                    onTap: () {
-                      Navigator.pop(context);
-                      if (isFlashcard) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    const WordListScreen(isFlashcardMode: true),
-                          ),
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const QuizScreen(),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                  // Favorites option
-                  ListTile(
-                    leading: const Icon(Icons.favorite, color: Colors.red),
-                    title: Text(l10n.favorites),
-                    onTap: () {
-                      Navigator.pop(context);
-                      if (isFlashcard) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => const WordListScreen(
-                                  isFlashcardMode: true,
-                                  favoritesOnly: true,
-                                ),
-                          ),
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    const QuizScreen(favoritesOnly: true),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                  const Divider(),
-                  // Level options
-                  ...levels.map(
-                    (level) => ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: _getLevelColor(
-                          level['level'] as String,
-                        ),
-                        radius: 16,
-                        child: Text(
-                          level['level'] as String,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      title: Text('${level['level']} - ${level['name']}'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        if (isFlashcard) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => WordListScreen(
-                                    isFlashcardMode: true,
-                                    level: level['level'] as String,
-                                  ),
-                            ),
-                          );
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => QuizScreen(
-                                    level: level['level'] as String,
-                                  ),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(l10n.cancel),
-              ),
-            ],
-          ),
-    );
-  }
-
-  Color _getLevelColor(String level) {
-    switch (level) {
-      case 'A1':
-        return Colors.green;
-      case 'A2':
-        return Colors.lightGreen;
-      case 'B1':
-        return Colors.orange;
-      case 'B2':
-        return Colors.deepOrange;
-      case 'C1':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
   Widget _buildMenuGrid() {
     final l10n = AppLocalizations.of(context)!;
 
@@ -496,14 +355,27 @@ class _HomeScreenState extends State<HomeScreen> {
           title: l10n.flashcard,
           subtitle: l10n.cardLearning,
           color: Colors.orange,
-          onTap: () => _showLevelSelectionDialog(isFlashcard: true),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => const WordListScreen(isFlashcardMode: true),
+              ),
+            );
+          },
         ),
         _buildMenuCard(
           icon: Icons.quiz,
           title: l10n.quiz,
           subtitle: l10n.testYourself,
           color: Colors.green,
-          onTap: () => _showLevelSelectionDialog(isFlashcard: false),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const QuizScreen()),
+            );
+          },
         ),
       ],
     );

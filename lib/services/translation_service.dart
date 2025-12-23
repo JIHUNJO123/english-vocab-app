@@ -1,14 +1,11 @@
-import 'dart:convert';
 import 'dart:ui' as ui;
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../db/database_helper.dart';
 
-/// Áö¿øÇÏ´Â ¾ğ¾î ¸ñ·Ï
+/// ì§€ì›í•˜ëŠ” ì–¸ì–´ (ë‚´ì¥ ë²ˆì—­ì´ ìˆëŠ” ì–¸ì–´ë§Œ)
 class SupportedLanguage {
-  final String code; // ¾ğ¾î ÄÚµå (ko, ja, zh, es, ...)
-  final String name; // ¿µ¾î ÀÌ¸§
-  final String nativeName; // ¸ğ±¹¾î ÀÌ¸§
+  final String code;
+  final String name;
+  final String nativeName;
 
   const SupportedLanguage({
     required this.code,
@@ -17,49 +14,31 @@ class SupportedLanguage {
   });
 }
 
-/// ¹ø¿ª ¼­ºñ½º (¹«·á API »ç¿ë + ·ÎÄÃ Ä³½Ì)
+/// ë²ˆì—­ ì„œë¹„ìŠ¤ (ë‚´ì¥ ë²ˆì—­ë§Œ ì‚¬ìš©, API í˜¸ì¶œ ì—†ìŒ)
 class TranslationService {
   static final TranslationService instance = TranslationService._init();
   TranslationService._init();
 
-  // Áö¿ø ¾ğ¾î ¸ñ·Ï
+  // ì§€ì› ì–¸ì–´ ëª©ë¡ (ë‚´ì¥ ë²ˆì—­ì´ ìˆëŠ” 11ê°œ ì–¸ì–´ë§Œ)
   static const List<SupportedLanguage> supportedLanguages = [
     SupportedLanguage(code: 'en', name: 'English', nativeName: 'English'),
-    SupportedLanguage(code: 'ko', name: 'Korean', nativeName: 'ÇÑ±¹¾î'),
-    SupportedLanguage(code: 'ja', name: 'Japanese', nativeName: 'ìíÜâåŞ'),
-    SupportedLanguage(code: 'zh', name: 'Chinese', nativeName: 'ñéÙş'),
-    SupportedLanguage(code: 'es', name: 'Spanish', nativeName: 'Espanol'),
-    SupportedLanguage(code: 'fr', name: 'French', nativeName: 'Francais'),
+    SupportedLanguage(code: 'ko', name: 'Korean', nativeName: 'í•œêµ­ì–´'),
+    SupportedLanguage(code: 'ja', name: 'Japanese', nativeName: 'æ—¥æœ¬èª'),
+    SupportedLanguage(code: 'zh', name: 'Chinese', nativeName: 'ä¸­æ–‡'),
+    SupportedLanguage(code: 'es', name: 'Spanish', nativeName: 'EspaÃ±ol'),
+    SupportedLanguage(code: 'fr', name: 'French', nativeName: 'FranÃ§ais'),
     SupportedLanguage(code: 'de', name: 'German', nativeName: 'Deutsch'),
-    SupportedLanguage(code: 'pt', name: 'Portuguese', nativeName: 'Portugues'),
-    SupportedLanguage(code: 'ru', name: 'Russian', nativeName: '¬²¬å¬ã¬ã¬Ü¬Ú¬Û'),
-    SupportedLanguage(code: 'ar', name: 'Arabic', nativeName: '???????'),
-    SupportedLanguage(code: 'hi', name: 'Hindi', nativeName: '??????'),
-    SupportedLanguage(code: 'bn', name: 'Bengali', nativeName: '?????'),
-    SupportedLanguage(code: 'ur', name: 'Urdu', nativeName: '????'),
-    SupportedLanguage(code: 'fa', name: 'Persian', nativeName: '?????'),
-    SupportedLanguage(code: 'th', name: 'Thai', nativeName: '???'),
-    SupportedLanguage(code: 'vi', name: 'Vietnamese', nativeName: 'Ti?ng Vi?t'),
-    SupportedLanguage(
-      code: 'id',
-      name: 'Indonesian',
-      nativeName: 'Bahasa Indonesia',
-    ),
-    SupportedLanguage(code: 'ms', name: 'Malay', nativeName: 'Bahasa Melayu'),
-    SupportedLanguage(code: 'tl', name: 'Filipino', nativeName: 'Filipino'),
-    SupportedLanguage(code: 'tr', name: 'Turkish', nativeName: 'Turkce'),
-    SupportedLanguage(code: 'uk', name: 'Ukrainian', nativeName: '¬µ¬Ü¬â¬Ñ?¬ß¬ã¬î¬Ü¬Ñ'),
-    SupportedLanguage(code: 'pl', name: 'Polish', nativeName: 'Polski'),
-    SupportedLanguage(code: 'nl', name: 'Dutch', nativeName: 'Nederlands'),
-    SupportedLanguage(code: 'it', name: 'Italian', nativeName: 'Italiano'),
-    SupportedLanguage(code: 'sv', name: 'Swedish', nativeName: 'Svenska'),
+    SupportedLanguage(code: 'pt', name: 'Portuguese', nativeName: 'PortuguÃªs'),
+    SupportedLanguage(code: 'ru', name: 'Russian', nativeName: 'Ğ ÑƒÑÑĞºĞ¸Ğ¹'),
+    SupportedLanguage(code: 'ar', name: 'Arabic', nativeName: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©'),
+    SupportedLanguage(code: 'hi', name: 'Hindi', nativeName: 'à¤¹à¤¿à¤¨à¥à¤¦à¥€'),
   ];
 
   String _currentLanguage = 'en';
 
   String get currentLanguage => _currentLanguage;
 
-  /// ÇöÀç ¾ğ¾î Á¤º¸ °¡Á®¿À±â
+  /// í˜„ì¬ ì–¸ì–´ ì •ë³´ ê°€ì ¸ì˜¤ê¸°
   SupportedLanguage get currentLanguageInfo {
     return supportedLanguages.firstWhere(
       (lang) => lang.code == _currentLanguage,
@@ -67,121 +46,38 @@ class TranslationService {
     );
   }
 
-  /// ¾ğ¾î ¼³Á¤ ÃÊ±âÈ­
+  /// ì–¸ì–´ ì„œë¹„ìŠ¤ ì´ˆê¸°í™”
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     final savedLanguage = prefs.getString('nativeLanguage');
 
-    if (savedLanguage != null) {
-      // ÀúÀåµÈ ¾ğ¾î°¡ ÀÖÀ¸¸é »ç¿ë
+    if (savedLanguage != null &&
+        supportedLanguages.any((lang) => lang.code == savedLanguage)) {
       _currentLanguage = savedLanguage;
     } else {
-      // ÀúÀåµÈ ¾ğ¾î°¡ ¾øÀ¸¸é ±â±â ¾ğ¾î ÀÚµ¿ °¨Áö
+      // ì €ì¥ëœ ê°’ì´ ì—†ìœ¼ë©´ ê¸°ê¸° ì–¸ì–´ ìë™ ê°ì§€
       final deviceLocale = ui.PlatformDispatcher.instance.locale;
       final deviceLangCode = deviceLocale.languageCode;
 
-      // Áö¿øÇÏ´Â ¾ğ¾îÀÎÁö È®ÀÎ
+      // ì§€ì›í•˜ëŠ” ì–¸ì–´ì¸ì§€ í™•ì¸
       final isSupported = supportedLanguages.any(
         (lang) => lang.code == deviceLangCode,
       );
       _currentLanguage = isSupported ? deviceLangCode : 'en';
 
-      // ÀÚµ¿ °¨ÁöµÈ ¾ğ¾î ÀúÀå
       await prefs.setString('nativeLanguage', _currentLanguage);
     }
   }
 
-  /// ¸ğ±¹¾î ¼³Á¤
+  /// ì–¸ì–´ ë³€ê²½
   Future<void> setLanguage(String languageCode) async {
-    _currentLanguage = languageCode;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('nativeLanguage', languageCode);
+    if (supportedLanguages.any((lang) => lang.code == languageCode)) {
+      _currentLanguage = languageCode;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('nativeLanguage', languageCode);
+    }
   }
 
-  /// ¹ø¿ª ÇÊ¿ä ¿©ºÎ
+  /// ë²ˆì—­ í•„ìš” ì—¬ë¶€
   bool get needsTranslation => _currentLanguage != 'en';
-
-  /// ÅØ½ºÆ® ¹ø¿ª (Ä³½Ã ¿ì¼±)
-  Future<String> translate(String text, int wordId, String fieldType) async {
-    if (!needsTranslation || text.isEmpty) return text;
-
-    // 1. Ä³½Ã È®ÀÎ
-    final cached = await DatabaseHelper.instance.getTranslation(
-      wordId,
-      _currentLanguage,
-      fieldType,
-    );
-    if (cached != null) return cached;
-
-    // 2. API È£Ãâ
-    final translated = await _translateWithAPI(text);
-
-    // 3. Ä³½Ã ÀúÀå
-    if (translated != text) {
-      await DatabaseHelper.instance.saveTranslation(
-        wordId,
-        _currentLanguage,
-        fieldType,
-        translated,
-      );
-    }
-
-    return translated;
-  }
-
-  /// MyMemory API·Î ¹ø¿ª (¹«·á, ÀÏ 1000È¸)
-  Future<String> _translateWithAPI(String text) async {
-    try {
-      final url = Uri.parse(
-        'https://api.mymemory.translated.net/get'
-        '?q=${Uri.encodeComponent(text)}'
-        '&langpair=en|$_currentLanguage',
-      );
-
-      print('Translation API call: en -> $_currentLanguage');
-      print(
-        '  Text: ${text.substring(0, text.length > 50 ? 50 : text.length)}...',
-      );
-
-      final response = await http.get(url).timeout(const Duration(seconds: 10));
-
-      print('  Response status: ${response.statusCode}');
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final translated = data['responseData']?['translatedText'];
-        final status = data['responseStatus'];
-
-        print('  API status: $status');
-        print(
-          '  Translated: ${translated?.toString().substring(0, (translated?.toString().length ?? 0) > 50 ? 50 : (translated?.toString().length ?? 0))}...',
-        );
-
-        if (translated != null && translated.toString().isNotEmpty) {
-          // MyMemory°¡ ´ë¹®ÀÚ·Î ¹İÈ¯ÇÒ ¶§°¡ ÀÖ¾î¼­ È®ÀÎ
-          if (translated.toString().toUpperCase() != translated.toString()) {
-            return translated.toString();
-          }
-          return translated.toString();
-        }
-      }
-    } catch (e) {
-      print('Translation error: $e');
-    }
-    print('  Translation failed, returning original text');
-    return text; // ½ÇÆĞ½Ã ¿ø¹® ¹İÈ¯
-  }
-
-  /// ¹èÄ¡ ¹ø¿ª (¿©·¯ ´Ü¾î ÇÑ¹ø¿¡)
-  Future<void> translateWords(List<int> wordIds) async {
-    if (!needsTranslation) return;
-
-    for (final wordId in wordIds) {
-      final word = await DatabaseHelper.instance.getWordById(wordId);
-      if (word != null) {
-        await translate(word.definition, wordId, 'definition');
-        await translate(word.example, wordId, 'example');
-      }
-    }
-  }
 }

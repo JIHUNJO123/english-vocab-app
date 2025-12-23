@@ -18,7 +18,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isDarkMode = false;
   bool _notificationEnabled = true;
   String _selectedLanguage = 'en';
-  double _wordFontSize = 1.0; // 0.8 ~ 1.4 (±âº» 1.0)
+  double _wordFontSize = 1.0; // 0.8 ~ 1.4 (ï¿½âº» 1.0)
   bool _isPurchasing = false;
 
   @override
@@ -57,7 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
-    // ÄÝ¹é ÇØÁ¦
+    // ï¿½Ý¹ï¿½ ï¿½ï¿½ï¿½ï¿½
     PurchaseService.instance.onPurchaseSuccess = null;
     PurchaseService.instance.onPurchaseError = null;
     super.dispose();
@@ -146,11 +146,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             subtitle: Text(lang.name),
                             onTap: () async {
-                              // TranslationService ¾÷µ¥ÀÌÆ®
+                              // TranslationService ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
                               await TranslationService.instance.setLanguage(
                                 lang.code,
                               );
-                              // LocaleProvider ¾÷µ¥ÀÌÆ® (UI ¾ð¾î º¯°æ)
+                              // LocaleProvider ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® (UI ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
                               if (context.mounted) {
                                 Provider.of<LocaleProvider>(
                                   context,
@@ -168,44 +168,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       context,
                                     )!.languageChanged(lang.nativeName),
                                   ),
-                                  action:
-                                      lang.code != 'en'
-                                          ? SnackBarAction(
-                                            label: 'Info',
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder:
-                                                    (ctx) => AlertDialog(
-                                                      title: Text(
-                                                        AppLocalizations.of(
-                                                          context,
-                                                        )!.translationInfo,
-                                                      ),
-                                                      content: Text(
-                                                        AppLocalizations.of(
-                                                          context,
-                                                        )!.translationInfoDesc,
-                                                      ),
-                                                      actions: [
-                                                        TextButton(
-                                                          onPressed:
-                                                              () =>
-                                                                  Navigator.pop(
-                                                                    ctx,
-                                                                  ),
-                                                          child: Text(
-                                                            AppLocalizations.of(
-                                                              context,
-                                                            )!.ok,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                              );
-                                            },
-                                          )
-                                          : null,
                                 ),
                               );
                             },
@@ -228,7 +190,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(title: Text(l10n.settings), centerTitle: true),
       body: ListView(
         children: [
-          // Language Settings (°¡Àå Áß¿ä!)
+          // Language Settings (ï¿½ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½!)
           _buildSectionHeader(l10n.language),
           ListTile(
             leading: const Icon(Icons.language),
@@ -250,7 +212,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _isDarkMode = value;
               });
               _saveSetting('darkMode', value);
-              // ´ÙÅ©¸ðµå Áï½Ã Àû¿ë
+              // ï¿½ï¿½Å©ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
               Provider.of<LocaleProvider>(
                 context,
                 listen: false,
@@ -381,7 +343,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final adService = AdService.instance;
     final purchaseService = PurchaseService.instance;
 
-    // ÀÌ¹Ì ±¤°í°¡ Á¦°ÅµÈ °æ¿ì
+    // ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Åµï¿½ ï¿½ï¿½ï¿½
     if (adService.adsRemoved) {
       return ListTile(
         leading: const Icon(Icons.check_circle, color: Colors.green),
@@ -390,7 +352,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     }
 
-    // ±¸¸Å °¡´ÉÇÑ °æ¿ì
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     return Column(
       children: [
         ListTile(
@@ -448,7 +410,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           subtitle: Text(l10n.restorePurchaseDesc),
           onTap: () async {
             await purchaseService.restorePurchases();
-            // º¹¿ø ÈÄ È­¸é °»½Å (¾à°£ÀÇ µô·¹ÀÌ ÈÄ)
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½à°£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
             await Future.delayed(const Duration(milliseconds: 500));
             if (mounted) {
               await AdService.instance.restoreAdsRemoved();

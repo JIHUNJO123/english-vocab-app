@@ -9,10 +9,10 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appTitle => 'English Word 10000';
+  String get appTitle => 'Essential English 10000';
 
   @override
-  String get todayWord => '📅 Mot du jour';
+  String get todayWord => 'Expression du jour';
 
   @override
   String get learning => 'Apprendre';
@@ -21,16 +21,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get levelLearning => 'Par niveau';
 
   @override
-  String get allWords => 'Tous les mots';
+  String get allWords => 'Toutes les expressions';
 
   @override
-  String get viewAllWords => 'Voir tous les mots';
+  String get viewAllWords => 'Voir toutes les expressions';
 
   @override
   String get favorites => 'Favoris';
 
   @override
-  String get savedWords => 'Mots enregistrés';
+  String get savedWords => 'Expressions enregistrées';
 
   @override
   String get flashcard => 'Cartes';
@@ -42,13 +42,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get search => 'Rechercher';
 
   @override
-  String get searchWords => 'Chercher des mots';
+  String get searchWords => 'Chercher des expressions';
 
   @override
   String get settings => 'Paramètres';
 
   @override
-  String get noWords => 'Aucun mot';
+  String get noWords => 'Aucune expression';
 
   @override
   String get cannotLoadWords => 'Impossible de charger';
@@ -108,7 +108,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String levelWords(String level) {
-    return 'Mots $level';
+    return 'Expressions $level';
   }
 
   @override
@@ -159,7 +159,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get developer => 'Développeur';
 
   @override
-  String get searchHint => 'Rechercher des mots...';
+  String get searchHint => 'Rechercher des expressions...';
 
   @override
   String get noSearchResults => 'Aucun résultat';
@@ -245,13 +245,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get copyrightNotice => 'Avis de droits d\'auteur';
 
   @override
-  String get copyrightContent => 'Toutes les définitions de mots et phrases d\'exemple dans cette application sont originales ou générées par IA. Aucun contenu de dictionnaire protégé par le droit d\'auteur n\'est utilisé.\n\nLes traductions sont fournies par MyMemory API (service de traduction gratuit).';
+  String get copyrightContent => 'Toutes les définitions de mots et phrases d\'exemple dans cette application sont originales ou générées par IA. Aucun contenu de dictionnaire protégé par le droit d\'auteur n\'est utilisé.';
 
   @override
   String get privacyPolicy => 'Politique de confidentialité';
 
   @override
-  String get privacyContent => 'Cette application ne collecte, ne stocke ni ne partage aucune information personnelle.\n\nLes demandes de traduction sont envoyées à MyMemory API pour traitement. Les données utilisateur ne sont pas stockées sur des serveurs externes.';
+  String get privacyContent => 'Cette application ne collecte, ne stocke ni ne partage aucune information personnelle.';
 
   @override
   String get alphabetical => 'Alphabétique';
@@ -266,7 +266,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get testYourself => 'Testez-vous';
 
   @override
-  String get wordQuiz => 'Quiz de vocabulaire';
+  String get wordQuiz => 'Quiz d\'expressions';
 
   @override
   String quizWithLevel(String level) {
@@ -274,10 +274,10 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get wordToMeaningMode => 'Mot→Sens';
+  String get wordToMeaningMode => 'Expression→Sens';
 
   @override
-  String get meaningToWordMode => 'Sens→Mot';
+  String get meaningToWordMode => 'Sens→Expression';
 
   @override
   String get quizComplete => '🎉 Quiz terminé!';
@@ -317,7 +317,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get whatIsTheMeaning => 'Quelle est la signification de ce mot?';
 
   @override
-  String get whichWordMatches => 'Quel mot correspond à ce sens?';
+  String get whichWordMatches => 'Quelle expression correspond à ce sens?';
 
   @override
   String get nextQuestion => 'Suivant';
@@ -359,7 +359,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get buy => 'Acheter';
 
   @override
-  String get wordFontSize => 'Flashcard Idiom Size';
+  String get wordFontSize => 'Flashcard Word Size';
 
   @override
   String get fontSizeSmall => 'Small';
@@ -380,5 +380,5 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fontSizeExtraLarge => 'Extra Large';
 
   @override
-  String get cancel => 'Annuler';
+  String get apiTranslationNotice => 'Translations are being provided via API (online translation)';
 }

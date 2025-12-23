@@ -1,15 +1,19 @@
-/// ´Ü¾î ¸ğµ¨ (´Ù±¹¾î Áö¿ø)
-/// ¿µ¾î ¿øº» µ¥ÀÌÅÍ + µ¿Àû ¹ø¿ª
+import 'dart:convert';
+
+/// ë‹¨ì–´ ëª¨ë¸ (ë‹¤êµ­ì–´ ì§€ì›)
 class Word {
   final int id;
   final String word;
   final String level;
-  final String? partOfSpeech;
-  final String definition; // ¿µ¾î Á¤ÀÇ
-  final String example; // ¿µ¾î ¿¹¹®
+  final String partOfSpeech;
+  final String definition; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+  final String example; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   bool isFavorite;
 
-  // ¹ø¿ªµÈ ÅØ½ºÆ® (·±Å¸ÀÓ¿¡ ¼³Á¤µÊ)
+  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (words.jsonï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½)
+  final Map<String, Map<String, String>>? translations;
+
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® (ï¿½ï¿½Å¸ï¿½Ó¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
   String? translatedDefinition;
   String? translatedExample;
 
@@ -17,16 +21,47 @@ class Word {
     required this.id,
     required this.word,
     required this.level,
-    this.partOfSpeech,
+    required this.partOfSpeech,
     required this.definition,
     required this.example,
     this.isFavorite = false,
+    this.translations,
     this.translatedDefinition,
     this.translatedExample,
   });
 
-  /// JSON¿¡¼­ »ı¼º (¿µ¾î ¿øº»)
+  /// ë‚´ì¥ ë²ˆì—­ ê°€ì ¸ì˜¤ê¸°
+  String? getEmbeddedTranslation(String langCode, String fieldType) {
+    print(
+      'DEBUG getEmbeddedTranslation: word=$word, langCode=$langCode, fieldType=$fieldType',
+    );
+    print('DEBUG translations is null: ${translations == null}');
+    if (translations == null) return null;
+    print('DEBUG translations keys: ${translations!.keys.toList()}');
+    final langData = translations![langCode];
+    print('DEBUG langData: $langData');
+    if (langData == null) return null;
+    final result = langData[fieldType];
+    print('DEBUG result: $result');
+    return result;
+  }
+
+  /// JSONï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
   factory Word.fromJson(Map<String, dynamic> json) {
+    // translations ï¿½Ä½ï¿½
+    Map<String, Map<String, String>>? translations;
+    if (json['translations'] != null) {
+      translations = {};
+      (json['translations'] as Map<String, dynamic>).forEach((langCode, data) {
+        if (data is Map<String, dynamic>) {
+          translations![langCode] = {
+            'definition': data['definition']?.toString() ?? '',
+            'example': data['example']?.toString() ?? '',
+          };
+        }
+      });
+    }
+
     return Word(
       id: json['id'],
       word: json['word'],
@@ -35,19 +70,58 @@ class Word {
       definition: json['definition'],
       example: json['example'],
       isFavorite: json['isFavorite'] == 1 || json['isFavorite'] == true,
+      translations: translations,
     );
   }
 
-  /// DB ¸Ê¿¡¼­ »ı¼º
+  /// DB ë§µì—ì„œ ìƒì„± (ë‚´ì¥ ë²ˆì—­ í¬í•¨)
   factory Word.fromDb(Map<String, dynamic> json) {
+    // translations JSON ë¬¸ìì—´ íŒŒì‹±
+    Map<String, Map<String, String>>? translations;
+
+    // ì²« ë‹¨ì–´ë§Œ ë””ë²„ê·¸ ì¶œë ¥
+    if (json['id'] == 1) {
+      print('DEBUG fromDb: word=${json['word']}');
+      print('DEBUG fromDb: translations raw=${json['translations']}');
+      print(
+        'DEBUG fromDb: translations type=${json['translations']?.runtimeType}',
+      );
+    }
+
+    if (json['translations'] != null && json['translations'] is String) {
+      try {
+        final decoded = jsonDecode(json['translations'] as String);
+        if (json['id'] == 1) {
+          print('DEBUG fromDb: decoded=$decoded');
+        }
+        if (decoded is Map<String, dynamic>) {
+          translations = {};
+          decoded.forEach((langCode, data) {
+            if (data is Map<String, dynamic>) {
+              translations![langCode] = {
+                'definition': data['definition']?.toString() ?? '',
+                'example': data['example']?.toString() ?? '',
+              };
+            }
+          });
+        }
+        if (json['id'] == 1) {
+          print('DEBUG fromDb: parsed translations=$translations');
+        }
+      } catch (e) {
+        print('DEBUG fromDb: Error parsing translations: $e');
+      }
+    }
+
     return Word(
       id: json['id'] as int,
       word: json['word'] as String,
       level: json['level'] as String,
-      partOfSpeech: json['partOfSpeech'] as String?,
+      partOfSpeech: json['partOfSpeech'] as String,
       definition: json['definition'] as String,
       example: json['example'] as String,
       isFavorite: (json['isFavorite'] as int) == 1,
+      translations: translations,
     );
   }
 
@@ -63,7 +137,7 @@ class Word {
     };
   }
 
-  /// ¹ø¿ªµÈ Á¤ÀÇ °¡Á®¿À±â (¹ø¿ª ¾øÀ¸¸é ¿µ¾î ¿øº»)
+  /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
   String getDefinition(bool useTranslation) {
     if (useTranslation &&
         translatedDefinition != null &&
@@ -73,7 +147,7 @@ class Word {
     return definition;
   }
 
-  /// ¹ø¿ªµÈ ¿¹¹® °¡Á®¿À±â (¹ø¿ª ¾øÀ¸¸é ¿µ¾î ¿øº»)
+  /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
   String getExample(bool useTranslation) {
     if (useTranslation &&
         translatedExample != null &&
@@ -91,6 +165,7 @@ class Word {
     String? definition,
     String? example,
     bool? isFavorite,
+    Map<String, Map<String, String>>? translations,
     String? translatedDefinition,
     String? translatedExample,
   }) {
@@ -102,6 +177,7 @@ class Word {
       definition: definition ?? this.definition,
       example: example ?? this.example,
       isFavorite: isFavorite ?? this.isFavorite,
+      translations: translations ?? this.translations,
       translatedDefinition: translatedDefinition ?? this.translatedDefinition,
       translatedExample: translatedExample ?? this.translatedExample,
     );

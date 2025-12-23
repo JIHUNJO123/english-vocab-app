@@ -1,9 +1,7 @@
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 
 /// 영어 품사를 현재 언어로 번역하는 헬퍼 함수
-String translatePartOfSpeech(AppLocalizations l10n, String? pos) {
-  if (pos == null || pos.isEmpty) return '';
-  
+String translatePartOfSpeech(AppLocalizations l10n, String pos) {
   final posLower = pos.toLowerCase().trim();
 
   switch (posLower) {
@@ -33,8 +31,6 @@ String translatePartOfSpeech(AppLocalizations l10n, String? pos) {
     case 'phrasal verb':
     case 'phrasal':
       return l10n.posPhrasal;
-    case 'idiom':
-      return ''; // idiom은 빈 문자열 반환 (표시 안함)
     default:
       return pos; // 번역이 없으면 원본 반환
   }

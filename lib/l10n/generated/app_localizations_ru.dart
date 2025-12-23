@@ -9,10 +9,10 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get appTitle => 'English Word 10000';
+  String get appTitle => 'Essential English 10000';
 
   @override
-  String get todayWord => '📅 Слово дня';
+  String get todayWord => 'Слово дня';
 
   @override
   String get learning => 'Обучение';
@@ -245,13 +245,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get copyrightNotice => 'Уведомление об авторских правах';
 
   @override
-  String get copyrightContent => 'Все определения слов и примеры предложений в этом приложении являются оригинальными или созданы ИИ. Контент словарей, защищенный авторским правом, не используется.\n\nПереводы предоставлены MyMemory API (бесплатный сервис перевода).';
+  String get copyrightContent => 'Все определения слов и примеры предложений в этом приложении являются оригинальными или созданы ИИ. Контент словарей, защищенный авторским правом, не используется.';
 
   @override
   String get privacyPolicy => 'Политика конфиденциальности';
 
   @override
-  String get privacyContent => 'Это приложение не собирает, не хранит и не передает личную информацию.\n\nЗапросы на перевод отправляются в MyMemory API для обработки. Данные пользователей не хранятся на внешних серверах.';
+  String get privacyContent => 'Это приложение не собирает, не хранит и не передает личную информацию.';
 
   @override
   String get alphabetical => 'По алфавиту';
@@ -359,7 +359,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get buy => 'Купить';
 
   @override
-  String get wordFontSize => 'Flashcard Idiom Size';
+  String get wordFontSize => 'Flashcard Word Size';
 
   @override
   String get fontSizeSmall => 'Small';
@@ -380,5 +380,5 @@ class AppLocalizationsRu extends AppLocalizations {
   String get fontSizeExtraLarge => 'Extra Large';
 
   @override
-  String get cancel => 'Отмена';
+  String get apiTranslationNotice => 'Translations are being provided via API (online translation)';
 }

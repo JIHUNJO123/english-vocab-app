@@ -16,9 +16,10 @@ class FavoritesScreen extends StatefulWidget {
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
   List<Word> _favorites = [];
-  Map<int, String> _translatedDefinitions = {}; // ¹ø¿ªµÈ Á¤ÀÇ Ä³½Ã
+  Map<int, String> _translatedDefinitions = {}; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½
   bool _isLoading = true;
-  bool _showNativeLanguage = true; // ¸ğ±¹¾î/¿µ¾î ÀüÈ¯ (±âº»: ¸ğ±¹¾î)
+  bool _showNativeLanguage = true; // ï¿½ğ±¹¾ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ (ï¿½âº»: ï¿½ğ±¹¾ï¿½)
+  bool _apiNoticeShown = false;
 
   @override
   void initState() {
@@ -29,19 +30,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Future<void> _loadFavorites() async {
     final favorites = await DatabaseHelper.instance.getFavorites();
 
-    // ¹ø¿ª Àû¿ë
+    // ë‚´ì¥ ë²ˆì—­ë§Œ ì‚¬ìš© (API í˜¸ì¶œ ì—†ìŒ)
     final translationService = TranslationService.instance;
     await translationService.init();
 
     Map<int, String> translations = {};
     if (translationService.needsTranslation) {
+      final langCode = translationService.currentLanguage;
       for (var word in favorites) {
-        final translated = await translationService.translate(
-          word.definition,
-          word.id,
-          'definition',
-        );
-        translations[word.id] = translated;
+        final embeddedDef = word.getEmbeddedTranslation(langCode, 'definition');
+        if (embeddedDef != null && embeddedDef.isNotEmpty) {
+          translations[word.id] = embeddedDef;
+        }
       }
     }
 
@@ -99,7 +99,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         title: Text(l10n.favorites),
         centerTitle: true,
         actions: [
-          // ¿µ¾î/¸ğ±¹¾î ÀüÈ¯ ¹öÆ°
+          // ï¿½ï¿½ï¿½ï¿½/ï¿½ğ±¹¾ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½Æ°
           if (_favorites.isNotEmpty &&
               TranslationService.instance.needsTranslation)
             IconButton(
@@ -298,16 +298,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           ],
                         ),
                         onTap: () {
-                          final favListCopy = List<Word>.from(_favorites);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => WordDetailScreen(
-                                    word: word,
-                                    wordList: favListCopy,
-                                    currentIndex: index,
-                                  ),
+                                  (context) => WordDetailScreen(word: word),
                             ),
                           ).then((_) => _loadFavorites());
                         },
