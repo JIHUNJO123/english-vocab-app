@@ -1,5 +1,5 @@
-ï»¿import 'package:flutter/material.dart';
-import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
 import '../services/translation_service.dart';
@@ -29,7 +29,7 @@ class _QuizScreenState extends State<QuizScreen> {
   List<Word> _currentOptions = [];
   QuizType _quizType = QuizType.wordToMeaning;
 
-  // ë²ˆì—­ ê´€ë ¨
+  // ¹ø¿ª °ü·Ã
   Map<int, String> _translatedDefinitions = {};
   bool _isLoadingTranslation = false;
 
@@ -37,7 +37,7 @@ class _QuizScreenState extends State<QuizScreen> {
   void initState() {
     super.initState();
     _loadWords();
-    // ì „ë©´ ê´‘ê³  ë¯¸ë¦¬ ë¡œë“œ
+    // Àü¸é ±¤°í ¹Ì¸® ·Îµå
     AdService.instance.loadInterstitialAd();
   }
 
@@ -52,7 +52,7 @@ class _QuizScreenState extends State<QuizScreen> {
     }
     words.shuffle();
 
-    // í€´ì¦ˆìš©ìœ¼ë¡œ 20ê°œì”©ë§Œ ì‚¬ìš© (ë„ˆë¬´ ë§ìœ¼ë©´ ì§€ë£¨í•¨)
+    // ÄûÁî¿ëÀ¸·Î 20°³¾¿¸¸ »ç¿ë (³Ê¹« ¸¹À¸¸é Áö·çÇÔ)
     if (words.length > 20) {
       words = words.sublist(0, 20);
     }
@@ -99,7 +99,7 @@ class _QuizScreenState extends State<QuizScreen> {
     final correctWord = _words[_currentIndex];
     final options = <Word>[correctWord];
 
-    // ì˜¤ë‹µ 3ê°œ ìƒì„±
+    // ¿À´ä 3°³ »ı¼º
     final otherWords = _words.where((w) => w.id != correctWord.id).toList();
     otherWords.shuffle();
 
@@ -147,7 +147,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _showResultDialog() {
-    // í€´ì¦ˆ ì™„ë£Œ ì‹œ ì „ë©´ ê´‘ê³  í‘œì‹œ
+    // ÄûÁî ¿Ï·á ½Ã Àü¸é ±¤°í Ç¥½Ã
     AdService.instance.showInterstitialAd();
 
     final l10n = AppLocalizations.of(context)!;
@@ -219,7 +219,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _restartQuiz() {
-    // ìƒˆë¡œìš´ 20ê°œ ì„¸íŠ¸ë¥¼ ìœ„í•´ ì „ì²´ ë‹¨ì–´ë¥¼ ë‹¤ì‹œ ë¡œë“œ
+    // »õ·Î¿î 20°³ ¼¼Æ®¸¦ À§ÇØ ÀüÃ¼ ´Ü¾î¸¦ ´Ù½Ã ·Îµå
     _loadWords();
     setState(() {
       _currentIndex = 0;
@@ -249,7 +249,7 @@ class _QuizScreenState extends State<QuizScreen> {
         ),
         centerTitle: true,
         actions: [
-          // í€´ì¦ˆ íƒ€ì… ì „í™˜
+          // ÄûÁî Å¸ÀÔ ÀüÈ¯
           IconButton(
             icon: Icon(
               _quizType == QuizType.wordToMeaning ? Icons.translate : Icons.abc,
@@ -289,7 +289,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Column(
       children: [
-        // ì§„í–‰ë¥  & ì ìˆ˜
+        // ÁøÇà·ü & Á¡¼ö
         Container(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -330,13 +330,13 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ),
 
-        // ë¬¸ì œ ì¹´ë“œ
+        // ¹®Á¦ Ä«µå
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // ë¬¸ì œ
+                // ¹®Á¦
                 Card(
                   elevation: 4,
                   child: Container(
@@ -345,7 +345,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     child: Column(
                       children: [
                         if (_quizType == QuizType.wordToMeaning) ...[
-                          // ë‹¨ì–´ â†’ ëœ» ë§ì¶”ê¸°
+                          // ´Ü¾î ¡æ ¶æ ¸ÂÃß±â
                           Text(
                             currentWord.word,
                             style: const TextStyle(
@@ -374,7 +374,7 @@ class _QuizScreenState extends State<QuizScreen> {
                             ),
                           ),
                         ] else ...[
-                          // ëœ» â†’ ë‹¨ì–´ ë§ì¶”ê¸°
+                          // ¶æ ¡æ ´Ü¾î ¸ÂÃß±â
                           if (_isLoadingTranslation)
                             const CircularProgressIndicator()
                           else
@@ -400,7 +400,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
                 const SizedBox(height: 16),
 
-                // ë³´ê¸°
+                // º¸±â
                 Expanded(
                   child: ListView.builder(
                     itemCount: _currentOptions.length,
@@ -515,7 +515,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                 ),
 
-                // ë‹¤ìŒ ë²„íŠ¼
+                // ´ÙÀ½ ¹öÆ°
                 if (_answered)
                   Padding(
                     padding: const EdgeInsets.only(top: 16),

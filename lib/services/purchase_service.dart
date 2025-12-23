@@ -1,4 +1,4 @@
-ï»¿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -9,7 +9,7 @@ class PurchaseService {
   static PurchaseService get instance => _instance;
   PurchaseService._internal();
 
-  // ìƒí’ˆ ID
+  // »óÇ° ID
   static const String removeAdsProductId = 'english_word_10000_remove_ads';
   static const Set<String> _productIds = {removeAdsProductId};
 
@@ -27,12 +27,12 @@ class PurchaseService {
   bool get isPurchasePending => _isPurchasePending;
   String? get errorMessage => _errorMessage;
 
-  // ì½œë°±
+  // Äİ¹é
   Function()? onPurchaseSuccess;
   Function(String)? onPurchaseError;
 
   Future<void> initialize() async {
-    // ì›¹ ë˜ëŠ” ë°ìŠ¤í¬í†±ì—ì„œëŠ” IAP ë¹„í™œì„±í™”
+    // À¥ ¶Ç´Â µ¥½ºÅ©Åé¿¡¼­´Â IAP ºñÈ°¼ºÈ­
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
       _isAvailable = false;
       return;
@@ -44,7 +44,7 @@ class PurchaseService {
       return;
     }
 
-    // êµ¬ë§¤ ìŠ¤íŠ¸ë¦¼ êµ¬ë…
+    // ±¸¸Å ½ºÆ®¸² ±¸µ¶
     _subscription = _inAppPurchase.purchaseStream.listen(
       _onPurchaseUpdate,
       onError: (error) {
@@ -53,7 +53,7 @@ class PurchaseService {
       },
     );
 
-    // ìƒí’ˆ ì •ë³´ ë¡œë“œ
+    // »óÇ° Á¤º¸ ·Îµå
     await _loadProducts();
   }
 
@@ -108,7 +108,7 @@ class PurchaseService {
       } else if (purchaseDetails.status == PurchaseStatus.purchased ||
           purchaseDetails.status == PurchaseStatus.restored) {
         debugPrint('  Purchase successful or restored!');
-        // êµ¬ë§¤ ì„±ê³µ - ê´‘ê³  ì œê±° ì²˜ë¦¬
+        // ±¸¸Å ¼º°ø - ±¤°í Á¦°Å Ã³¸®
         if (purchaseDetails.productID == removeAdsProductId) {
           await AdService.instance.removeAds();
           onPurchaseSuccess?.call();
@@ -119,7 +119,7 @@ class PurchaseService {
         _errorMessage = 'Purchase canceled';
       }
 
-      // êµ¬ë§¤ ì™„ë£Œ ì²˜ë¦¬
+      // ±¸¸Å ¿Ï·á Ã³¸®
       if (purchaseDetails.pendingCompletePurchase) {
         debugPrint('  Completing purchase...');
         await _inAppPurchase.completePurchase(purchaseDetails);
@@ -127,7 +127,7 @@ class PurchaseService {
     }
   }
 
-  // ê´‘ê³  ì œê±° êµ¬ë§¤
+  // ±¤°í Á¦°Å ±¸¸Å
   Future<bool> buyRemoveAds() async {
     debugPrint('buyRemoveAds called');
     debugPrint('  isAvailable: $_isAvailable');
@@ -158,7 +158,7 @@ class PurchaseService {
 
     debugPrint('  Purchasing product: ${product.id} - ${product.price}');
 
-    // ë¹„ì†Œëª¨ì„± ìƒí’ˆìœ¼ë¡œ êµ¬ë§¤
+    // ºñ¼Ò¸ğ¼º »óÇ°À¸·Î ±¸¸Å
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
     try {
       final result = await _inAppPurchase.buyNonConsumable(
@@ -173,13 +173,13 @@ class PurchaseService {
     }
   }
 
-  // êµ¬ë§¤ ë³µì›
+  // ±¸¸Å º¹¿ø
   Future<void> restorePurchases() async {
     if (!_isAvailable) return;
     await _inAppPurchase.restorePurchases();
   }
 
-  // ê´‘ê³  ì œê±° ìƒí’ˆ ê°€ê²© ê°€ì ¸ì˜¤ê¸°
+  // ±¤°í Á¦°Å »óÇ° °¡°İ °¡Á®¿À±â
   String? getRemoveAdsPrice() {
     final product =
         _products.where((p) => p.id == removeAdsProductId).firstOrNull;

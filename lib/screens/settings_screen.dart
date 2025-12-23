@@ -1,7 +1,7 @@
-ï»¿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../services/translation_service.dart';
 import '../services/ad_service.dart';
 import '../services/purchase_service.dart';
@@ -18,7 +18,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isDarkMode = false;
   bool _notificationEnabled = true;
   String _selectedLanguage = 'en';
-  double _wordFontSize = 1.0; // 0.8 ~ 1.4 (ê¸°ë³¸ 1.0)
+  double _wordFontSize = 1.0; // 0.8 ~ 1.4 (±âº» 1.0)
   bool _isPurchasing = false;
 
   @override
@@ -57,7 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
-    // ì½œë°± í•´ì œ
+    // Äİ¹é ÇØÁ¦
     PurchaseService.instance.onPurchaseSuccess = null;
     PurchaseService.instance.onPurchaseError = null;
     super.dispose();
@@ -146,11 +146,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             subtitle: Text(lang.name),
                             onTap: () async {
-                              // TranslationService ì—…ë°ì´íŠ¸
+                              // TranslationService ¾÷µ¥ÀÌÆ®
                               await TranslationService.instance.setLanguage(
                                 lang.code,
                               );
-                              // LocaleProvider ì—…ë°ì´íŠ¸ (UI ì–¸ì–´ ë³€ê²½)
+                              // LocaleProvider ¾÷µ¥ÀÌÆ® (UI ¾ğ¾î º¯°æ)
                               if (context.mounted) {
                                 Provider.of<LocaleProvider>(
                                   context,
@@ -228,7 +228,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(title: Text(l10n.settings), centerTitle: true),
       body: ListView(
         children: [
-          // Language Settings (ê°€ì¥ ì¤‘ìš”!)
+          // Language Settings (°¡Àå Áß¿ä!)
           _buildSectionHeader(l10n.language),
           ListTile(
             leading: const Icon(Icons.language),
@@ -250,7 +250,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _isDarkMode = value;
               });
               _saveSetting('darkMode', value);
-              // ë‹¤í¬ëª¨ë“œ ì¦‰ì‹œ ì ìš©
+              // ´ÙÅ©¸ğµå Áï½Ã Àû¿ë
               Provider.of<LocaleProvider>(
                 context,
                 listen: false,
@@ -381,7 +381,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final adService = AdService.instance;
     final purchaseService = PurchaseService.instance;
 
-    // ì´ë¯¸ ê´‘ê³ ê°€ ì œê±°ëœ ê²½ìš°
+    // ÀÌ¹Ì ±¤°í°¡ Á¦°ÅµÈ °æ¿ì
     if (adService.adsRemoved) {
       return ListTile(
         leading: const Icon(Icons.check_circle, color: Colors.green),
@@ -390,7 +390,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     }
 
-    // êµ¬ë§¤ ê°€ëŠ¥í•œ ê²½ìš°
+    // ±¸¸Å °¡´ÉÇÑ °æ¿ì
     return Column(
       children: [
         ListTile(
@@ -448,7 +448,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           subtitle: Text(l10n.restorePurchaseDesc),
           onTap: () async {
             await purchaseService.restorePurchases();
-            // ë³µì› í›„ í™”ë©´ ê°±ì‹  (ì•½ê°„ì˜ ë”œë ˆì´ í›„)
+            // º¹¿ø ÈÄ È­¸é °»½Å (¾à°£ÀÇ µô·¹ÀÌ ÈÄ)
             await Future.delayed(const Duration(milliseconds: 500));
             if (mounted) {
               await AdService.instance.restoreAdsRemoved();

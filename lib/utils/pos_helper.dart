@@ -1,6 +1,6 @@
-ï»¿import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 
-/// ì˜ì–´ í’ˆì‚¬ë¥¼ í˜„ì¬ ì–¸ì–´ë¡œ ë²ˆì—­í•˜ëŠ” í—¬í¼ í•¨ìˆ˜
+/// ¿µ¾î Ç°»ç¸¦ ÇöÀç ¾ğ¾î·Î ¹ø¿ªÇÏ´Â ÇïÆÛ ÇÔ¼ö
 String translatePartOfSpeech(AppLocalizations l10n, String? pos) {
   if (pos == null || pos.isEmpty) return '';
   
@@ -34,8 +34,8 @@ String translatePartOfSpeech(AppLocalizations l10n, String? pos) {
     case 'phrasal':
       return l10n.posPhrasal;
     case 'idiom':
-      return ''; // idiomì€ ë¹ˆ ë¬¸ìì—´ ë°˜í™˜ (í‘œì‹œ ì•ˆí•¨)
+      return ''; // idiomÀº ºó ¹®ÀÚ¿­ ¹İÈ¯ (Ç¥½Ã ¾ÈÇÔ)
     default:
-      return pos; // ë²ˆì—­ì´ ì—†ìœ¼ë©´ ì›ë³¸ ë°˜í™˜
+      return pos; // ¹ø¿ªÀÌ ¾øÀ¸¸é ¿øº» ¹İÈ¯
   }
 }

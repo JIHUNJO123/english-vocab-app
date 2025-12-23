@@ -1,5 +1,5 @@
-ï»¿import 'package:flutter/material.dart';
-import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _translatedDefinition;
   bool _isLoading = true;
   bool _isBannerAdLoaded = false;
-  String? _lastLanguage; // ë§ˆì§€ë§‰ ë¡œë“œëœ ì–¸ì–´ ì¶”ì 
+  String? _lastLanguage; // ¸¶Áö¸· ·ÎµåµÈ ¾ğ¾î ÃßÀû
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // ì–¸ì–´ ë³€ê²½ ê°ì§€í•˜ì—¬ ì˜¤ëŠ˜ì˜ ë‹¨ì–´ ìƒˆë¡œê³ ì¹¨
+    // ¾ğ¾î º¯°æ °¨ÁöÇÏ¿© ¿À´ÃÀÇ ´Ü¾î »õ·Î°íÄ§
     final currentLanguage = TranslationService.instance.currentLanguage;
     if (_lastLanguage != null && _lastLanguage != currentLanguage) {
       _loadTodayWord();
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadTodayWord() async {
     final word = await DatabaseHelper.instance.getTodayWord();
     if (word != null) {
-      // ë²ˆì—­ ì ìš©
+      // ¹ø¿ª Àû¿ë
       final translationService = TranslationService.instance;
       await translationService.init();
 
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          // ë°°ë„ˆ ê´‘ê³ 
+          // ¹è³Ê ±¤°í
           _buildBannerAd(),
         ],
       ),
@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
-                      "ğŸ“…",
+                      "??",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

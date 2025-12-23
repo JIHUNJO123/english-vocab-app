@@ -1,5 +1,5 @@
-ï»¿import 'package:flutter/material.dart';
-import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
 import '../utils/pos_helper.dart';
@@ -16,9 +16,9 @@ class FavoritesScreen extends StatefulWidget {
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
   List<Word> _favorites = [];
-  Map<int, String> _translatedDefinitions = {}; // ë²ˆì—­ëœ ì •ì˜ ìºì‹œ
+  Map<int, String> _translatedDefinitions = {}; // ¹ø¿ªµÈ Á¤ÀÇ Ä³½Ã
   bool _isLoading = true;
-  bool _showNativeLanguage = true; // ëª¨êµ­ì–´/ì˜ì–´ ì „í™˜ (ê¸°ë³¸: ëª¨êµ­ì–´)
+  bool _showNativeLanguage = true; // ¸ğ±¹¾î/¿µ¾î ÀüÈ¯ (±âº»: ¸ğ±¹¾î)
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Future<void> _loadFavorites() async {
     final favorites = await DatabaseHelper.instance.getFavorites();
 
-    // ë²ˆì—­ ì ìš©
+    // ¹ø¿ª Àû¿ë
     final translationService = TranslationService.instance;
     await translationService.init();
 
@@ -99,7 +99,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         title: Text(l10n.favorites),
         centerTitle: true,
         actions: [
-          // ì˜ì–´/ëª¨êµ­ì–´ ì „í™˜ ë²„íŠ¼
+          // ¿µ¾î/¸ğ±¹¾î ÀüÈ¯ ¹öÆ°
           if (_favorites.isNotEmpty &&
               TranslationService.instance.needsTranslation)
             IconButton(

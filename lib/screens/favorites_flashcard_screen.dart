@@ -1,6 +1,6 @@
-ï»¿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import '../models/word.dart';
 import '../services/translation_service.dart';
 import '../utils/pos_helper.dart';
@@ -23,11 +23,11 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   late AnimationController _flipController;
   late Animation<double> _flipAnimation;
 
-  // ë²ˆì—­ ê´€ë ¨
+  // ¹ø¿ª °ü·Ã
   String? _translatedDefinition;
   String? _translatedExample;
   bool _isLoadingTranslation = false;
-  double _wordFontSize = 1.0; // ë‹¨ì–´ í°íŠ¸ í¬ê¸° ë°°ìœ¨
+  double _wordFontSize = 1.0; // ´Ü¾î ÆùÆ® Å©±â ¹èÀ²
 
   @override
   void initState() {
@@ -164,14 +164,14 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.shuffle),
-            tooltip: 'ì„ê¸°',
+            tooltip: '¼¯±â',
             onPressed: _shuffleCards,
           ),
         ],
       ),
       body: Column(
         children: [
-          // ì§„í–‰ í‘œì‹œ
+          // ÁøÇà Ç¥½Ã
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -192,7 +192,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             ),
           ),
 
-          // í”Œë˜ì‹œì¹´ë“œ
+          // ÇÃ·¡½ÃÄ«µå
           Expanded(
             child: GestureDetector(
               onTap: _flipCard,
@@ -231,7 +231,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             ),
           ),
 
-          // ë„¤ë¹„ê²Œì´ì…˜ ë²„íŠ¼
+          // ³×ºñ°ÔÀÌ¼Ç ¹öÆ°
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 24.0,
@@ -240,7 +240,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Previous ë²„íŠ¼
+                // Previous ¹öÆ°
                 Container(
                   width: 56,
                   height: 56,
@@ -273,7 +273,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Flip ë²„íŠ¼
+                // Flip ¹öÆ°
                 Container(
                   width: 56,
                   height: 56,
@@ -298,7 +298,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
                   ),
                 ),
                 const SizedBox(width: 32),
-                // Next ë²„íŠ¼
+                // Next ¹öÆ°
                 Container(
                   width: 56,
                   height: 56,
@@ -345,7 +345,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   }
 
   Widget _buildFrontCard(Word word, AppLocalizations l10n) {
-    // ì•ë©´: ì˜ì–´ ë‹¨ì–´ ë³´ì—¬ì£¼ê¸° (ë‹¨ì–´ ë³´ê³  ëœ» ë§ì¶”ê¸°)
+    // ¾Õ¸é: ¿µ¾î ´Ü¾î º¸¿©ÁÖ±â (´Ü¾î º¸°í ¶æ ¸ÂÃß±â)
     return _buildCard(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -383,14 +383,14 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
   }
 
   Widget _buildBackCard(Word word, AppLocalizations l10n) {
-    // ë’·ë©´: ë²ˆì—­ëœ ëœ»ê³¼ ì˜ˆë¬¸
+    // µŞ¸é: ¹ø¿ªµÈ ¶æ°ú ¿¹¹®
     return _buildCard(
       color: Colors.blue[50],
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ë‹¨ì–´ (í¬ê³  ëˆˆì— ë„ê²Œ)
+            // ´Ü¾î (Å©°í ´«¿¡ ¶ç°Ô)
             Text(
               word.word,
               style: TextStyle(
@@ -409,7 +409,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
               ),
             ),
             const SizedBox(height: 16),
-            // ì˜ë¯¸ (í¬ê³  ëˆˆì— ë„ê²Œ)
+            // ÀÇ¹Ì (Å©°í ´«¿¡ ¶ç°Ô)
             if (_isLoadingTranslation)
               const CircularProgressIndicator()
             else ...[
@@ -424,7 +424,7 @@ class _FavoritesFlashcardScreenState extends State<FavoritesFlashcardScreen>
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              // ì˜ˆë¬¸ (ëœ ëˆˆì— ë„ê²Œ)
+              // ¿¹¹® (´ú ´«¿¡ ¶ç°Ô)
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(

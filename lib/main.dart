@@ -1,8 +1,8 @@
-ï»¿import 'dart:io';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:english_idiom_app/l10n/generated/app_localizations.dart';
+import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -15,23 +15,23 @@ import 'services/purchase_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // í”Œë«í¼ë³„ sqflite ì´ˆê¸°í™”
+  // ÇÃ·§Æûº° sqflite ÃÊ±âÈ­
   if (kIsWeb) {
-    // ì›¹ì—ì„œ sqflite ì´ˆê¸°í™”
+    // À¥¿¡¼­ sqflite ÃÊ±âÈ­
     databaseFactory = databaseFactoryFfiWeb;
   } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    // Windows, Linux, macOSì—ì„œ sqflite ì´ˆê¸°í™”
+    // Windows, Linux, macOS¿¡¼­ sqflite ÃÊ±âÈ­
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
 
-  // ë²ˆì—­ ì„œë¹„ìŠ¤ ì´ˆê¸°í™”
+  // ¹ø¿ª ¼­ºñ½º ÃÊ±âÈ­
   await TranslationService.instance.init();
 
-  // ê´‘ê³  ì„œë¹„ìŠ¤ ì´ˆê¸°í™”
+  // ±¤°í ¼­ºñ½º ÃÊ±âÈ­
   await AdService.instance.initialize();
 
-  // ì¸ì•± êµ¬ë§¤ ì„œë¹„ìŠ¤ ì´ˆê¸°í™”
+  // ÀÎ¾Û ±¸¸Å ¼­ºñ½º ÃÊ±âÈ­
   await PurchaseService.instance.initialize();
 
   runApp(
@@ -42,7 +42,7 @@ void main() async {
   );
 }
 
-/// ì–¸ì–´ ë° í…Œë§ˆ ë³€ê²½ì„ ìœ„í•œ Provider
+/// ¾ğ¾î ¹× Å×¸¶ º¯°æÀ» À§ÇÑ Provider
 class LocaleProvider extends ChangeNotifier {
   Locale _locale = const Locale('en');
   ThemeMode _themeMode = ThemeMode.light;
@@ -57,12 +57,12 @@ class LocaleProvider extends ChangeNotifier {
   Future<void> _loadSavedSettings() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // ì–¸ì–´ ë¡œë“œ
+    // ¾ğ¾î ·Îµå
     await TranslationService.instance.init();
     final langCode = TranslationService.instance.currentLanguage;
     _locale = Locale(langCode);
 
-    // ë‹¤í¬ëª¨ë“œ ë¡œë“œ
+    // ´ÙÅ©¸ğµå ·Îµå
     final isDarkMode = prefs.getBool('darkMode') ?? false;
     _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
 
@@ -92,7 +92,7 @@ class EnglishVocabApp extends StatelessWidget {
       title: 'English Vocabulary',
       debugShowCheckedModeBanner: false,
 
-      // Localization ì„¤ì •
+      // Localization ¼³Á¤
       locale: localeProvider.locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -133,7 +133,7 @@ class EnglishVocabApp extends StatelessWidget {
           seedColor: const Color(0xFF4A90E2),
           brightness: Brightness.light,
         ),
-        useMaterial3: false, // Material 2 ì‚¬ìš© (shader ì»´íŒŒì¼ ë¬¸ì œ ë°©ì§€)
+        useMaterial3: false, // Material 2 »ç¿ë (shader ÄÄÆÄÀÏ ¹®Á¦ ¹æÁö)
         appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
         cardTheme: CardThemeData(
           elevation: 2,

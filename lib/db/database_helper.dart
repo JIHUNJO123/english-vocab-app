@@ -1,4 +1,4 @@
-ï»¿import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -29,7 +29,7 @@ class DatabaseHelper {
   }
 
   Future _createDB(Database db, int version) async {
-    // ë‹¨ì–´ í…Œì´ë¸” (ì˜ì–´ ì›ë³¸ë§Œ)
+    // ´Ü¾î Å×ÀÌºí (¿µ¾î ¿øº»¸¸)
     await db.execute('''
       CREATE TABLE words (
         id INTEGER PRIMARY KEY,
@@ -42,7 +42,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // ë²ˆì—­ ìºì‹œ í…Œì´ë¸”
+    // ¹ø¿ª Ä³½Ã Å×ÀÌºí
     await db.execute('''
       CREATE TABLE translations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +55,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // ì¸ë±ìŠ¤ ìƒì„±
+    // ÀÎµ¦½º »ı¼º
     await db.execute('''
       CREATE INDEX idx_translations_lookup 
       ON translations(wordId, languageCode, fieldType)
@@ -67,7 +67,7 @@ class DatabaseHelper {
 
   Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 3) {
-      // ê¸°ì¡´ í…Œì´ë¸” ì‚­ì œí•˜ê³  ìƒˆë¡œ ìƒì„± (ìƒˆ ì •ì˜ ë°ì´í„° ë°˜ì˜)
+      // ±âÁ¸ Å×ÀÌºí »èÁ¦ÇÏ°í »õ·Î »ı¼º (»õ Á¤ÀÇ µ¥ÀÌÅÍ ¹İ¿µ)
       await db.execute('DROP TABLE IF EXISTS words');
       await db.execute('DROP TABLE IF EXISTS translations');
       await _createDB(db, newVersion);
@@ -93,9 +93,9 @@ class DatabaseHelper {
     }
   }
 
-  // ============ ë²ˆì—­ ìºì‹œ ë©”ì„œë“œ ============
+  // ============ ¹ø¿ª Ä³½Ã ¸Ş¼­µå ============
 
-  /// ë²ˆì—­ ìºì‹œì—ì„œ ê°€ì ¸ì˜¤ê¸°
+  /// ¹ø¿ª Ä³½Ã¿¡¼­ °¡Á®¿À±â
   Future<String?> getTranslation(
     int wordId,
     String languageCode,
@@ -114,7 +114,7 @@ class DatabaseHelper {
     return null;
   }
 
-  /// ë²ˆì—­ ìºì‹œì— ì €ì¥
+  /// ¹ø¿ª Ä³½Ã¿¡ ÀúÀå
   Future<void> saveTranslation(
     int wordId,
     String languageCode,
@@ -131,7 +131,7 @@ class DatabaseHelper {
     }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  /// íŠ¹ì • ì–¸ì–´ì˜ ëª¨ë“  ë²ˆì—­ ì‚­ì œ
+  /// Æ¯Á¤ ¾ğ¾îÀÇ ¸ğµç ¹ø¿ª »èÁ¦
   Future<void> clearTranslations(String languageCode) async {
     final db = await instance.database;
     await db.delete(
@@ -141,13 +141,13 @@ class DatabaseHelper {
     );
   }
 
-  /// ëª¨ë“  ë²ˆì—­ ìºì‹œ ì‚­ì œ
+  /// ¸ğµç ¹ø¿ª Ä³½Ã »èÁ¦
   Future<void> clearAllTranslations() async {
     final db = await instance.database;
     await db.delete('translations');
   }
 
-  // ============ ë‹¨ì–´ ë©”ì„œë“œ ============
+  // ============ ´Ü¾î ¸Ş¼­µå ============
 
   Future<List<Word>> getAllWords() async {
     final db = await instance.database;
@@ -233,7 +233,7 @@ class DatabaseHelper {
     return Word.fromDb(result.first);
   }
 
-  /// ë‹¨ì–´ì— ë²ˆì—­ ë°ì´í„° ì ìš©
+  /// ´Ü¾î¿¡ ¹ø¿ª µ¥ÀÌÅÍ Àû¿ë
   Future<Word> applyTranslations(Word word, String languageCode) async {
     if (languageCode == 'en') return word;
 
@@ -250,7 +250,7 @@ class DatabaseHelper {
     );
   }
 
-  /// ì—¬ëŸ¬ ë‹¨ì–´ì— ë²ˆì—­ ì ìš©
+  /// ¿©·¯ ´Ü¾î¿¡ ¹ø¿ª Àû¿ë
   Future<List<Word>> applyTranslationsToList(
     List<Word> words,
     String languageCode,

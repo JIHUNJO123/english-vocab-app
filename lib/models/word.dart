@@ -1,15 +1,15 @@
-ï»¿/// ë‹¨ì–´ ëª¨ë¸ (ë‹¤êµ­ì–´ ì§€ì›)
-/// ì˜ì–´ ì›ë³¸ ë°ì´í„° + ë™ì  ë²ˆì—­
+/// ´Ü¾î ¸ğµ¨ (´Ù±¹¾î Áö¿ø)
+/// ¿µ¾î ¿øº» µ¥ÀÌÅÍ + µ¿Àû ¹ø¿ª
 class Word {
   final int id;
   final String word;
   final String level;
   final String? partOfSpeech;
-  final String definition; // ì˜ì–´ ì •ì˜
-  final String example; // ì˜ì–´ ì˜ˆë¬¸
+  final String definition; // ¿µ¾î Á¤ÀÇ
+  final String example; // ¿µ¾î ¿¹¹®
   bool isFavorite;
 
-  // ë²ˆì—­ëœ í…ìŠ¤íŠ¸ (ëŸ°íƒ€ì„ì— ì„¤ì •ë¨)
+  // ¹ø¿ªµÈ ÅØ½ºÆ® (·±Å¸ÀÓ¿¡ ¼³Á¤µÊ)
   String? translatedDefinition;
   String? translatedExample;
 
@@ -25,7 +25,7 @@ class Word {
     this.translatedExample,
   });
 
-  /// JSONì—ì„œ ìƒì„± (ì˜ì–´ ì›ë³¸)
+  /// JSON¿¡¼­ »ı¼º (¿µ¾î ¿øº»)
   factory Word.fromJson(Map<String, dynamic> json) {
     return Word(
       id: json['id'],
@@ -38,7 +38,7 @@ class Word {
     );
   }
 
-  /// DB ë§µì—ì„œ ìƒì„±
+  /// DB ¸Ê¿¡¼­ »ı¼º
   factory Word.fromDb(Map<String, dynamic> json) {
     return Word(
       id: json['id'] as int,
@@ -63,7 +63,7 @@ class Word {
     };
   }
 
-  /// ë²ˆì—­ëœ ì •ì˜ ê°€ì ¸ì˜¤ê¸° (ë²ˆì—­ ì—†ìœ¼ë©´ ì˜ì–´ ì›ë³¸)
+  /// ¹ø¿ªµÈ Á¤ÀÇ °¡Á®¿À±â (¹ø¿ª ¾øÀ¸¸é ¿µ¾î ¿øº»)
   String getDefinition(bool useTranslation) {
     if (useTranslation &&
         translatedDefinition != null &&
@@ -73,7 +73,7 @@ class Word {
     return definition;
   }
 
-  /// ë²ˆì—­ëœ ì˜ˆë¬¸ ê°€ì ¸ì˜¤ê¸° (ë²ˆì—­ ì—†ìœ¼ë©´ ì˜ì–´ ì›ë³¸)
+  /// ¹ø¿ªµÈ ¿¹¹® °¡Á®¿À±â (¹ø¿ª ¾øÀ¸¸é ¿µ¾î ¿øº»)
   String getExample(bool useTranslation) {
     if (useTranslation &&
         translatedExample != null &&

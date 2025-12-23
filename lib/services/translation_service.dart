@@ -1,14 +1,14 @@
-ï»¿import 'dart:convert';
+import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../db/database_helper.dart';
 
-/// ì§€ì›í•˜ëŠ” ì–¸ì–´ ëª©ë¡
+/// Áö¿øÇÏ´Â ¾ğ¾î ¸ñ·Ï
 class SupportedLanguage {
-  final String code; // ì–¸ì–´ ì½”ë“œ (ko, ja, zh, es, ...)
-  final String name; // ì˜ì–´ ì´ë¦„
-  final String nativeName; // ëª¨êµ­ì–´ ì´ë¦„
+  final String code; // ¾ğ¾î ÄÚµå (ko, ja, zh, es, ...)
+  final String name; // ¿µ¾î ÀÌ¸§
+  final String nativeName; // ¸ğ±¹¾î ÀÌ¸§
 
   const SupportedLanguage({
     required this.code,
@@ -17,29 +17,29 @@ class SupportedLanguage {
   });
 }
 
-/// ë²ˆì—­ ì„œë¹„ìŠ¤ (ë¬´ë£Œ API ì‚¬ìš© + ë¡œì»¬ ìºì‹±)
+/// ¹ø¿ª ¼­ºñ½º (¹«·á API »ç¿ë + ·ÎÄÃ Ä³½Ì)
 class TranslationService {
   static final TranslationService instance = TranslationService._init();
   TranslationService._init();
 
-  // ì§€ì› ì–¸ì–´ ëª©ë¡
+  // Áö¿ø ¾ğ¾î ¸ñ·Ï
   static const List<SupportedLanguage> supportedLanguages = [
     SupportedLanguage(code: 'en', name: 'English', nativeName: 'English'),
-    SupportedLanguage(code: 'ko', name: 'Korean', nativeName: 'í•œêµ­ì–´'),
-    SupportedLanguage(code: 'ja', name: 'Japanese', nativeName: 'æ—¥æœ¬èª'),
-    SupportedLanguage(code: 'zh', name: 'Chinese', nativeName: 'ä¸­æ–‡'),
-    SupportedLanguage(code: 'es', name: 'Spanish', nativeName: 'EspaÃ±ol'),
-    SupportedLanguage(code: 'fr', name: 'French', nativeName: 'FranÃ§ais'),
+    SupportedLanguage(code: 'ko', name: 'Korean', nativeName: 'ÇÑ±¹¾î'),
+    SupportedLanguage(code: 'ja', name: 'Japanese', nativeName: 'ìíÜâåŞ'),
+    SupportedLanguage(code: 'zh', name: 'Chinese', nativeName: 'ñéÙş'),
+    SupportedLanguage(code: 'es', name: 'Spanish', nativeName: 'Espanol'),
+    SupportedLanguage(code: 'fr', name: 'French', nativeName: 'Francais'),
     SupportedLanguage(code: 'de', name: 'German', nativeName: 'Deutsch'),
-    SupportedLanguage(code: 'pt', name: 'Portuguese', nativeName: 'PortuguÃªs'),
-    SupportedLanguage(code: 'ru', name: 'Russian', nativeName: 'Ğ ÑƒÑÑĞºĞ¸Ğ¹'),
-    SupportedLanguage(code: 'ar', name: 'Arabic', nativeName: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©'),
-    SupportedLanguage(code: 'hi', name: 'Hindi', nativeName: 'à¤¹à¤¿à¤¨à¥à¤¦à¥€'),
-    SupportedLanguage(code: 'bn', name: 'Bengali', nativeName: 'à¦¬à¦¾à¦‚à¦²à¦¾'),
-    SupportedLanguage(code: 'ur', name: 'Urdu', nativeName: 'Ø§Ø±Ø¯Ùˆ'),
-    SupportedLanguage(code: 'fa', name: 'Persian', nativeName: 'ÙØ§Ø±Ø³ÛŒ'),
-    SupportedLanguage(code: 'th', name: 'Thai', nativeName: 'à¹„à¸—à¸¢'),
-    SupportedLanguage(code: 'vi', name: 'Vietnamese', nativeName: 'Tiáº¿ng Viá»‡t'),
+    SupportedLanguage(code: 'pt', name: 'Portuguese', nativeName: 'Portugues'),
+    SupportedLanguage(code: 'ru', name: 'Russian', nativeName: '¬²¬å¬ã¬ã¬Ü¬Ú¬Û'),
+    SupportedLanguage(code: 'ar', name: 'Arabic', nativeName: '???????'),
+    SupportedLanguage(code: 'hi', name: 'Hindi', nativeName: '??????'),
+    SupportedLanguage(code: 'bn', name: 'Bengali', nativeName: '?????'),
+    SupportedLanguage(code: 'ur', name: 'Urdu', nativeName: '????'),
+    SupportedLanguage(code: 'fa', name: 'Persian', nativeName: '?????'),
+    SupportedLanguage(code: 'th', name: 'Thai', nativeName: '???'),
+    SupportedLanguage(code: 'vi', name: 'Vietnamese', nativeName: 'Ti?ng Vi?t'),
     SupportedLanguage(
       code: 'id',
       name: 'Indonesian',
@@ -47,8 +47,8 @@ class TranslationService {
     ),
     SupportedLanguage(code: 'ms', name: 'Malay', nativeName: 'Bahasa Melayu'),
     SupportedLanguage(code: 'tl', name: 'Filipino', nativeName: 'Filipino'),
-    SupportedLanguage(code: 'tr', name: 'Turkish', nativeName: 'TÃ¼rkÃ§e'),
-    SupportedLanguage(code: 'uk', name: 'Ukrainian', nativeName: 'Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°'),
+    SupportedLanguage(code: 'tr', name: 'Turkish', nativeName: 'Turkce'),
+    SupportedLanguage(code: 'uk', name: 'Ukrainian', nativeName: '¬µ¬Ü¬â¬Ñ?¬ß¬ã¬î¬Ü¬Ñ'),
     SupportedLanguage(code: 'pl', name: 'Polish', nativeName: 'Polski'),
     SupportedLanguage(code: 'nl', name: 'Dutch', nativeName: 'Nederlands'),
     SupportedLanguage(code: 'it', name: 'Italian', nativeName: 'Italiano'),
@@ -59,7 +59,7 @@ class TranslationService {
 
   String get currentLanguage => _currentLanguage;
 
-  /// í˜„ì¬ ì–¸ì–´ ì •ë³´ ê°€ì ¸ì˜¤ê¸°
+  /// ÇöÀç ¾ğ¾î Á¤º¸ °¡Á®¿À±â
   SupportedLanguage get currentLanguageInfo {
     return supportedLanguages.firstWhere(
       (lang) => lang.code == _currentLanguage,
@@ -67,45 +67,45 @@ class TranslationService {
     );
   }
 
-  /// ì–¸ì–´ ì„¤ì • ì´ˆê¸°í™”
+  /// ¾ğ¾î ¼³Á¤ ÃÊ±âÈ­
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     final savedLanguage = prefs.getString('nativeLanguage');
 
     if (savedLanguage != null) {
-      // ì €ì¥ëœ ì–¸ì–´ê°€ ìˆìœ¼ë©´ ì‚¬ìš©
+      // ÀúÀåµÈ ¾ğ¾î°¡ ÀÖÀ¸¸é »ç¿ë
       _currentLanguage = savedLanguage;
     } else {
-      // ì €ì¥ëœ ì–¸ì–´ê°€ ì—†ìœ¼ë©´ ê¸°ê¸° ì–¸ì–´ ìë™ ê°ì§€
+      // ÀúÀåµÈ ¾ğ¾î°¡ ¾øÀ¸¸é ±â±â ¾ğ¾î ÀÚµ¿ °¨Áö
       final deviceLocale = ui.PlatformDispatcher.instance.locale;
       final deviceLangCode = deviceLocale.languageCode;
 
-      // ì§€ì›í•˜ëŠ” ì–¸ì–´ì¸ì§€ í™•ì¸
+      // Áö¿øÇÏ´Â ¾ğ¾îÀÎÁö È®ÀÎ
       final isSupported = supportedLanguages.any(
         (lang) => lang.code == deviceLangCode,
       );
       _currentLanguage = isSupported ? deviceLangCode : 'en';
 
-      // ìë™ ê°ì§€ëœ ì–¸ì–´ ì €ì¥
+      // ÀÚµ¿ °¨ÁöµÈ ¾ğ¾î ÀúÀå
       await prefs.setString('nativeLanguage', _currentLanguage);
     }
   }
 
-  /// ëª¨êµ­ì–´ ì„¤ì •
+  /// ¸ğ±¹¾î ¼³Á¤
   Future<void> setLanguage(String languageCode) async {
     _currentLanguage = languageCode;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('nativeLanguage', languageCode);
   }
 
-  /// ë²ˆì—­ í•„ìš” ì—¬ë¶€
+  /// ¹ø¿ª ÇÊ¿ä ¿©ºÎ
   bool get needsTranslation => _currentLanguage != 'en';
 
-  /// í…ìŠ¤íŠ¸ ë²ˆì—­ (ìºì‹œ ìš°ì„ )
+  /// ÅØ½ºÆ® ¹ø¿ª (Ä³½Ã ¿ì¼±)
   Future<String> translate(String text, int wordId, String fieldType) async {
     if (!needsTranslation || text.isEmpty) return text;
 
-    // 1. ìºì‹œ í™•ì¸
+    // 1. Ä³½Ã È®ÀÎ
     final cached = await DatabaseHelper.instance.getTranslation(
       wordId,
       _currentLanguage,
@@ -113,10 +113,10 @@ class TranslationService {
     );
     if (cached != null) return cached;
 
-    // 2. API í˜¸ì¶œ
+    // 2. API È£Ãâ
     final translated = await _translateWithAPI(text);
 
-    // 3. ìºì‹œ ì €ì¥
+    // 3. Ä³½Ã ÀúÀå
     if (translated != text) {
       await DatabaseHelper.instance.saveTranslation(
         wordId,
@@ -129,7 +129,7 @@ class TranslationService {
     return translated;
   }
 
-  /// MyMemory APIë¡œ ë²ˆì—­ (ë¬´ë£Œ, ì¼ 1000íšŒ)
+  /// MyMemory API·Î ¹ø¿ª (¹«·á, ÀÏ 1000È¸)
   Future<String> _translateWithAPI(String text) async {
     try {
       final url = Uri.parse(
@@ -158,7 +158,7 @@ class TranslationService {
         );
 
         if (translated != null && translated.toString().isNotEmpty) {
-          // MyMemoryê°€ ëŒ€ë¬¸ìë¡œ ë°˜í™˜í•  ë•Œê°€ ìˆì–´ì„œ í™•ì¸
+          // MyMemory°¡ ´ë¹®ÀÚ·Î ¹İÈ¯ÇÒ ¶§°¡ ÀÖ¾î¼­ È®ÀÎ
           if (translated.toString().toUpperCase() != translated.toString()) {
             return translated.toString();
           }
@@ -169,10 +169,10 @@ class TranslationService {
       print('Translation error: $e');
     }
     print('  Translation failed, returning original text');
-    return text; // ì‹¤íŒ¨ì‹œ ì›ë¬¸ ë°˜í™˜
+    return text; // ½ÇÆĞ½Ã ¿ø¹® ¹İÈ¯
   }
 
-  /// ë°°ì¹˜ ë²ˆì—­ (ì—¬ëŸ¬ ë‹¨ì–´ í•œë²ˆì—)
+  /// ¹èÄ¡ ¹ø¿ª (¿©·¯ ´Ü¾î ÇÑ¹ø¿¡)
   Future<void> translateWords(List<int> wordIds) async {
     if (!needsTranslation) return;
 
