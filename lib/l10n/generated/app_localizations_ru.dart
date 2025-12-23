@@ -378,4 +378,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get fontSizeExtraLarge => 'Extra Large';
+
+  @override
+  String get cancel => 'Отмена';
 }

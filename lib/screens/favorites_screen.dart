@@ -298,11 +298,16 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           ],
                         ),
                         onTap: () {
+                          final favListCopy = List<Word>.from(_favorites);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => WordDetailScreen(word: word),
+                                  (context) => WordDetailScreen(
+                                    word: word,
+                                    wordList: favListCopy,
+                                    currentIndex: index,
+                                  ),
                             ),
                           ).then((_) => _loadFavorites());
                         },

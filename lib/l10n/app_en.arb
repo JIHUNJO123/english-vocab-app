@@ -155,5 +155,6 @@
   "fontSizeNormal": "Normal",
   "fontSizeMediumLarge": "Medium Large",
   "fontSizeLarge": "Large",
-  "fontSizeExtraLarge": "Extra Large"
+  "fontSizeExtraLarge": "Extra Large",
+  "cancel": "Cancel"
 }

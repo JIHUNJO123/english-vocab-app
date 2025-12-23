@@ -378,4 +378,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fontSizeExtraLarge => 'Extra Large';
+
+  @override
+  String get cancel => '取消';
 }

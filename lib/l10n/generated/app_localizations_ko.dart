@@ -378,4 +378,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get fontSizeExtraLarge => '매우 크게';
+
+  @override
+  String get cancel => '취소';
 }

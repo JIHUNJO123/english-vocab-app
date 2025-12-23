@@ -378,4 +378,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get fontSizeExtraLarge => 'Extra Large';
+
+  @override
+  String get cancel => 'Annuleren';
 }

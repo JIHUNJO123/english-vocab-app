@@ -378,4 +378,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get fontSizeExtraLarge => 'Extra Large';
+
+  @override
+  String get cancel => 'বাতিল';
 }

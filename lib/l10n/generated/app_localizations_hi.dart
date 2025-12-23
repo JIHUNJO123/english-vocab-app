@@ -378,4 +378,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get fontSizeExtraLarge => 'Extra Large';
+
+  @override
+  String get cancel => 'रद्द';
 }

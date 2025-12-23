@@ -13,8 +13,14 @@ import 'word_detail_screen.dart';
 class WordListScreen extends StatefulWidget {
   final String? level;
   final bool isFlashcardMode;
+  final bool favoritesOnly;
 
-  const WordListScreen({super.key, this.level, this.isFlashcardMode = false});
+  const WordListScreen({
+    super.key,
+    this.level,
+    this.isFlashcardMode = false,
+    this.favoritesOnly = false,
+  });
 
   @override
   State<WordListScreen> createState() => _WordListScreenState();
@@ -24,7 +30,7 @@ class _WordListScreenState extends State<WordListScreen> {
   List<Word> _words = [];
   bool _isLoading = true;
   int _currentFlashcardIndex = 0;
-  late PageController _pageController;
+  PageController? _pageController;
   String _sortOrder = 'alphabetical'; // 'alphabetical' or 'random'
   bool _isBannerAdLoaded = false;
   int _flashcardViewCount = 0; // 플래시카드 전면 광고용 카운터
@@ -34,6 +40,7 @@ class _WordListScreenState extends State<WordListScreen> {
   // 리스트 모드용 스크롤 컨트롤러
   final ScrollController _listScrollController = ScrollController();
   int _lastListPosition = 0;
+  int _initialPagePosition = 0; // 초기 페이지 위치 저장
 
   // 번역 관련
   Map<int, String> _translatedDefinitions = {};
@@ -42,16 +49,22 @@ class _WordListScreenState extends State<WordListScreen> {
 
   // 위치 저장 키 생성
   String get _positionKey =>
-      'word_list_position_${widget.level ?? 'all'}_${widget.isFlashcardMode ? 'flashcard' : 'list'}';
+      'word_list_position_${widget.favoritesOnly ? 'favorites' : (widget.level ?? 'all')}_${widget.isFlashcardMode ? 'flashcard' : 'list'}';
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
-    _loadWords();
+    _loadSavedPosition().then((_) {
+      _loadWords();
+    });
     _loadBannerAd();
     _loadInterstitialAd();
     _loadFontSize();
+  }
+
+  Future<void> _loadSavedPosition() async {
+    final prefs = await SharedPreferences.getInstance();
+    _initialPagePosition = prefs.getInt(_positionKey) ?? 0;
   }
 
   Future<void> _loadFontSize() async {
@@ -86,40 +99,58 @@ class _WordListScreenState extends State<WordListScreen> {
 
   Future<void> _loadWords() async {
     List<Word> words;
-    if (widget.level != null) {
+    if (widget.favoritesOnly) {
+      words = await DatabaseHelper.instance.getFavorites();
+    } else if (widget.level != null) {
       words = await DatabaseHelper.instance.getWordsByLevel(widget.level!);
     } else {
       words = await DatabaseHelper.instance.getAllWords();
     }
 
-    // 저장된 위치 불러오기
-    final prefs = await SharedPreferences.getInstance();
-    final savedPosition = prefs.getInt(_positionKey) ?? 0;
+    // 저장된 위치로 이동
+    if (words.isNotEmpty) {
+      final position = _initialPagePosition.clamp(0, words.length - 1);
+      if (widget.isFlashcardMode) {
+        _currentFlashcardIndex = position;
+        // PageController 초기 페이지 설정
+        _pageController = PageController(initialPage: position);
+      } else {
+        _lastListPosition = position;
+      }
+    } else {
+      _pageController = PageController();
+    }
 
     setState(() {
       _words = words;
       _isLoading = false;
     });
 
-    // 저장된 위치로 이동
-    if (words.isNotEmpty) {
-      final position = savedPosition.clamp(0, words.length - 1);
-      if (widget.isFlashcardMode) {
-        _currentFlashcardIndex = position;
-        // PageController 초기 페이지 설정
-        _pageController = PageController(initialPage: position);
-        setState(() {});
+    // 리스트 모드에서 저장된 위치로 스크롤
+    if (!widget.isFlashcardMode &&
+        words.isNotEmpty &&
+        _initialPagePosition > 0) {
+      _scrollToSavedPosition(_initialPagePosition.clamp(0, words.length - 1));
+    }
+  }
+
+  void _scrollToSavedPosition(int position) {
+    if (position <= 0) return;
+
+    void tryScroll() {
+      if (!mounted) return;
+      if (_listScrollController.hasClients) {
+        // 각 아이템 높이를 약 80으로 추정
+        final targetOffset = position * 80.0;
+        final maxScroll = _listScrollController.position.maxScrollExtent;
+        _listScrollController.jumpTo(targetOffset.clamp(0.0, maxScroll));
       } else {
-        _lastListPosition = position;
-        // 리스트 모드에서 저장된 위치로 스크롤
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_listScrollController.hasClients && position > 0) {
-            // 각 아이템 높이를 약 80으로 추정
-            _listScrollController.jumpTo(position * 80.0);
-          }
-        });
+        // 아직 준비되지 않았으면 다음 프레임에서 다시 시도
+        WidgetsBinding.instance.addPostFrameCallback((_) => tryScroll());
       }
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => tryScroll());
   }
 
   Future<void> _savePosition(int position) async {
@@ -181,8 +212,8 @@ class _WordListScreenState extends State<WordListScreen> {
         _currentFlashcardIndex = 0;
       }
 
-      if (_pageController.hasClients) {
-        _pageController.jumpToPage(_currentFlashcardIndex);
+      if (_pageController != null && _pageController!.hasClients) {
+        _pageController!.jumpToPage(_currentFlashcardIndex);
       }
     });
   }
@@ -236,13 +267,18 @@ class _WordListScreenState extends State<WordListScreen> {
 
   @override
   void dispose() {
-    _pageController.dispose();
-    _listScrollController.dispose();
-    AdService.instance.disposeBannerAd();
+    _pageController?.dispose();
     // 종료 시 현재 위치 저장
     if (widget.isFlashcardMode) {
       _savePosition(_currentFlashcardIndex);
+    } else {
+      // 리스트 모드에서도 현재 위치 저장 - _lastListPosition 사용
+      if (_words.isNotEmpty) {
+        _savePosition(_lastListPosition.clamp(0, _words.length - 1));
+      }
     }
+    _listScrollController.dispose();
+    AdService.instance.disposeBannerAd();
     super.dispose();
   }
 
@@ -425,14 +461,20 @@ class _WordListScreenState extends State<WordListScreen> {
   Widget _buildListMode() {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollNotification) {
-        if (scrollNotification is ScrollEndNotification) {
-          // 스크롤이 끝났을 때 현재 보이는 아이템 인덱스 저장
-          final scrollPosition = _listScrollController.position.pixels;
-          final itemIndex = (scrollPosition / 80.0).round().clamp(
-            0,
-            _words.length - 1,
-          );
-          _savePosition(itemIndex);
+        if (scrollNotification is ScrollUpdateNotification ||
+            scrollNotification is ScrollEndNotification) {
+          // 스크롤할 때마다 현재 보이는 아이템 인덱스 저장
+          if (_listScrollController.hasClients) {
+            final scrollPosition = _listScrollController.position.pixels;
+            final itemIndex = (scrollPosition / 80.0).round().clamp(
+              0,
+              _words.length - 1,
+            );
+            _lastListPosition = itemIndex; // 항상 업데이트
+            if (scrollNotification is ScrollEndNotification) {
+              _savePosition(itemIndex); // 스크롤 끝났을 때만 저장
+            }
+          }
         }
         return false;
       },
@@ -498,15 +540,28 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
                 onPressed: () => _toggleFavorite(word),
               ),
-              onTap: () {
+              onTap: () async {
                 // 클릭한 위치 저장
                 _savePosition(index);
-                Navigator.push(
+                final result = await Navigator.push<int>(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => WordDetailScreen(word: word),
+                    builder:
+                        (context) => WordDetailScreen(
+                          word: word,
+                          wordList: List<Word>.from(_words),
+                          currentIndex: index,
+                        ),
                   ),
-                ).then((_) => _loadWords());
+                );
+                if (result != null && result != index && mounted) {
+                  _listScrollController.animateTo(
+                    result * 80.0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+                _loadWords();
               },
             ),
           );
@@ -526,34 +581,37 @@ class _WordListScreenState extends State<WordListScreen> {
           ),
         ),
         Expanded(
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentFlashcardIndex = index;
-              });
-              // 위치 저장
-              _savePosition(index);
+          child:
+              _pageController == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentFlashcardIndex = index;
+                      });
+                      // 위치 저장
+                      _savePosition(index);
 
-              // 플래시카드 10장마다 전면 광고 표시
-              _flashcardViewCount++;
-              if (_flashcardViewCount % 10 == 0) {
-                AdService.instance.showInterstitialAd();
-              }
-            },
-            itemCount: _words.length,
-            itemBuilder: (context, index) {
-              final word = _words[index];
-              return Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: FlipCard(
-                  direction: FlipDirection.HORIZONTAL,
-                  front: _buildFlashcardFront(word),
-                  back: _buildFlashcardBack(word),
-                ),
-              );
-            },
-          ),
+                      // 플래시카드 10장마다 전면 광고 표시
+                      _flashcardViewCount++;
+                      if (_flashcardViewCount % 10 == 0) {
+                        AdService.instance.showInterstitialAd();
+                      }
+                    },
+                    itemCount: _words.length,
+                    itemBuilder: (context, index) {
+                      final word = _words[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: FlipCard(
+                          direction: FlipDirection.HORIZONTAL,
+                          front: _buildFlashcardFront(word),
+                          back: _buildFlashcardBack(word),
+                        ),
+                      );
+                    },
+                  ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -585,9 +643,9 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
                 child: IconButton(
                   onPressed:
-                      _currentFlashcardIndex > 0
+                      _currentFlashcardIndex > 0 && _pageController != null
                           ? () {
-                            _pageController.previousPage(
+                            _pageController!.previousPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                             );
@@ -627,9 +685,10 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
                 child: IconButton(
                   onPressed:
-                      _currentFlashcardIndex < _words.length - 1
+                      _currentFlashcardIndex < _words.length - 1 &&
+                              _pageController != null
                           ? () {
-                            _pageController.nextPage(
+                            _pageController!.nextPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                             );
@@ -681,18 +740,21 @@ class _WordListScreenState extends State<WordListScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              if (translatePartOfSpeech(AppLocalizations.of(context)!, word.partOfSpeech).isNotEmpty)
+              if (translatePartOfSpeech(
+                AppLocalizations.of(context)!,
+                word.partOfSpeech,
+              ).isNotEmpty)
                 Text(
                   translatePartOfSpeech(
                     AppLocalizations.of(context)!,
                     word.partOfSpeech,
                   ),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white.withAlpha((0.8 * 255).toInt()),
-                  fontStyle: FontStyle.italic,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white.withAlpha((0.8 * 255).toInt()),
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
-              ),
               const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -833,4 +895,3 @@ class _WordListScreenState extends State<WordListScreen> {
     }
   }
 }
-

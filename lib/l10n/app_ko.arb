@@ -123,5 +123,6 @@
   "fontSizeNormal": "보통",
   "fontSizeMediumLarge": "약간 크게",
   "fontSizeLarge": "크게",
-  "fontSizeExtraLarge": "매우 크게"
+  "fontSizeExtraLarge": "매우 크게",
+  "cancel": "취소"
 }
