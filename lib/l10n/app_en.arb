@@ -1,24 +1,24 @@
-{
+﻿{
   "@@locale": "en",
-  "appTitle": "English Idiom 1000",
-  "todayWord": " Today's Idiom",
+  "appTitle": "Essential English 10000",
+  "todayWord": "Today's Word",
   "learning": "Learning",
   "levelLearning": "Level Learning",
-  "allWords": "All Idioms",
-  "viewAllWords": "View all idioms",
+  "allWords": "All Words",
+  "viewAllWords": "View All Words",
   "favorites": "Favorites",
-  "savedWords": "Saved idioms",
+  "savedWords": "Saved Words",
   "flashcard": "Flashcard",
   "cardLearning": "Learn with cards",
   "search": "Search",
-  "searchWords": "Search idioms",
+  "searchWords": "Search Words",
   "settings": "Settings",
-  "noWords": "No idioms found",
-  "cannotLoadWords": "Cannot load idioms",
+  "noWords": "No words found",
+  "cannotLoadWords": "Cannot load words",
   "addedToFavorites": "Added to favorites",
   "removedFromFavorites": "Removed from favorites",
-  "definition": " Definition",
-  "example": " Example",
+  "definition": "📖 Definition",
+  "example": "💬 Example",
   "translating": "Translating...",
   "listenPronunciation": "Listen Pronunciation",
   "markAsLearned": "Mark as Learned",
@@ -38,7 +38,7 @@
   "levelB1": "Intermediate 1",
   "levelB2": "Intermediate 2",
   "levelC1": "Advanced",
-  "levelWords": "{level} Idioms",
+  "levelWords": "{level} Words",
   "@levelWords": {
     "placeholders": {
       "level": {"type": "String"}
@@ -55,7 +55,7 @@
     }
   },
   "translationInfo": "Translation Info",
-  "translationInfoDesc": "Translations will be downloaded automatically when you view idioms. Once downloaded, they are cached locally for offline use.",
+  "translationInfoDesc": "Translations will be downloaded automatically when you view words. Once downloaded, they are cached locally for offline use.",
   "ok": "OK",
   "darkMode": "Dark Mode",
   "speechRate": "Speech Rate",
@@ -64,11 +64,11 @@
   "about": "About",
   "version": "Version",
   "developer": "Developer",
-  "searchHint": "Search for idioms...",
+  "searchHint": "Search for words...",
   "noSearchResults": "No results found",
-  "typeToSearch": "Type to search for idioms",
+  "typeToSearch": "Type to Search for words...",
   "noFavorites": "No favorites yet",
-  "addFavoritesHint": "Add idioms to favorites by tapping the heart icon",
+  "addFavoritesHint": "Add words to favorites by tapping the heart icon",
   "posNoun": "noun",
   "posVerb": "verb",
   "posAdjective": "adjective",
@@ -97,23 +97,23 @@
   "copyright": "Copyright",
   "copyrightDesc": "All definitions are original or AI-generated",
   "copyrightNotice": "Copyright Notice",
-  "copyrightContent": "All idiom definitions and example sentences in this app are original or AI-generated. No copyrighted dictionary content is used.\\n\\nTranslations are provided by MyMemory API (free translation service).",
+  "copyrightContent": "All word definitions and example sentences in this app are original or AI-generated. No copyrighted dictionary content is used.",
   "privacyPolicy": "Privacy Policy",
-  "privacyContent": "This app does not collect, store, or share any personal information.\\n\\nTranslation requests are sent to MyMemory API for processing. No user data is stored on external servers.",
+  "privacyContent": "This app does not collect, store, or share any personal information.",
   "alphabetical": "Alphabetical",
   "random": "Random",
   "quiz": "Quiz",
   "testYourself": "Test yourself",
-  "wordQuiz": "Idiom Quiz",
+  "wordQuiz": "Word Quiz",
   "quizWithLevel": "{level} Quiz",
   "@quizWithLevel": {
     "placeholders": {
       "level": {"type": "String"}
     }
   },
-  "wordToMeaningMode": "IdiomMeaning",
-  "meaningToWordMode": "MeaningIdiom",
-  "quizComplete": " Quiz Complete!",
+  "wordToMeaningMode": "Word→Meaning",
+  "meaningToWordMode": "Meaning→Word",
+  "quizComplete": "🎉 Quiz Complete!",
   "correctAnswers": "{percentage}% Correct",
   "@correctAnswers": {
     "placeholders": {
@@ -123,10 +123,10 @@
   "exit": "Exit",
   "tryAgain": "Try Again",
   "quizCompleteMessage": "Quiz Complete!",
-  "excellent": "Excellent! ",
-  "greatJob": "Great Job! ",
-  "goodStart": "Good Start! ",
-  "keepPracticing": "Keep Practicing! ",
+  "excellent": "Excellent! 🌟",
+  "greatJob": "Great Job! 👏",
+  "goodStart": "Good Start! 💪",
+  "keepPracticing": "Keep Practicing! 📚",
   "questionProgress": "{current} / {total}",
   "@questionProgress": {
     "placeholders": {
@@ -134,8 +134,8 @@
       "total": {"type": "int"}
     }
   },
-  "whatIsTheMeaning": "What is the meaning of this idiom?",
-  "whichWordMatches": "Which idiom matches this meaning?",
+  "whatIsTheMeaning": "What is the meaning of this word?",
+  "whichWordMatches": "Which word matches this meaning?",
   "nextQuestion": "Next",
   "loading": "Loading...",
   "removeAds": "Remove Ads",
@@ -149,12 +149,15 @@
   "purchaseRestored": "Purchase restored successfully!",
   "noPurchaseToRestore": "No purchase found to restore",
   "buy": "Buy",
-  "wordFontSize": "Flashcard Idiom Size",
+  "wordFontSize": "Flashcard Word Size",
   "fontSizeSmall": "Small",
   "fontSizeMediumSmall": "Medium Small",
   "fontSizeNormal": "Normal",
   "fontSizeMediumLarge": "Medium Large",
   "fontSizeLarge": "Large",
   "fontSizeExtraLarge": "Extra Large",
-  "cancel": "Cancel"
+  "apiTranslationNotice": "Translations are being provided via API (online translation)"
 }
+
+
+

@@ -1,7 +1,7 @@
 ﻿{
   "@@locale": "zh",
-  "appTitle": "English Word 10000",
-  "todayWord": "📅 今日单词",
+  "appTitle": "Essential English 10000",
+  "todayWord": "今日单词",
   "learning": "学习",
   "levelLearning": "分级学习",
   "allWords": "全部单词",
@@ -81,9 +81,9 @@
   "copyright": "版权",
   "copyrightDesc": "所有定义均为原创或AI生成",
   "copyrightNotice": "版权声明",
-  "copyrightContent": "此应用程序中的所有单词定义和例句均为原创或AI生成。未使用受版权保护的词典内容。\n\n翻译由MyMemory API（免费翻译服务）提供。",
+  "copyrightContent": "此应用程序中的所有单词定义和例句均为原创或AI生成。未使用受版权保护的词典内容。",
   "privacyPolicy": "隐私政策",
-  "privacyContent": "此应用程序不收集、存储或分享任何个人信息。\n\n翻译请求发送到MyMemory API进行处理。用户数据不会存储在外部服务器上。",
+  "privacyContent": "此应用程序不收集、存储或分享任何个人信息。",
   "alphabetical": "字母顺序",
   "random": "随机",
   "quiz": "测验",
@@ -116,9 +116,9 @@
   "purchaseFailed": "购买失败，请重试。",
   "purchaseRestored": "购买恢复成功！",
   "noPurchaseToRestore": "没有可恢复的购买",
-  "buy": "购买",
-  "cancel": "取消"
+  "buy": "购买"
 }
+
 
 
 

@@ -1,7 +1,7 @@
 ﻿{
   "@@locale": "de",
-  "appTitle": "English Word 10000",
-  "todayWord": "📅 Wort des Tages",
+  "appTitle": "Essential English 10000",
+  "todayWord": "Wort des Tages",
   "learning": "Lernen",
   "levelLearning": "Nach Niveau",
   "allWords": "Alle Wörter",
@@ -13,7 +13,7 @@
   "search": "Suchen",
   "searchWords": "Wörter suchen",
   "settings": "Einstellungen",
-  "noWords": "Keine Wörter",
+  "noWords": "Keine Wörter gefunden",
   "cannotLoadWords": "Laden fehlgeschlagen",
   "addedToFavorites": "Zu Favoriten hinzugefügt",
   "removedFromFavorites": "Aus Favoriten entfernt",
@@ -81,14 +81,14 @@
   "copyright": "Urheberrecht",
   "copyrightDesc": "Alle Definitionen sind original oder KI-generiert",
   "copyrightNotice": "Urheberrechtshinweis",
-  "copyrightContent": "Alle Wortdefinitionen und Beispielsätze in dieser App sind original oder KI-generiert. Es werden keine urheberrechtlich geschützten Wörterbuchinhalte verwendet.\n\nÜbersetzungen werden von MyMemory API (kostenloser Übersetzungsdienst) bereitgestellt.",
+  "copyrightContent": "Alle Wortdefinitionen und Beispielsätze in dieser App sind original oder KI-generiert. Es werden keine urheberrechtlich geschützten Wörterbuchinhalte verwendet.",
   "privacyPolicy": "Datenschutzrichtlinie",
-  "privacyContent": "Diese App sammelt, speichert oder teilt keine persönlichen Informationen.\n\nÜbersetzungsanfragen werden an MyMemory API zur Verarbeitung gesendet. Benutzerdaten werden nicht auf externen Servern gespeichert.",
+  "privacyContent": "Diese App sammelt, speichert oder teilt keine persönlichen Informationen.",
   "alphabetical": "Alphabetisch",
   "random": "Zufällig",
   "quiz": "Quiz",
   "testYourself": "Teste dich",
-  "wordQuiz": "Vokabelquiz",
+  "wordQuiz": "Wörter-Quiz",
   "quizWithLevel": "{level} Quiz",
   "wordToMeaningMode": "Wort→Bedeutung",
   "meaningToWordMode": "Bedeutung→Wort",
@@ -116,9 +116,9 @@
   "purchaseFailed": "Kauf fehlgeschlagen. Bitte versuche es erneut.",
   "purchaseRestored": "Kauf erfolgreich wiederhergestellt!",
   "noPurchaseToRestore": "Kein Kauf zum Wiederherstellen gefunden",
-  "buy": "Kaufen",
-  "cancel": "Abbrechen"
+  "buy": "Kaufen"
 }
+
 
 
 
