@@ -50,10 +50,9 @@ class _WordListScreenState extends State<WordListScreen> {
   // 위치 저장 키
   String get _positionKey =>
       'word_list_position_${widget.level ?? 'all'}_${widget.isFlashcardMode ? 'flashcard' : 'list'}';
-  
+
   // 페이지 저장 키 (리스트 모드)
-  String get _pageKey =>
-      'word_list_page_${widget.level ?? 'all'}';
+  String get _pageKey => 'word_list_page_${widget.level ?? 'all'}';
 
   @override
   void initState() {
@@ -155,7 +154,7 @@ class _WordListScreenState extends State<WordListScreen> {
       _isLoading = false;
       _isLoadingPage = false;
     });
-    
+
     // 페이지 저장
     _saveCurrentPage(page);
   }
