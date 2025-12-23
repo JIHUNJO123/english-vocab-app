@@ -526,72 +526,81 @@ class _HomeScreenState extends State<HomeScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: color.withAlpha((0.2 * 255).toInt()),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                '$level - $levelName',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+      builder:
+          (context) => Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: color.withAlpha((0.2 * 255).toInt()),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '$level - $levelName',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                ListTile(
+                  leading: Icon(Icons.list_alt, color: color),
+                  title: Text(l10n.allWords),
+                  subtitle: Text(l10n.viewAllWords),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WordListScreen(level: level),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.style, color: color),
+                  title: Text(l10n.flashcard),
+                  subtitle: Text(l10n.cardLearning),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => WordListScreen(
+                              level: level,
+                              isFlashcardMode: true,
+                            ),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.quiz, color: color),
+                  title: Text(l10n.quiz),
+                  subtitle: Text(l10n.testYourself),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuizScreen(level: level),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+              ],
             ),
-            const SizedBox(height: 20),
-            ListTile(
-              leading: Icon(Icons.list_alt, color: color),
-              title: Text(l10n.allWords),
-              subtitle: Text(l10n.viewAllWords),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WordListScreen(level: level),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.style, color: color),
-              title: Text(l10n.flashcard),
-              subtitle: Text(l10n.cardLearning),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WordListScreen(level: level, isFlashcardMode: true),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.quiz, color: color),
-              title: Text(l10n.quiz),
-              subtitle: Text(l10n.testYourself),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => QuizScreen(level: level),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
-      ),
+          ),
     );
   }
+}
