@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "de",
   "appTitle": "Essential English 10000",
   "todayWord": "Wort des Tages",
@@ -74,7 +74,9 @@
   "currentSpeed": "Aktuell: {speed}x",
   "@currentSpeed": {
     "placeholders": {
-      "speed": {"type": "String"}
+      "speed": {
+        "type": "String"
+      }
     }
   },
   "getDailyReminders": "Tägliche Lernerinnerungen erhalten",
@@ -116,10 +118,10 @@
   "purchaseFailed": "Kauf fehlgeschlagen. Bitte versuche es erneut.",
   "purchaseRestored": "Kauf erfolgreich wiederhergestellt!",
   "noPurchaseToRestore": "Kein Kauf zum Wiederherstellen gefunden",
-  "buy": "Kaufen"
+  "buy": "Kaufen",
+  "lockedContent": "Gesperrter Inhalt",
+  "watchAdToUnlock": "Schau ein kurzes Video, um alle Wörter bis Mitternacht freizuschalten!",
+  "watchAd": "Werbung ansehen",
+  "adNotReady": "Werbung ist noch nicht bereit. Bitte versuche es erneut.",
+  "unlockedUntilMidnight": "Alle Wörter bis Mitternacht freigeschaltet!"
 }
-
-
-
-
-

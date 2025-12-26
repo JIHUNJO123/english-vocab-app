@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "ar",
   "appTitle": "Essential English 10000",
   "todayWord": "تعبير اليوم",
@@ -111,10 +111,10 @@
   "purchaseFailed": "فشلت عملية الشراء. يرجى المحاولة مرة أخرى.",
   "purchaseRestored": "تمت استعادة عملية الشراء بنجاح!",
   "noPurchaseToRestore": "لا توجد عملية شراء للاستعادة",
-  "buy": "شراء"
+  "buy": "شراء",
+  "lockedContent": "محتوى مقفل",
+  "watchAdToUnlock": "شاهد فيديو قصير لفتح جميع الكلمات حتى منتصف الليل!",
+  "watchAd": "مشاهدة الإعلان",
+  "adNotReady": "الإعلان غير جاهز بعد. يرجى المحاولة مرة أخرى.",
+  "unlockedUntilMidnight": "تم فتح جميع الكلمات حتى منتصف الليل!"
 }
-
-
-
-
-
