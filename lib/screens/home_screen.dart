@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:english_vocab_app/l10n/generated/app_localizations.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../db/database_helper.dart';
 import '../models/word.dart';
 import '../services/translation_service.dart';
@@ -22,14 +21,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Word? _todayWord;
   String? _translatedDefinition;
   bool _isLoading = true;
-  bool _isBannerAdLoaded = false;
   String? _lastLanguage; // 마지막 로드된 언어 추적
 
   @override
   void initState() {
     super.initState();
     _loadTodayWord();
-    _loadBannerAd();
+    AdService.instance.loadRewardedAd();
   }
 
   @override
@@ -41,23 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _loadTodayWord();
     }
     _lastLanguage = currentLanguage;
-  }
-
-  Future<void> _loadBannerAd() async {
-    final adService = AdService.instance;
-    await adService.initialize();
-
-    if (!adService.adsRemoved) {
-      await adService.loadBannerAd(
-        onLoaded: () {
-          if (mounted) {
-            setState(() {
-              _isBannerAdLoaded = true;
-            });
-          }
-        },
-      );
-    }
   }
 
   Future<void> _loadTodayWord() async {
@@ -93,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    AdService.instance.disposeBannerAd();
+    AdService.instance.dispose();
     super.dispose();
   }
 
@@ -160,27 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          // ��� ����
-          _buildBannerAd(),
         ],
       ),
-    );
-  }
-
-  Widget _buildBannerAd() {
-    final adService = AdService.instance;
-
-    if (adService.adsRemoved ||
-        !_isBannerAdLoaded ||
-        adService.bannerAd == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      width: adService.bannerAd!.size.width.toDouble(),
-      height: adService.bannerAd!.size.height.toDouble(),
-      alignment: Alignment.center,
-      child: AdWidget(ad: adService.bannerAd!),
     );
   }
 
@@ -359,8 +321,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder:
-                    (context) => const WordListScreen(isFlashcardMode: true),
+                builder: (context) =>
+                    const WordListScreen(isFlashcardMode: true),
               ),
             );
           },
@@ -526,81 +488,79 @@ class _HomeScreenState extends State<HomeScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (context) => Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                color: color.withAlpha((0.2 * 255).toInt()),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '$level - $levelName',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: Icon(Icons.list_alt, color: color),
+              title: Text(l10n.allWords),
+              subtitle: Text(l10n.viewAllWords),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WordListScreen(level: level),
                   ),
-                  decoration: BoxDecoration(
-                    color: color.withAlpha((0.2 * 255).toInt()),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '$level - $levelName',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: color,
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.style, color: color),
+              title: Text(l10n.flashcard),
+              subtitle: Text(l10n.cardLearning),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WordListScreen(
+                      level: level,
+                      isFlashcardMode: true,
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                ListTile(
-                  leading: Icon(Icons.list_alt, color: color),
-                  title: Text(l10n.allWords),
-                  subtitle: Text(l10n.viewAllWords),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WordListScreen(level: level),
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.style, color: color),
-                  title: Text(l10n.flashcard),
-                  subtitle: Text(l10n.cardLearning),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => WordListScreen(
-                              level: level,
-                              isFlashcardMode: true,
-                            ),
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.quiz, color: color),
-                  title: Text(l10n.quiz),
-                  subtitle: Text(l10n.testYourself),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => QuizScreen(level: level),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-              ],
+                );
+              },
             ),
-          ),
+            ListTile(
+              leading: Icon(Icons.quiz, color: color),
+              title: Text(l10n.quiz),
+              subtitle: Text(l10n.testYourself),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => QuizScreen(level: level),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
     );
   }
 }

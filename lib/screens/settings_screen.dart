@@ -265,11 +265,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // About
           _buildSectionHeader(l10n.about),
           ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: Text(l10n.version),
-            subtitle: const Text('1.0.0'),
-          ),
-          ListTile(
             leading: const Icon(Icons.description_outlined),
             title: Text(l10n.copyright),
             subtitle: Text(l10n.copyrightDesc),
@@ -342,91 +337,93 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildRemoveAdsSection(AppLocalizations l10n) {
     final adService = AdService.instance;
     final purchaseService = PurchaseService.instance;
+    final isUnlocked = adService.isUnlocked;
+    final isPurchaseAvailable = purchaseService.isAvailable;
 
-    // �̹� ������ ���ŵ� ���
-    if (adService.adsRemoved) {
-      return ListTile(
-        leading: const Icon(Icons.check_circle, color: Colors.green),
-        title: Text(l10n.adsRemoved),
-        subtitle: Text(l10n.enjoyAdFree),
-      );
-    }
-
-    // ���� ������ ���
     return Column(
       children: [
+        // 잠금 해제 상태 표시
         ListTile(
-          leading: const Icon(Icons.block, color: Colors.orange),
-          title: Text(l10n.removeAdsTitle),
-          subtitle: Text(l10n.removeAdsDesc),
-          trailing: ElevatedButton(
-            onPressed:
-                _isPurchasing
-                    ? null
-                    : () async {
-                      setState(() {
-                        _isPurchasing = true;
-                      });
-
-                      try {
-                        final success = await purchaseService.buyRemoveAds();
-                        if (!success && mounted) {
-                          setState(() {
-                            _isPurchasing = false;
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                purchaseService.errorMessage ??
-                                    l10n.purchaseFailed,
-                              ),
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        if (mounted) {
-                          setState(() {
-                            _isPurchasing = false;
-                          });
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(e.toString())));
-                        }
-                      }
-                    },
-            child:
-                _isPurchasing
-                    ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                    : Text(purchaseService.getRemoveAdsPrice() ?? l10n.buy),
+          leading: Icon(
+            isUnlocked ? Icons.lock_open : Icons.lock_outline,
+            color: isUnlocked ? Colors.green : null,
+          ),
+          title: Text(isUnlocked ? l10n.unlockedUntilMidnight : l10n.lockedContent),
+          subtitle: Text(
+            isUnlocked 
+              ? l10n.unlockedUntilMidnight 
+              : l10n.watchAdToUnlock,
           ),
         ),
-        ListTile(
-          leading: const Icon(Icons.restore),
-          title: Text(l10n.restorePurchase),
-          subtitle: Text(l10n.restorePurchaseDesc),
-          onTap: () async {
-            await purchaseService.restorePurchases();
-            // ���� �� ȭ�� ���� (�ణ�� ������ ��)
-            await Future.delayed(const Duration(milliseconds: 500));
-            if (mounted) {
-              await AdService.instance.restoreAdsRemoved();
-              setState(() {});
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    adService.adsRemoved
-                        ? l10n.purchaseRestored
-                        : l10n.noPurchaseToRestore,
+        // IAP 광고 제거 구매 (스토어 사용 가능한 경우에만 표시)
+        if (isPurchaseAvailable) ...[
+          ListTile(
+            leading: const Icon(Icons.block, color: Colors.orange),
+            title: Text(l10n.removeAdsTitle),
+            subtitle: Text(l10n.removeAdsDesc),
+            trailing: ElevatedButton(
+              onPressed:
+                  _isPurchasing
+                      ? null
+                      : () async {
+                        setState(() {
+                          _isPurchasing = true;
+                        });
+
+                        try {
+                          final success = await purchaseService.buyRemoveAds();
+                          if (!success && mounted) {
+                            setState(() {
+                              _isPurchasing = false;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  purchaseService.errorMessage ??
+                                      l10n.purchaseFailed,
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            setState(() {
+                              _isPurchasing = false;
+                            });
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(SnackBar(content: Text(e.toString())));
+                          }
+                        }
+                      },
+              child:
+                  _isPurchasing
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : Text(purchaseService.getRemoveAdsPrice() ?? l10n.buy),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.restore),
+            title: Text(l10n.restorePurchase),
+            subtitle: Text(l10n.restorePurchaseDesc),
+            onTap: () async {
+              await purchaseService.restorePurchases();
+              await Future.delayed(const Duration(milliseconds: 500));
+              if (mounted) {
+                setState(() {});
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.restorePurchase),
                   ),
-                ),
-              );
-            }
-          },
-        ),
+                );
+              }
+            },
+          ),
+        ],
       ],
     );
   }
