@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'db/database_helper.dart';
 import 'screens/home_screen.dart';
 import 'services/translation_service.dart';
@@ -20,10 +21,15 @@ void main() async {
   if (kIsWeb) {
     // 웹에서 sqflite 초기화
     databaseFactory = databaseFactoryFfiWeb;
-  } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  } else if (!Platform.isAndroid && !Platform.isIOS) {
     // Windows, Linux, macOS에서 sqflite 초기화
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
+  }
+
+  // Initialize Mobile Ads (Android/iOS에서만)
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+    await MobileAds.instance.initialize();
   }
 
   // 번역 서비스 초기화
